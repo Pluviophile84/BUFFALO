@@ -1,0 +1,42 @@
+---
+import { issue } from '../lib/issue-state';
+import { HERO, ACTION } from '../content/copy';
+import Coin from '../components/Coin.astro';
+import SerialModule from '../components/SerialModule.astro';
+import Specimen from '../components/Specimen.astro';
+import SecurityThread from '../components/SecurityThread.astro';
+import GuillocheField from '../components/GuillocheField.astro';
+import EngravedRule from '../components/EngravedRule.astro';
+import Action from '../components/Action.astro';
+---
+<section class="hero" id="top" aria-labelledby="hero-title" data-guilloche-host="hero">
+  <div class="hero__inner wrap">
+    <div class="hero__copy">
+      <p class="hero__eyebrow label">{HERO.eyebrow}</p>
+      <h1 class="hero__title" id="hero-title">
+        <span class="hero__lead">{HERO.lead}</span>
+        <span class="hero__h1">{HERO.h1}</span>
+      </h1>
+      <p class="hero__body">{HERO.body}</p>
+      <div class="actions hero__actions">
+        <Action href={issue.buyUrl} label={ACTION.acquire} primary helper={ACTION.availableAtIssue} external />
+        <Action href="#provenance" label={HERO.secondary} />
+      </div>
+      <SerialModule class="hero__serial" />
+      <p class="hero__note">{HERO.note}</p>
+    </div>
+    <div class="hero__coincol">
+      <SecurityThread />
+      <div class="hero__coinwrap">
+        <span class="hero__vignette" aria-hidden="true"></span>
+        <GuillocheField variant="hero" />
+        <Coin sizes="(min-width: 1024px) min(48.7vh, 470px), 66vw" eager strike class="hero__coin" />
+        {!issue.live && <Specimen kind="stamp" class="hero__stamp" />}
+        {[1, 2, 3].map((n) => (
+          <svg class={`thread__win thread__win--${n}`} width="9" height="50" aria-hidden="true" focusable="false"><text transform="rotate(90) translate(1 -1.5)">BUFFALO</text></svg>
+        ))}
+      </div>
+      <EngravedRule lines={4} class="hero__ground" />
+    </div>
+  </div>
+</section>

@@ -1,0 +1,53 @@
+---
+import { MARK } from '../content/copy';
+import PlateLabel from '../components/PlateLabel.astro';
+import Coin from '../components/Coin.astro';
+import Glyph from '../components/Glyph.astro';
+
+// Hotspot positions live in sections.css (.hotspot--*), in % of the coin box,
+// derived from master user units: rim (180,180) · field (290,862) · bison (760,320)
+// · guilloche (722,150) · Ƀ (408,620) · ground (640,790). Verified in tests/mark.spec.ts.
+---
+<section class="section mark" id="mark" aria-labelledby="mark-title" data-mark>
+  <div class="wrap">
+    <div class="mark__head">
+      <PlateLabel text={MARK.label} />
+      <h2 id="mark-title" data-ink>{MARK.h2}</h2>
+      <p class="mark__intro" data-ink data-stagger="1">{MARK.intro}</p>
+    </div>
+    <div class="mark__body">
+      <div class="mark__coinwrap">
+        <Coin sizes="(min-width: 1024px) 540px, 84vw" class="mark__coin" id="mark-coin" interactive>
+          {MARK.items.map((it, i) => {
+            return (
+              <button class:list={['hotspot', `hotspot--${it.id}`]} type="button" data-spot={it.id} aria-describedby={`mark-d-${it.id}`} aria-pressed="false" tabindex={i === 0 ? 0 : -1}>
+                <span class="hotspot__ring" aria-hidden="true">{i + 1}</span>
+                <span class="vh">{`${i + 1}. ${it.title.replace('Ƀ', 'B with stroke')}`}</span>
+              </button>
+            );
+          })}
+        </Coin>
+      </div>
+      <div class="mark__notes">
+        <ol class="mark__list">
+          {MARK.items.map((it, i) => (
+            <li class="mark__item" data-item={it.id}>
+              <button class="mark__btn" type="button" data-pick={it.id} aria-controls="mark-coin" aria-pressed="false">
+                <span class="mark__n label" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <span class="mark__title">{it.glyph ? (<>The <Glyph kind="b" />.</>) : it.title}</span>
+              </button>
+              <p class="mark__text" id={`mark-d-${it.id}`}>{it.text}</p>
+            </li>
+          ))}
+        </ol>
+        <button class="ket-decoder" type="button" data-ket>
+          <span class="vh">{MARK.ketSr}</span>
+          <span class="ket" aria-hidden="true">|{MARK.ketBytes.map((b, i) => (
+            <span class="ket__byte" data-letter={MARK.ketLetters[i]}><span class="ket__bits">{b}</span><span class="ket__letter">{MARK.ketLetters[i]}</span></span>
+          ))}<Glyph kind="ket" hidden /></span>
+        </button>
+        <p class="mark__principle">{MARK.principle}</p>
+      </div>
+    </div>
+  </div>
+</section>

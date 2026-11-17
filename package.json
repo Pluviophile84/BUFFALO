@@ -1,0 +1,45 @@
+{
+  "name": "buffalo-fourth-issue",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "BUFFALO ($BUFFALO) \u2014 The Fourth Issue. Official pre-launch website.",
+  "engines": {
+    "node": ">=22.23.4 <23"
+  },
+  "scripts": {
+    "dev": "npm run generate && astro dev",
+    "generate": "node scripts/build-generated.mjs && node scripts/build-og.mjs",
+    "build": "npm run generate && astro build",
+    "preview": "astro preview",
+    "assets": "node scripts/extract-layers.mjs && node scripts/build-fonts.mjs && node scripts/build-historical.mjs && node scripts/reference-render.mjs && node scripts/build-generated.mjs && node scripts/build-kit.mjs",
+    "test": "node tests/build-states.mjs && playwright test && node tests/lighthouse.mjs",
+    "test:static": "playwright test --project=static",
+    "lighthouse": "node tests/lighthouse.mjs",
+    "test:browser": "playwright test --project=browser"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.5",
+    "@fontsource-variable/jetbrains-mono": "5.3.0",
+    "@fontsource/libre-caslon-display": "5.3.0",
+    "@fontsource/libre-caslon-text": "5.3.0",
+    "@resvg/resvg-js": "2.6.2",
+    "astro": "7.4.12",
+    "d3-geo": "3.1.2",
+    "sharp": "0.35.5",
+    "subset-font": "2.9.0",
+    "svgo": "4.1.0",
+    "topojson-client": "3.1.0",
+    "world-atlas": "2.0.2"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@capsizecss/metrics": "4.4.0",
+    "@capsizecss/unpack": "4.0.1",
+    "@lhci/cli": "0.16.1",
+    "@playwright/test": "1.63.0",
+    "fontkit": "3.0.0",
+    "pixelmatch": "8.0.0",
+    "pngjs": "7.0.0"
+  }
+}

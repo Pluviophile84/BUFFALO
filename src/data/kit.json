@@ -1,0 +1,138 @@
+{
+  "tiles": [
+    {
+      "id": "emblem",
+      "name": "The emblem",
+      "bg": "vault",
+      "preview": {
+        "src": "/kit/previews/emblem.webp",
+        "width": 320,
+        "height": 320
+      },
+      "files": [
+        {
+          "href": "/kit/buffalo-emblem-512.png",
+          "download": "buffalo-emblem-512.png",
+          "format": "PNG",
+          "meta": "512 × 512 · transparent · 246 KB"
+        },
+        {
+          "href": "/kit/buffalo-emblem-1024.png",
+          "download": "buffalo-emblem-1024.png",
+          "format": "PNG",
+          "meta": "1024 × 1024 · transparent · 844 KB"
+        },
+        {
+          "href": "/kit/buffalo-emblem-2048.png",
+          "download": "buffalo-emblem-2048.png",
+          "format": "PNG",
+          "meta": "2048 × 2048 · transparent · 2657 KB"
+        }
+      ]
+    },
+    {
+      "id": "b",
+      "name": "The Ƀ",
+      "glyph": true,
+      "bg": "vault",
+      "preview": {
+        "src": "/kit/previews/b.webp",
+        "width": 200,
+        "height": 234
+      },
+      "files": [
+        {
+          "href": "/kit/buffalo-b-cream.svg",
+          "download": "buffalo-b-cream.svg",
+          "format": "SVG",
+          "meta": "Cream · vector",
+          "variant": "Cream SVG"
+        },
+        {
+          "href": "/kit/buffalo-b-cream.png",
+          "download": "buffalo-b-cream.png",
+          "format": "PNG",
+          "meta": "Cream · 854 × 1001",
+          "variant": "Cream PNG"
+        },
+        {
+          "href": "/kit/buffalo-b-ink.svg",
+          "download": "buffalo-b-ink.svg",
+          "format": "SVG",
+          "meta": "Bison deep · vector",
+          "variant": "Bison deep SVG"
+        },
+        {
+          "href": "/kit/buffalo-b-ink.png",
+          "download": "buffalo-b-ink.png",
+          "format": "PNG",
+          "meta": "Bison deep · 854 × 1001",
+          "variant": "Bison deep PNG"
+        },
+        {
+          "href": "/kit/buffalo-b-bronze.svg",
+          "download": "buffalo-b-bronze.svg",
+          "format": "SVG",
+          "meta": "Bronze · vector",
+          "variant": "Bronze SVG"
+        },
+        {
+          "href": "/kit/buffalo-b-bronze.png",
+          "download": "buffalo-b-bronze.png",
+          "format": "PNG",
+          "meta": "Bronze · 854 × 1001",
+          "variant": "Bronze PNG"
+        }
+      ]
+    },
+    {
+      "id": "x",
+      "name": "X header",
+      "bg": "vault",
+      "preview": {
+        "src": "/kit/previews/x-header.webp",
+        "width": 600,
+        "height": 200
+      },
+      "files": [
+        {
+          "href": "/kit/buffalo-x-header-1500x500.png",
+          "download": "buffalo-x-header-1500x500.png",
+          "format": "PNG",
+          "meta": "1500 × 500 · 464 KB"
+        }
+      ]
+    },
+    {
+      "id": "wallpapers",
+      "name": "Wallpapers",
+      "bg": "vault",
+      "preview": {
+        "src": "/kit/previews/wallpaper.webp",
+        "width": 600,
+        "height": 338
+      },
+      "files": [
+        {
+          "href": "/kit/buffalo-wallpaper-phone-1290x2796.png",
+          "download": "buffalo-wallpaper-phone-1290x2796.png",
+          "format": "PNG",
+          "meta": "Phone · 1290 × 2796 · 1225 KB",
+          "variant": "phone"
+        },
+        {
+          "href": "/kit/buffalo-wallpaper-desktop-2560x1440.png",
+          "download": "buffalo-wallpaper-desktop-2560x1440.png",
+          "format": "PNG",
+          "meta": "Desktop · 2560 × 1440 · 1494 KB",
+          "variant": "desktop"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    "emblem 512: logo pack (02_Transparent_PNG)",
+    "emblem 1024: logo pack (02_Transparent_PNG)",
+    "emblem 2048: generated from master"
+  ]
+}

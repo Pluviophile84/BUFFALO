@@ -1,0 +1,23 @@
+---
+import { FINAL } from '../content/copy';
+import PlateLabel from '../components/PlateLabel.astro';
+import Action from '../components/Action.astro';
+import SerialModule from '../components/SerialModule.astro';
+import GuillocheField from '../components/GuillocheField.astro';
+---
+<section class="section final" id="issue" aria-labelledby="final-title" data-guilloche-host="final">
+  <div class="final__fieldwrap" aria-hidden="true"><span class="final__focus"></span><GuillocheField variant="final" /></div>
+  <div class="wrap final__inner">
+    <div class="final__panel">
+      <PlateLabel text={FINAL.label} center />
+      <h2 class="final__display" id="final-title" data-ink>{FINAL.display}</h2>
+      <p class="final__sub" data-ink data-stagger="1">{FINAL.sub}</p>
+      <div class="actions final__actions">
+        <Action href="#specification" label={FINAL.spec} primary />
+        <Action href="#provenance" label={FINAL.provenance} />
+      </div>
+      <SerialModule class="final__serial" />
+      <p class="final__wit wit">{FINAL.wit}</p>
+    </div>
+  </div>
+</section>

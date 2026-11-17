@@ -1,0 +1,39 @@
+---
+// A link-styled action. Disabled actions render <a aria-disabled="true"> with no
+// href (so they cannot be followed or tabbed to) and visible helper text.
+interface Props {
+  href?: string | null;
+  label: string;
+  primary?: boolean;
+  helper?: string;
+  external?: boolean;
+  class?: string;
+}
+const { href, label, primary = false, helper, external = false, class: cls = '' } = Astro.props;
+const disabled = !href;
+// Deterministic id for aria-describedby (stable across builds).
+const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+const g = globalThis as unknown as { __actionSeq?: Map<string, number> };
+g.__actionSeq ??= new Map();
+const n = (g.__actionSeq.get(slug) ?? 0) + 1;
+g.__actionSeq.set(slug, n);
+const hid = disabled && helper ? `help-${slug}-${n}` : undefined;
+---
+{disabled ? (
+  <span class:list={['action', cls]}>
+    <a class:list={['btn', primary && 'btn--primary']} role="link" aria-disabled="true" aria-describedby={hid}>
+      {label}
+    </a>
+    {helper && <span class="helper" id={hid}>{helper}</span>}
+  </span>
+) : (
+  <a
+    class:list={['btn', primary && 'btn--primary', cls]}
+    href={href}
+    target={external ? '_blank' : undefined}
+    rel={external ? 'noopener noreferrer' : undefined}
+    data-external={external ? '' : undefined}
+  >
+    {label}
+  </a>
+)}

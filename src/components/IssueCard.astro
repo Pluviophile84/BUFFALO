@@ -1,0 +1,48 @@
+---
+// Provenance card. Issues I–III are bounded: engraved double frame,
+// registration marks, microtext border. Issue IV is frameless and bleeds; its
+// frame lines draw and then dissolve when it enters the viewport.
+import RegMarks from './RegMarks.astro';
+import Microtext from './Microtext.astro';
+
+interface Props {
+  numeral: 'I' | 'II' | 'III' | 'IV';
+  label: string;
+  title: string;
+  body: string;
+  wit: string;
+  caption: string;
+  plate: 'paper' | 'coin' | 'emblem';
+  frameless?: boolean;
+}
+const { numeral, label, title, body, wit, caption, plate, frameless = false } = Astro.props;
+---
+<article class:list={['card', frameless ? 'card--free' : 'card--framed', `card--${plate}`]} data-card={numeral} aria-labelledby={`card-${numeral}`}>
+  {frameless ? (
+    <svg class="card__dissolve" aria-hidden="true" focusable="false" data-dissolve>
+      <rect x="0.5" y="0.5" width="100%" height="100%" />
+      <rect x="6.5" y="6.5" width="100%" height="100%" class="card__dissolve-inner" />
+    </svg>
+  ) : (
+    <>
+      <span class="card__frame" aria-hidden="true"></span>
+      <RegMarks />
+      <span class="card__micro card__micro--t"><Microtext /></span>
+      <span class="card__micro card__micro--b"><Microtext /></span>
+      <span class="card__micro card__micro--l"><Microtext vertical /></span>
+      <span class="card__micro card__micro--r"><Microtext vertical /></span>
+    </>
+  )}
+  <div class="card__inner">
+    <p class="card__label label">{label}</p>
+    <figure class="card__figure">
+      <div class:list={['card__plate', `card__plate--${plate}`]}>
+        <slot name="plate" />
+      </div>
+      <figcaption class="card__caption">{caption}</figcaption>
+    </figure>
+    <h3 class="card__title" id={`card-${numeral}`}>{title}</h3>
+    <p class="card__body">{body}</p>
+    <p class="card__wit wit">{wit}</p>
+  </div>
+</article>

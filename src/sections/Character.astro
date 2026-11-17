@@ -1,0 +1,29 @@
+---
+import { CHARACTER } from '../content/copy';
+import PlateLabel from '../components/PlateLabel.astro';
+---
+<section class="section character" id="character" aria-labelledby="character-title">
+  <div class="character__mark" aria-hidden="true">
+    <picture>
+      <source type="image/avif" srcset="/brand/bison-1023.avif" />
+      <img src="/brand/bison-1023.webp" alt="" width="1023" height="721" loading="lazy" decoding="async" />
+    </picture>
+  </div>
+  <div class="wrap character__inner">
+    <div class="character__head">
+      <PlateLabel text={CHARACTER.label} />
+      <h2 id="character-title" data-ink>{CHARACTER.h2}</h2>
+      <p class="character__intro" data-ink data-stagger="1">{CHARACTER.intro}</p>
+    </div>
+    <ol class="character__traits">
+      {CHARACTER.traits.map((t, i) => (
+        <li class="trait" data-ink data-stagger={String(i + 1)}>
+          <span class="trait__n label" aria-hidden="true">{t.n}</span>
+          <h3 class="trait__word">{t.word}</h3>
+          <p class="trait__text">{t.text}</p>
+        </li>
+      ))}
+    </ol>
+    <p class="character__closing" data-ink>{CHARACTER.closing}</p>
+  </div>
+</section>

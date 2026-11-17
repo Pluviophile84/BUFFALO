@@ -1,0 +1,807 @@
+@layer components {
+  /* ── Typographic roles (sections may refine them) ───────── */
+  .mono {
+    font-family: var(--f-mono);
+  }
+  .label {
+    font-family: var(--f-mono);
+    font-size: var(--t-label);
+    line-height: 1.5;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+  .wit {
+    font-family: var(--f-text);
+    font-style: italic;
+    font-size: inherit;
+  }
+
+  /* ── Layout ─────────────────────────────────────────────── */
+  .wrap {
+    width: 100%;
+    max-width: calc(var(--max) + 2 * var(--margin));
+    margin-inline: auto;
+    padding-inline: var(--margin);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    column-gap: var(--gutter);
+  }
+  .section {
+    position: relative;
+    padding-block: var(--section-y);
+  }
+  .paper {
+    background: var(--cream);
+    color: var(--bison-deep);
+  }
+
+  /* ── Skip link ──────────────────────────────────────────── */
+  .skip {
+    position: absolute;
+    left: var(--s4);
+    top: -100px;
+    z-index: 100;
+    padding: var(--s3) var(--s4);
+    background: var(--cream);
+    color: var(--vault);
+    font-family: var(--f-mono);
+    font-size: var(--t-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .skip:focus {
+    top: var(--s4);
+  }
+
+  /* ── Plate label: I · STATEMENT OF ISSUE ────────────────── */
+  .plate-label {
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+    color: var(--bronze-text);
+    margin-bottom: var(--s8);
+  }
+  .plate-label::before {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.7;
+  }
+  .paper .plate-label {
+    color: var(--bronze-ink);
+  }
+  .plate-label--center {
+    justify-content: center;
+  }
+  .plate-label--center::after {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.7;
+  }
+
+  /* ── Buttons ────────────────────────────────────────────── */
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s3) var(--s4);
+    align-items: flex-start;
+  }
+  .action {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--s2);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s3);
+    min-height: 52px;
+    min-width: 44px;
+    padding: 0 var(--s6);
+    font-family: var(--f-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    border: 1px solid var(--rule-strong);
+    color: var(--cream);
+    background: transparent;
+  }
+  /* Transitions live on the interactive state only, so nothing ever animates
+     on first render (e.g. when a content-visibility section is painted). */
+  .btn:hover {
+    border-color: var(--cream-2);
+    transition:
+      background-color 400ms var(--ease),
+      border-color 400ms var(--ease),
+      color 400ms var(--ease);
+  }
+  .btn--primary {
+    background: var(--bronze-text);
+    border-color: var(--bronze-text);
+    color: var(--vault);
+  }
+  .btn--primary:hover {
+    background: var(--cream);
+    border-color: var(--cream);
+  }
+  .btn[aria-disabled='true'] {
+    background: transparent;
+    border: 1px dashed var(--rule-strong);
+    color: var(--cream-2);
+    cursor: not-allowed;
+  }
+  .btn__mark {
+    width: 6px;
+    height: 6px;
+    border: 1px solid currentColor;
+    transform: rotate(45deg);
+  }
+  .helper {
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cream-3);
+  }
+  .paper .btn {
+    color: var(--bison-deep);
+    border-color: var(--rule-paper-strong);
+  }
+  .paper .btn:hover {
+    border-color: var(--bison-deep);
+  }
+  .paper .btn[aria-disabled='true'] {
+    color: var(--ink-2);
+    border-color: var(--rule-paper-strong);
+  }
+  .paper .helper {
+    color: var(--ink-2);
+  }
+
+  /* ── Status pill ────────────────────────────────────────── */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+    min-height: 32px;
+    padding: 0 var(--s3);
+    border: 1px solid var(--rule-strong);
+    color: var(--cream-2);
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .pill__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--bronze-text);
+  }
+  .pill--live .pill__dot {
+    background: var(--greenback);
+  }
+
+  /* ── Navigation ─────────────────────────────────────────── */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--nav-bg);
+    border-bottom: 1px solid transparent;
+  }
+  @supports (animation-timeline: scroll()) {
+    .nav {
+      animation: nav-rule linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 24px;
+    }
+  }
+  @supports not (animation-timeline: scroll()) {
+    .nav {
+      border-bottom-color: var(--rule);
+    }
+  }
+  @keyframes nav-rule {
+    to {
+      border-bottom-color: var(--rule);
+    }
+  }
+  .nav__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s6);
+    height: 64px;
+  }
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s3);
+    min-height: 44px;
+    text-decoration: none;
+    color: var(--cream);
+  }
+  .wordmark__b {
+    width: auto;
+    height: 24px;
+  }
+  .wordmark__text {
+    font-family: var(--f-display);
+    font-size: 1.0625rem;
+    letter-spacing: 0.18em;
+    line-height: 1;
+    padding-top: 2px;
+  }
+  .nav__links {
+    display: none;
+    gap: clamp(var(--s4), 2vw, var(--s8));
+  }
+  .nav__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--t-small);
+    color: var(--cream-2);
+    text-decoration: none;
+  }
+  .nav__links a:hover {
+    color: var(--cream);
+    transition: color 300ms var(--ease);
+  }
+  .nav__right {
+    display: flex;
+    align-items: center;
+    gap: var(--s4);
+  }
+  .nav__right .pill {
+    display: none;
+  }
+  .nav__menu {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s3);
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 var(--s2);
+    font-family: var(--f-mono);
+    font-size: var(--t-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--cream);
+  }
+  .nav__menu-icon {
+    width: 18px;
+    height: 7px;
+    border-top: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+  }
+  @media (min-width: 600px) {
+    .nav__right .pill {
+      display: inline-flex;
+    }
+  }
+  @media (min-width: 1100px) {
+    .nav__links {
+      display: flex;
+    }
+    .nav__menu {
+      display: none;
+    }
+  }
+
+  /* Overlay menu (mobile) */
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: var(--vault);
+    display: flex;
+    flex-direction: column;
+    padding: 0 var(--margin) var(--s10);
+    overflow-y: auto;
+  }
+  .menu:not(.is-open) {
+    display: none;
+  }
+  .menu__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    flex: none;
+  }
+  .menu__links {
+    margin-top: var(--s10);
+    display: grid;
+    gap: var(--s2);
+  }
+  .menu__links a {
+    display: block;
+    padding: var(--s2) 0;
+    font-family: var(--f-display);
+    font-size: 2rem;
+    line-height: 1.2;
+    text-decoration: none;
+    color: var(--cream);
+    border-bottom: 1px solid var(--rule);
+  }
+  .menu__foot {
+    margin-top: auto;
+    padding-top: var(--s10);
+    display: grid;
+    gap: var(--s5);
+    justify-items: start;
+  }
+
+  /* ── The coin (layered from the master; see Coin.astro) ── */
+  .coin {
+    position: relative;
+    aspect-ratio: 1;
+    width: 100%;
+    isolation: isolate;
+  }
+  .coin > * {
+    position: absolute;
+  }
+  .coin__layer {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .coin__bison img,
+  .coin__ground {
+    width: 100%;
+    height: 100%;
+  }
+
+  .coin__bison img {
+    display: block;
+  }
+  .coin__shock {
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid var(--bronze-text);
+    opacity: 0;
+    pointer-events: none;
+  }
+  [data-mark] .coin [data-layer] {
+    transition: opacity 500ms var(--ease);
+  }
+
+  /* Strike sequence (hero only; once per session — see scripts/strike.ts) */
+  @media (prefers-reduced-motion: no-preference) {
+    .coin--strike .coin__guilloche {
+      animation: strike-draw 900ms var(--ease) both;
+    }
+    .coin--strike .coin__rings {
+      animation: strike-settle 600ms var(--ease) 300ms both;
+    }
+    .coin--strike .coin__bison {
+      mask-image: linear-gradient(90deg, #000 0 calc(50% - 12px), transparent calc(50% + 12px));
+      mask-size: 200% 100%;
+      mask-repeat: no-repeat;
+      animation: strike-ink 900ms var(--ease) 500ms both;
+    }
+    .coin--strike .coin__b {
+      animation: strike-b 160ms cubic-bezier(0.3, 0, 0.1, 1) 1400ms both;
+    }
+    .coin--strike .coin__shock {
+      animation: strike-shock 500ms var(--ease) 1400ms both;
+    }
+    .coin--strike .coin__ground {
+      animation: strike-ground 450ms var(--ease) 1550ms both;
+    }
+    .coin--struck * {
+      animation: none !important;
+    }
+  }
+  @keyframes strike-draw {
+    from {
+      clip-path: circle(0% at 50% 50%);
+    }
+    to {
+      clip-path: circle(50% at 50% 50%);
+    }
+  }
+  @keyframes strike-settle {
+    from {
+      opacity: 0;
+      transform: scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes strike-ink {
+    from {
+      mask-position: 100% 0;
+    }
+    to {
+      mask-position: 0 0;
+    }
+  }
+  @keyframes strike-b {
+    from {
+      opacity: 0;
+      transform: scale(1.06);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes strike-shock {
+    from {
+      opacity: 0.9;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.08);
+    }
+  }
+  @keyframes strike-ground {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  /* ── Registration (crop) marks ──────────────────────────── */
+  .reg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .reg i {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+  }
+  .reg i::before,
+  .reg i::after {
+    content: '';
+    position: absolute;
+    background: var(--rule-strong);
+  }
+  .paper .reg i::before,
+  .paper .reg i::after {
+    background: var(--rule-paper-strong);
+  }
+  .reg i::before {
+    width: 10px;
+    height: 1px;
+  }
+  .reg i::after {
+    width: 1px;
+    height: 10px;
+  }
+  .reg i:nth-child(1) {
+    left: -14px;
+    top: -14px;
+  }
+  .reg i:nth-child(1)::before {
+    left: 0;
+    top: 14px;
+  }
+  .reg i:nth-child(1)::after {
+    left: 14px;
+    top: 0;
+  }
+  .reg i:nth-child(2) {
+    right: -14px;
+    top: -14px;
+  }
+  .reg i:nth-child(2)::before {
+    right: 0;
+    top: 14px;
+  }
+  .reg i:nth-child(2)::after {
+    right: 14px;
+    top: 0;
+  }
+  .reg i:nth-child(3) {
+    left: -14px;
+    bottom: -14px;
+  }
+  .reg i:nth-child(3)::before {
+    left: 0;
+    bottom: 14px;
+  }
+  .reg i:nth-child(3)::after {
+    left: 14px;
+    bottom: 0;
+  }
+  .reg i:nth-child(4) {
+    right: -14px;
+    bottom: -14px;
+  }
+  .reg i:nth-child(4)::before {
+    right: 0;
+    bottom: 14px;
+  }
+  .reg i:nth-child(4)::after {
+    right: 14px;
+    bottom: 0;
+  }
+
+  /* ── Engraved rule: tapering hairlines, echoing the ground raster ── */
+  .engraved-rule {
+    display: block;
+    width: 100%;
+    height: 17px;
+    color: var(--cream);
+    overflow: visible;
+  }
+  .engraved-rule--4 {
+    height: 13px;
+  }
+  .engraved-rule--3 {
+    height: 9px;
+  }
+  .paper .engraved-rule,
+  .engraved-rule--ink {
+    color: var(--bison-deep);
+  }
+  .engraved-rule line,
+  .hair line {
+    stroke: currentColor;
+    stroke-width: 1;
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 0;
+  }
+
+  /* ── Microtext (always aria-hidden; SVG so it scales as a line) ── */
+  .micro {
+    display: block;
+    overflow: hidden;
+    font-family: var(--f-mono);
+    font-size: var(--t-micro);
+    letter-spacing: 0.08em;
+    fill: var(--guilloche);
+  }
+  .paper .micro {
+    fill: var(--rule-paper-strong);
+  }
+
+  /* ── Inline glyphs: Ƀ (master vector) and ⟩ (drawn to JetBrains Mono) ── */
+  .glyph-b {
+    display: inline-block;
+    vertical-align: baseline;
+    white-space: nowrap;
+  }
+  .glyph-b svg {
+    display: inline-block;
+    height: 0.69em;
+    width: auto;
+    vertical-align: baseline;
+    fill: currentColor;
+  }
+  .glyph-ket {
+    display: inline-block;
+    width: 0.6em;
+    height: 1em;
+    vertical-align: -0.11em;
+    overflow: visible;
+    stroke: currentColor;
+    fill: none;
+  }
+
+  /* ── Serial module ──────────────────────────────────────── */
+  .serial {
+    position: relative;
+    display: grid;
+    gap: var(--s3);
+    padding: var(--s5) var(--s5) var(--s4);
+    background: var(--vault-3);
+    border: 1px solid var(--rule);
+    max-width: 560px;
+  }
+  .serial__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s4);
+    color: var(--cream-3);
+    min-height: 44px;
+  }
+  .serial__row {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    padding-right: 0;
+  }
+  @media (min-width: 480px) {
+    .serial--pending .serial__row {
+      padding-right: min(42%, 210px);
+    }
+  }
+  .serial__head .label {
+    letter-spacing: 0.12em;
+    font-size: 0.6875rem;
+  }
+  .serial__value {
+    font-family: var(--f-mono);
+    font-size: clamp(0.8125rem, 0.7rem + 0.35vw, 0.9375rem);
+    letter-spacing: 0.02em;
+    color: var(--cream);
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .serial--pending .serial__value {
+    color: var(--bronze-text);
+    letter-spacing: 0.06em;
+  }
+  .serial__copy {
+    flex: none;
+    min-height: 44px;
+    min-width: 72px;
+    padding: 0 var(--s4);
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    border: 1px solid var(--rule-strong);
+    color: var(--cream);
+  }
+  .serial__copy:hover {
+    border-color: var(--cream-2);
+  }
+  .serial__copy[aria-disabled='true'] {
+    border-style: dashed;
+    color: var(--cream-3);
+    cursor: not-allowed;
+  }
+  .serial__specimen {
+    position: absolute;
+    right: var(--s5);
+    bottom: 10px;
+    width: min(36%, 188px);
+    height: auto;
+    transform: rotate(-8deg);
+    opacity: 0.55;
+    pointer-events: none;
+    color: var(--bronze-text);
+  }
+  .serial__specimen text {
+    fill: currentColor;
+    font-family: var(--f-mono);
+    font-size: 30px;
+    letter-spacing: 0.32em;
+  }
+  .serial__specimen rect {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+  }
+
+  /* ── Stamp: SPECIMEN · PRE-ISSUE (beside the coin, never over it) ── */
+  .stamp {
+    display: inline-block;
+    padding: 5px 10px 5px 12px;
+    border: 3px double var(--bronze-text);
+    color: var(--bronze-text);
+    font-family: var(--f-mono);
+    font-size: clamp(8px, 2.5vw, 11px);
+    line-height: 1.2;
+    letter-spacing: 0.16em;
+    white-space: nowrap;
+    background: var(--vault);
+  }
+
+  /* ── Ledger (dl) ────────────────────────────────────────── */
+  .ledger {
+    border-top: 1px solid var(--rule);
+  }
+  .ledger__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s1) var(--s6);
+    padding: var(--s4) 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  @media (min-width: 560px) {
+    .ledger__row {
+      grid-template-columns: minmax(150px, 0.8fr) minmax(0, 1.6fr);
+    }
+  }
+  .ledger dt {
+    color: var(--cream-3);
+  }
+  .ledger dd {
+    font-family: var(--f-mono);
+    font-size: 0.9375rem;
+    color: var(--cream);
+    overflow-wrap: anywhere;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s2) var(--s4);
+  }
+  .ledger .is-pending {
+    color: var(--bronze-text);
+  }
+  .ledger a {
+    color: var(--bronze-text);
+    text-underline-offset: 4px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* ── Hairline draw / ink reveal (enhanced by scripts/reveal.ts) ── */
+  /* Ink, not fade: a soft-edged (24px) left-to-right wipe, like an impression being pulled. */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-ink='pending'],
+    [data-ink='in'] {
+      mask-image: linear-gradient(90deg, #000 0 calc(50% - 12px), transparent calc(50% + 12px));
+      mask-size: 200% 100%;
+      mask-repeat: no-repeat;
+      mask-position: 100% 0;
+    }
+    [data-ink='in'] {
+      mask-position: 0 0;
+      transition: mask-position var(--t-slow) var(--ease) var(--ink-delay, 0ms);
+    }
+    /* Hairlines draw via stroke-dashoffset (pathLength = 1). */
+    [data-draw='pending'] line {
+      stroke-dashoffset: 1;
+    }
+    [data-draw='in'] line {
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset var(--t-slow) var(--ease) var(--ink-delay, 0ms);
+    }
+  }
+  [data-stagger='1'] {
+    --ink-delay: 100ms;
+  }
+  [data-stagger='2'] {
+    --ink-delay: 200ms;
+  }
+  [data-stagger='3'] {
+    --ink-delay: 300ms;
+  }
+  [data-stagger='4'] {
+    --ink-delay: 400ms;
+  }
+  [data-stagger='5'] {
+    --ink-delay: 500ms;
+  }
+
+  /* ── Ƀ seal ─────────────────────────────────────────────── */
+  .seal {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--bronze);
+    border-radius: 50%;
+    flex: none;
+  }
+  .seal svg {
+    height: 18px;
+    width: auto;
+  }
+
+  /* ── Ket line ───────────────────────────────────────────── */
+  .ket {
+    font-family: var(--f-mono);
+    white-space: nowrap;
+  }
+}

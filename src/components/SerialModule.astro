@@ -1,0 +1,33 @@
+---
+// The serial (contract address). Every instance renders from the single config
+// value. Pre-issue: pending text, copy disabled, SPECIMEN overprint.
+import { issue } from '../lib/issue-state';
+import { HERO, ACTION } from '../content/copy';
+import Specimen from './Specimen.astro';
+
+interface Props {
+  class?: string;
+}
+const { class: cls = '' } = Astro.props;
+const live = issue.live;
+---
+<div class:list={['serial', !live && 'serial--pending', cls]} data-serial-module>
+  <div class="serial__head">
+    <span class="label">{HERO.serialLabel}</span>
+    {live ? (
+      <button class="serial__copy" type="button" data-copy={issue.serial} data-copied={ACTION.copied} aria-label={`${ACTION.copy} serial`}>
+        <span data-copy-label>{ACTION.copy}</span>
+      </button>
+    ) : (
+      <button class="serial__copy" type="button" disabled aria-disabled="true">{ACTION.copy}</button>
+    )}
+  </div>
+  <div class="serial__row">
+    {live ? (
+      <code class="serial__value" data-serial>{issue.serial}</code>
+    ) : (
+      <span class="serial__value label">{HERO.serialPending}</span>
+    )}
+  </div>
+  {!live && <Specimen kind="overprint" />}
+</div>

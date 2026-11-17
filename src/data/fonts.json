@@ -1,0 +1,61 @@
+{
+  "charset": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ©°·×–—‘’“”…′″  ",
+  "faces": {
+    "caslon-display": {
+      "bytes": 18120,
+      "sourceBytes": 24236,
+      "unitsPerEm": 1000,
+      "ascent": 970,
+      "descent": -266,
+      "capHeight": 690,
+      "xHeight": 424
+    },
+    "caslon-text": {
+      "bytes": 17972,
+      "sourceBytes": 24972,
+      "unitsPerEm": 1000,
+      "ascent": 970,
+      "descent": -260,
+      "capHeight": 770,
+      "xHeight": 530
+    },
+    "caslon-text-italic": {
+      "bytes": 20512,
+      "sourceBytes": 28020,
+      "unitsPerEm": 1000,
+      "ascent": 970,
+      "descent": -260,
+      "capHeight": 770,
+      "xHeight": 530
+    },
+    "caslon-text-bold": {
+      "bytes": 18132,
+      "sourceBytes": 25260,
+      "unitsPerEm": 1000,
+      "ascent": 970,
+      "descent": -260,
+      "capHeight": 770,
+      "xHeight": 530
+    },
+    "jetbrains-mono": {
+      "bytes": 16436,
+      "sourceBytes": 40404,
+      "unitsPerEm": 1000,
+      "ascent": 1020,
+      "descent": -300,
+      "capHeight": 730,
+      "xHeight": 550
+    },
+    "monoGlyph": {
+      "unitsPerEm": 1000,
+      "advance": 600,
+      "barBBox": {
+        "minX": 255,
+        "minY": -110,
+        "maxX": 345,
+        "maxY": 830
+      },
+      "stem": 90
+    }
+  }
+}

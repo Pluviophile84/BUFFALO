@@ -1,0 +1,99 @@
+// §10 CSP output check, §7 metadata, single canonical host.
+import { test, expect } from '@playwright/test';
+import fs from 'node:fs';
+import path from 'node:path';
+import { STATES, walk, ROOT } from '../helpers';
+
+const SITE = 'https://buffalocoin.xyz';
+// External hosts the site links to on purpose (credits, sources, schema, live routes).
+const EXTERNAL = new Set(['commons.wikimedia.org', 'www.usmint.gov', 'www.nps.gov', 'home.nps.gov', 'www.fontsinuse.com', 'schema.org', 'pump.fun', 'solscan.io', 'x.com', 't.me']);
+
+for (const st of STATES) {
+  test.describe(st.name, () => {
+    const htmlFiles = walk(st.dist, (f) => f.endsWith('.html'));
+
+    test('no inline scripts, inline styles or event handlers', () => {
+      expect(htmlFiles.length).toBe(3);
+      for (const f of htmlFiles) {
+        const h = fs.readFileSync(f, 'utf8');
+        for (const m of h.matchAll(/<script\b([^>]*)>/g)) {
+          const attrs = m[1]!;
+          // JSON-LD is a non-executable data block; everything else must be external.
+          if (/type="application\/ld\+json"/.test(attrs)) continue;
+          expect(attrs, `inline <script> in ${f}`).toMatch(/\ssrc="\/_astro\//);
+        }
+        expect(h, `<style> in ${f}`).not.toMatch(/<style[\s>]/);
+        expect(h, `style= in ${f}`).not.toMatch(/\sstyle="/);
+        expect(h, `on*= handler in ${f}`).not.toMatch(/\son[a-z]+="/i);
+        expect(h).not.toMatch(/javascript:/i);
+      }
+    });
+
+    test('canonical, og:url, og:image, twitter:image are absolute on the apex', () => {
+      const pages = { 'index.html': SITE, 'disclaimer.html': `${SITE}/disclaimer` };
+      for (const [file, url] of Object.entries(pages)) {
+        const h = fs.readFileSync(path.join(st.dist, file), 'utf8');
+        expect(h).toContain(`<link rel="canonical" href="${url}">`);
+        expect(h).toContain(`<meta property="og:url" content="${url}">`);
+        const og = h.match(/<meta property="og:image" content="([^"]+)">/)![1]!;
+        const tw = h.match(/<meta name="twitter:image" content="([^"]+)">/)![1]!;
+        expect(og).toBe(tw);
+        expect(og).toMatch(new RegExp(`^${SITE}/og/buffalo-fourth-issue${st.name === 'live' ? '' : '-specimen'}\\.png$`));
+        expect(fs.existsSync(path.join(st.dist, new URL(og).pathname))).toBe(true);
+        expect(h).toContain('<meta name="twitter:card" content="summary_large_image">');
+      }
+    });
+
+    test('no other host appears in built absolute URLs', () => {
+      const files = walk(st.dist, (f) => /\.(html|xml|txt|webmanifest)$/.test(f));
+      for (const f of files) {
+        const t = fs.readFileSync(f, 'utf8');
+        const urls = [...t.matchAll(/https?:\/\/[^\s"'<>)]+/g)].map((m) => m[0]);
+        for (const u of urls) {
+          if (/^https?:\/\/www\.(sitemaps\.org|w3\.org|google\.com)\/(schemas|1999|2000)/.test(u)) continue; // XML namespaces
+          const url = new URL(u);
+          expect(url.protocol, u).toBe('https:');
+          if (url.hostname === 'buffalocoin.xyz') {
+            expect(u, `trailing slash: ${u}`).not.toMatch(/\/$/);
+            continue;
+          }
+          expect(EXTERNAL.has(url.hostname), `unexpected host ${url.hostname} in ${path.relative(st.dist, f)}`).toBe(true);
+        }
+      }
+      const sitemap = fs.readFileSync(path.join(st.dist, 'sitemap-0.xml'), 'utf8');
+      expect([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1])).toEqual([SITE, `${SITE}/disclaimer`]);
+      expect(fs.readFileSync(path.join(st.dist, 'robots.txt'), 'utf8')).toContain(`Sitemap: ${SITE}/sitemap-index.xml`);
+    });
+
+    test('title, description, theme, JSON-LD WebSite only', () => {
+      const h = fs.readFileSync(path.join(st.dist, 'index.html'), 'utf8');
+      expect(h).toContain('<title>BUFFALO ($BUFFALO) · The Fourth Issue</title>');
+      expect(h).toContain('<meta name="description" content="The bison has been American money three times. Now it belongs to no nation. Paper, nickel, gold, and now the chain. $BUFFALO, the Fourth Issue, on Solana.">');
+      expect(h).toContain('<meta name="theme-color" content="#0E100B">');
+      expect(h).toContain('<meta name="color-scheme" content="dark">');
+      const ld = JSON.parse(h.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)![1]!);
+      expect(ld['@type']).toBe('WebSite');
+      expect(ld.url).toBe(SITE);
+      expect(h.match(/application\/ld\+json/g)).toHaveLength(1);
+      const nf = fs.readFileSync(path.join(st.dist, '404.html'), 'utf8');
+      expect(nf).toContain('<meta name="robots" content="noindex">');
+    });
+  });
+}
+
+test('vercel.json: headers and caching', () => {
+  const v = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8'));
+  const all = v.headers.find((h: { source: string }) => h.source === '/(.*)').headers as { key: string; value: string }[];
+  const get = (k: string) => all.find((h) => h.key === k)?.value;
+  expect(get('Content-Security-Policy')).toBe("default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests");
+  expect(get('Strict-Transport-Security')).toBe('max-age=63072000; includeSubDomains; preload');
+  expect(get('X-Frame-Options')).toBe('DENY');
+  expect(get('Cross-Origin-Opener-Policy')).toBe('same-origin');
+  expect(v.cleanUrls).toBe(true);
+  expect(v.trailingSlash).toBe(false);
+  const cache = (src: string) => v.headers.find((h: { source: string }) => h.source === src).headers[0].value;
+  expect(cache('/_astro/(.*)')).toContain('immutable');
+  expect(cache('/brand/(.*)')).toContain('max-age=31536000');
+  expect(cache('/kit/(.*)')).toBe('public, max-age=86400');
+  expect(cache('/((?!_astro/|brand/|kit/|og/).*)')).toBe('no-cache');
+});

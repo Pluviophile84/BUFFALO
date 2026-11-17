@@ -1,0 +1,63 @@
+---
+// The emblem, reconstructed from its extracted layers in the master's own
+// coordinate system (viewBox 40 40 920 920, original transforms), so it can be
+// struck and so the Ƀ stays vector-crisp. Layer order = master order:
+//   frame circles → frame guilloche → ground raster → bison raster → Ƀ vector.
+// The guilloche is referenced with <use> from the extracted file: vector line
+// work at any size, cached once, and never mistaken for an LCP image.
+// Every composite is pixel-diffed against a resvg render of the master (tests/logo.spec.ts).
+import brand from '../data/brand.json';
+import { META } from '../content/copy';
+
+interface Props {
+  sizes: string;
+  eager?: boolean;
+  strike?: boolean;
+  id?: string;
+  class?: string;
+  decorative?: boolean;
+  interactive?: boolean; // contains controls (the Mark): a labelled group, not role=img
+}
+const { sizes, eager = false, strike = false, id, class: cls = '', decorative = false, interactive = false } = Astro.props;
+const [rim, ring, field] = brand.circles;
+const srcset = (ext: string) => brand.bison.srcset.map((s) => `/brand/bison-${s.width}.${ext} ${s.width}w`).join(', ');
+const fallback = brand.bison.srcset[1]!;
+const loading = eager ? 'eager' : 'lazy';
+---
+<div
+  class:list={['coin', strike && 'coin--strike', cls]}
+  id={id}
+  data-coin
+  data-strike={strike ? '' : undefined}
+  role={decorative ? undefined : interactive ? 'group' : 'img'}
+  aria-label={decorative ? undefined : META.coinAlt}
+  aria-hidden={decorative ? 'true' : undefined}
+>
+  <svg class="coin__layer coin__rings" viewBox={brand.viewBox} aria-hidden="true" focusable="false">
+    <g class="coin__rim" data-layer="rim">
+      <circle cx={rim.cx} cy={rim.cy} r={rim.r} fill={rim.fill} />
+      <circle cx={ring.cx} cy={ring.cy} r={ring.r} fill={ring.fill} />
+    </g>
+    <circle class="coin__field" data-layer="field" cx={field.cx} cy={field.cy} r={field.r} fill={field.fill} />
+  </svg>
+  <svg class="coin__layer coin__guilloche" data-layer="guilloche" viewBox={brand.viewBox} aria-hidden="true" focusable="false"><use href="/brand/guilloche.svg#guilloche" /></svg>
+  <img class="coin__ground" data-layer="ground" src="/brand/ground.webp" alt="" width={brand.ground.native.width} height={brand.ground.native.height} loading={loading} decoding="async" fetchpriority="low" />
+  <picture class="coin__bison" data-layer="bison">
+    <source type="image/avif" srcset={srcset('avif')} sizes={sizes} />
+    <source type="image/webp" srcset={srcset('webp')} sizes={sizes} />
+    <img
+      src={`/brand/bison-${fallback.width}.webp`}
+      alt=""
+      width={brand.bison.native.width}
+      height={brand.bison.native.height}
+      loading={loading}
+      decoding="async"
+      fetchpriority={eager ? 'high' : undefined}
+    />
+  </picture>
+  <svg class="coin__layer coin__b" data-layer="b" viewBox={brand.viewBox} aria-hidden="true" focusable="false">
+    <g transform={brand.b.transform}><path fill={brand.b.fill} fill-rule={brand.b.fillRule} d={brand.b.d} /></g>
+  </svg>
+  {strike && <span class="coin__shock" aria-hidden="true"></span>}
+  <slot />
+</div>

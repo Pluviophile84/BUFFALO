@@ -1,0 +1,23 @@
+---
+// "Read from afar, it is a line. Read up close, it is a message."
+// A hairline that resolves into microtext. Always aria-hidden. SVG text, so it
+// renders as line work rather than as body copy.
+interface Props {
+  text?: string;
+  vertical?: boolean;
+  class?: string;
+  repeat?: number;
+}
+// 8 runs ≈ 1,370px: longer than any card edge, short enough to shape cheaply.
+const { text = 'BUFFALO · THE FOURTH ISSUE · ', vertical = false, class: cls = '', repeat = 8 } = Astro.props;
+const run = text.repeat(repeat);
+---
+{vertical ? (
+  <svg class:list={['micro', 'micro--v', cls]} aria-hidden="true" focusable="false" width="9" height="100%">
+    <text x="0" y="0" transform="rotate(90) translate(0 -1.5)">{run}</text>
+  </svg>
+) : (
+  <svg class:list={['micro', 'micro--h', cls]} aria-hidden="true" focusable="false" width="100%" height="9">
+    <text x="0" y="7.5">{run}</text>
+  </svg>
+)}

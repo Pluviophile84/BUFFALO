@@ -1,0 +1,20 @@
+---
+// Living guilloche (§3.5 A). The static, seeded SVG is the baseline (no JS,
+// reduced motion, coarse pointers). It is drawn by <use> from the generated
+// file, so it is vector line work (never an LCP candidate) and stays out of the
+// HTML. scripts/guilloche-canvas.ts layers a canvas over it on fine pointers
+// and hides the static field once the canvas has drawn.
+import heroSvg from '../assets/generated/guilloche-hero.svg?url';
+import finalSvg from '../assets/generated/guilloche-final.svg?url';
+import generated from '../data/generated.json';
+
+interface Props {
+  variant: 'hero' | 'final';
+}
+const { variant } = Astro.props;
+const src = variant === 'hero' ? heroSvg : finalSvg;
+const h = Math.ceil(generated.guillocheExtent * 100);
+---
+<div class:list={['field', `field--${variant}`]} aria-hidden="true">
+  <svg class="field__svg" viewBox={`${-h} ${-h} ${2 * h} ${2 * h}`} focusable="false"><use href={`${src}#field`} /></svg>
+</div>

@@ -1,0 +1,67 @@
+---
+import { issue } from '../lib/issue-state';
+import { SPEC, ACTION } from '../content/copy';
+import PlateLabel from '../components/PlateLabel.astro';
+import Action from '../components/Action.astro';
+
+const R = SPEC.rows;
+const live = issue.live;
+const pendingCls = (v: string) => (v === issue.pendingLabel || !live ? 'is-pending' : undefined);
+---
+<section class="section spec" id="specification" aria-labelledby="spec-title">
+  <div class="wrap spec__grid">
+    <div class="spec__intro">
+      <PlateLabel text={SPEC.label} />
+      <h2 id="spec-title" data-ink>{SPEC.h2}</h2>
+      <p class="spec__body" data-ink data-stagger="1">{SPEC.body}</p>
+      <div class="notice" role="note">
+        <p><strong>{SPEC.noticeTitle}</strong> {SPEC.notice}</p>
+      </div>
+      <div class="actions spec__actions">
+        <Action href={issue.explorerUrl} label={SPEC.verify} primary helper={ACTION.availableAtIssue} external />
+        <Action href={issue.buyUrl} label={ACTION.acquire} helper={ACTION.availableAtIssue} external />
+      </div>
+    </div>
+    <div class="spec__ledger-wrap">
+      <dl class="ledger spec__ledger">
+        <div class="ledger__row"><dt class="label">{R.denomination}</dt><dd>$BUFFALO</dd></div>
+        <div class="ledger__row"><dt class="label">{R.network}</dt><dd>Solana</dd></div>
+        <div class="ledger__row"><dt class="label">{R.issuance}</dt><dd>pump.fun</dd></div>
+        <div class="ledger__row ledger__row--serial">
+          <dt class="label">{R.serial}</dt>
+          {live ? (
+            <dd>
+              <code class="spec__serial" data-serial>{issue.serial}</code>
+              <button class="serial__copy" type="button" data-copy={issue.serial} data-copied={ACTION.copied} aria-label={`${ACTION.copy} serial`}><span data-copy-label>{ACTION.copy}</span></button>
+            </dd>
+          ) : (
+            <dd class="is-pending">To be struck at issue</dd>
+          )}
+        </div>
+        <div class="ledger__row">
+          <dt class="label">{R.explorer}</dt>
+          {live ? (
+            <dd><a href={issue.explorerUrl} target="_blank" rel="noopener noreferrer">{SPEC.viewOnExplorer}</a></dd>
+          ) : (
+            <dd class="is-pending">{ACTION.availableAtIssue}</dd>
+          )}
+        </div>
+        <div class="ledger__row"><dt class="label">{R.totalSupply}</dt><dd class={pendingCls(issue.facts.totalSupply)}>{issue.facts.totalSupply}</dd></div>
+        <div class="ledger__row"><dt class="label">{R.mintAuthority}</dt><dd class={pendingCls(issue.facts.mintAuthority)}>{issue.facts.mintAuthority}</dd></div>
+        <div class="ledger__row"><dt class="label">{R.freezeAuthority}</dt><dd class={pendingCls(issue.facts.freezeAuthority)}>{issue.facts.freezeAuthority}</dd></div>
+        <div class="ledger__row"><dt class="label">{R.teamAllocation}</dt><dd class={pendingCls(issue.facts.teamAllocation)}>{issue.facts.teamAllocation}</dd></div>
+        <div class="ledger__row"><dt class="label">{R.status}</dt><dd class={live ? undefined : 'is-pending'}>{issue.statusLabel}</dd></div>
+      </dl>
+    </div>
+  </div>
+  <div class="wrap">
+    <ul class="rules">
+      {SPEC.rules.map((r, i) => (
+        <li class="rule-card" data-ink data-stagger={String(i + 1)}>
+          <h3 class="rule-card__title">{r.title}</h3>
+          <p>{r.text}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,26 @@
+---
+// The ground line's ket microtext as SVG line work (aria-hidden decoration).
+// The ⟩ is drawn: no shipped font contains U+27E9. textLength pins the run to
+// JetBrains Mono's 0.6em advance so the bracket lands exactly at its end.
+import fonts from '../data/fonts.json';
+interface Props {
+  class?: string;
+  size?: number;
+}
+const { class: cls = '', size = 9 } = Astro.props;
+const bits = '01000010010101010100011001000110010000010100110001001111';
+const adv = 0.6 * size;
+const track = 0.06 * size;
+const len = (bits.length + 1) * (adv + track); // "|" + 56 bits
+const m = fonts.faces.monoGlyph;
+const s = size / m.unitsPerEm;
+const gx = len + track;
+const y = size; // baseline
+const pt = (x: number, fy: number) => `${(gx + x * s).toFixed(2)},${(y - fy * s).toFixed(2)}`;
+const mid = (m.barBBox.maxY + m.barBBox.minY) / 2;
+const W = Math.ceil(gx + m.advance * s);
+---
+<svg class:list={['ket-line', cls]} viewBox={`0 0 ${W} ${Math.ceil(size * 1.3)}`} width={W} height={Math.ceil(size * 1.3)} aria-hidden="true" focusable="false">
+  <text x="0" y={y} textLength={len.toFixed(2)} lengthAdjust="spacing">|{bits}</text>
+  <polyline points={`${pt(175, m.barBBox.minY)} ${pt(400, mid)} ${pt(175, m.barBBox.maxY)}`} fill="none" stroke="currentColor" stroke-width={(m.stem * 0.85 * s).toFixed(2)} />
+</svg>

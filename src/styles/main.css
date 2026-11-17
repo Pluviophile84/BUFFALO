@@ -1,0 +1,8 @@
+/* `emblem` is last: the coin's locked geometry can never be overridden by context. */
+@layer reset, tokens, base, components, sections, utilities, emblem;
+@import './fonts.css';
+@import './tokens.css';
+@import './base.css';
+@import './components.css';
+@import './coin-geometry.css';
+@import './sections.css';

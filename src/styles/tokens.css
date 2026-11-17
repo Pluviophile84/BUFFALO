@@ -1,0 +1,92 @@
+@layer tokens {
+  :root {
+    /* Canonical — sampled from the master SVG */
+    --bronze: #947342; /* rim — decorative, borders, display ≥24px only */
+    --olive: #5d5c3c; /* outer ring — decorative */
+    --greenback: #7a8062; /* field — decorative fills, large display only */
+    --guilloche: #5e634a; /* field line — decorative line work only */
+    --cream: #eee1c6; /* the Ƀ — primary text on dark; paper background */
+    --bison: #614731; /* bison mid-brown — accent on paper */
+    --bison-deep: #1b1510; /* bison shadow — primary text on paper */
+
+    /* Derived — legibility only */
+    --vault: #0e100b;
+    --vault-2: #151810;
+    --vault-3: #1c2016;
+    --cream-2: #b8af98;
+    --cream-3: #9a937f;
+    --bronze-text: #c29e66;
+    --ink-2: #4a4e39;
+    --bronze-ink: #6b5330;
+    --rule: rgb(238 225 198 / 0.12);
+    --rule-paper: rgb(27 21 16 / 0.14);
+    --rule-strong: rgb(238 225 198 / 0.24);
+    --rule-paper-strong: rgb(27 21 16 / 0.28);
+    --nav-bg: rgb(14 16 11 / 0.88);
+
+    /* Type */
+    --f-display: 'Libre Caslon Display', 'Libre Caslon Display Fallback', 'Times New Roman', serif;
+    --f-text: 'Libre Caslon Text', 'Libre Caslon Text Fallback', 'Times New Roman', serif;
+    --f-mono: 'JetBrains Mono', 'JetBrains Mono Fallback', 'Courier New', monospace;
+    --t-display: clamp(3rem, 2rem + 5vw, 6.75rem);
+    --t-h2: clamp(2.125rem, 1.5rem + 2.6vw, 3.75rem);
+    --t-h3: clamp(1.375rem, 1.2rem + 0.7vw, 1.75rem);
+    --t-lead: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
+    --t-body: 1.125rem;
+    --t-small: 0.9375rem;
+    --t-label: 0.75rem;
+    --t-micro: 0.5625rem;
+    --track-label: 0.16em;
+
+    /* Space — 4px base */
+    --s1: 4px;
+    --s2: 8px;
+    --s3: 12px;
+    --s4: 16px;
+    --s5: 20px;
+    --s6: 24px;
+    --s8: 32px;
+    --s10: 40px;
+    --s12: 48px;
+    --s16: 64px;
+    --s20: 80px;
+    --s24: 96px;
+    --section-y: clamp(96px, 12vw, 192px);
+    --max: 1320px;
+    --gutter: 24px;
+    --margin: 20px;
+    --cols: 4;
+
+    /* Motion */
+    --ease: cubic-bezier(0.2, 0.7, 0.1, 1);
+    --t-fast: 500ms;
+    --t-mid: 800ms;
+    --t-slow: 1200ms;
+
+    color-scheme: dark;
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      --cols: 8;
+      --margin: 32px;
+    }
+  }
+  @media (min-width: 1024px) {
+    :root {
+      --cols: 12;
+      --margin: 48px;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    :root {
+      --rule: rgb(238 225 198 / 0.36);
+      --rule-paper: rgb(27 21 16 / 0.4);
+      --rule-strong: rgb(238 225 198 / 0.55);
+      --rule-paper-strong: rgb(27 21 16 / 0.6);
+      --cream-3: var(--cream-2);
+      --nav-bg: var(--vault);
+    }
+  }
+}

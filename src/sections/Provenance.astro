@@ -1,0 +1,70 @@
+---
+import { PROVENANCE } from '../content/copy';
+import PlateLabel from '../components/PlateLabel.astro';
+import IssueCard from '../components/IssueCard.astro';
+import Coin from '../components/Coin.astro';
+import EngravedRule from '../components/EngravedRule.astro';
+import history from '../data/history.json';
+
+const files = import.meta.glob<string>('../assets/history/*', { query: '?url', import: 'default', eager: true });
+const url = (name: string) => {
+  const k = Object.keys(files).find((p) => p.endsWith(`/${name}`));
+  if (!k) throw new Error(`Missing historical plate ${name}`);
+  return files[k]!;
+};
+type PlateId = keyof typeof history;
+const plate = (id: PlateId) => {
+  const h = history[id];
+  const set = (ext: string) => h.sizes.map((s) => `${url(`${id}-${s.width}.${ext}`)} ${s.width}w`).join(', ');
+  const largest = h.sizes.at(-1)!;
+  return { avif: set('avif'), webp: set('webp'), src: url(`${id}-${h.sizes[0]!.width}.webp`), width: largest.width, height: largest.height };
+};
+const note = plate('note-1901');
+const nickel = plate('nickel-1913');
+const gold = plate('gold-2006');
+const [c1, c2, c3, c4] = PROVENANCE.cards as [typeof PROVENANCE.cards[0], typeof PROVENANCE.cards[0], typeof PROVENANCE.cards[0], typeof PROVENANCE.cards[0]];
+const coinSizes = '(min-width: 1024px) 250px, (min-width: 768px) 300px, 70vw';
+const noteSizes = '(min-width: 1024px) 270px, (min-width: 768px) 320px, 76vw';
+---
+<section class="section paper provenance" id="provenance" aria-labelledby="provenance-title">
+  <EngravedRule lines={5} class="provenance__entry" ink />
+  <div class="wrap">
+    <div class="provenance__head">
+      <PlateLabel text={PROVENANCE.label} />
+      <h2 id="provenance-title" data-ink>{PROVENANCE.h2}</h2>
+      <p class="provenance__intro" data-ink data-stagger="1">{PROVENANCE.intro}</p>
+    </div>
+  </div>
+  <div class="provenance__scroller" tabindex="0" role="region" aria-label="Four issues of the bison">
+    <div class="provenance__cards">
+      <IssueCard numeral="I" plate="paper" {...c1}>
+        <picture slot="plate">
+          <source type="image/avif" srcset={note.avif} sizes={noteSizes} />
+          <source type="image/webp" srcset={note.webp} sizes={noteSizes} />
+          <img src={note.src} alt="The 1901 ten-dollar United States Note, with a bison at the center between portraits of Lewis and Clark." width={note.width} height={note.height} loading="lazy" decoding="async" />
+        </picture>
+      </IssueCard>
+      <IssueCard numeral="II" plate="coin" {...c2}>
+        <picture slot="plate">
+          <source type="image/avif" srcset={nickel.avif} sizes={coinSizes} />
+          <source type="image/webp" srcset={nickel.webp} sizes={coinSizes} />
+          <img src={nickel.src} alt="Reverse of the Buffalo nickel: a bison standing on a mound, FIVE CENTS beneath." width={nickel.width} height={nickel.height} loading="lazy" decoding="async" />
+        </picture>
+      </IssueCard>
+      <IssueCard numeral="III" plate="coin" {...c3}>
+        <picture slot="plate">
+          <source type="image/avif" srcset={gold.avif} sizes={coinSizes} />
+          <source type="image/webp" srcset={gold.webp} sizes={coinSizes} />
+          <img src={gold.src} alt="Reverse of the American Buffalo gold coin: Fraser’s bison, with $50 and 1 OZ. .9999 FINE GOLD." width={gold.width} height={gold.height} loading="lazy" decoding="async" />
+        </picture>
+      </IssueCard>
+      <IssueCard numeral="IV" plate="emblem" frameless {...c4}>
+        <Coin slot="plate" sizes={coinSizes} class="card__coin" />
+      </IssueCard>
+    </div>
+  </div>
+  <div class="wrap provenance__progress" aria-hidden="true">
+    <span class="provenance__track"><span class="provenance__bar"></span></span>
+    <span class="label">I — IV</span>
+  </div>
+</section>

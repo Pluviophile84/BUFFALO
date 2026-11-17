@@ -1,0 +1,74 @@
+---
+import '../styles/main.css';
+import { issue } from '../lib/issue-state';
+import { META } from '../content/copy';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import displayFont from '../assets/fonts/caslon-display.woff2?url';
+import brand from '../data/brand.json';
+import og from '../../public/og/og.json';
+
+interface Props {
+  title?: string;
+  description?: string;
+  path?: string;
+  home?: boolean;
+  noindex?: boolean;
+}
+const { title = META.title, description = META.description, path = '/', home = false, noindex = false } = Astro.props;
+const site = issue.siteUrl;
+const canonical = path === '/' ? site : `${site}${path}`;
+const ogImage = `${site}${og.file}`;
+const jsonLd = JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'BUFFALO', alternateName: '$BUFFALO', url: site });
+// Hero bison: preload the AVIF set with the same sizes the hero uses.
+const heroSizes = '(min-width: 1024px) min(48.7vh, 470px), 66vw';
+const heroSrcset = brand.bison.srcset.map((s) => `/brand/bison-${s.width}.avif ${s.width}w`).join(', ');
+---
+<!doctype html>
+<html lang="en" data-state={issue.status}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    <meta name="theme-color" content="#0E100B" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    {home && <link rel="preload" as="image" type="image/avif" imagesrcset={heroSrcset} imagesizes={heroSizes} fetchpriority="high" />}
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="BUFFALO" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content={String(og.width)} />
+    <meta property="og:image:height" content={String(og.height)} />
+    <meta property="og:image:alt" content={META.coinAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={META.coinAlt} />
+    <script type="application/ld+json" set:html={jsonLd} />
+    <noscript><link rel="stylesheet" href="/nojs.css" /></noscript>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <Nav home={home} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <p class="vh" aria-live="polite" id="live-status"></p>
+    <script>
+      import '../scripts/main';
+    </script>
+  </body>
+</html>

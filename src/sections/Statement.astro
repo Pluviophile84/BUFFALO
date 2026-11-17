@@ -1,0 +1,17 @@
+---
+import { STATEMENT } from '../content/copy';
+import PlateLabel from '../components/PlateLabel.astro';
+import Glyph from '../components/Glyph.astro';
+---
+<section class="section statement" id="statement" aria-labelledby="statement-label">
+  <div class="wrap">
+    <PlateLabel text={STATEMENT.label} center id="statement-label" as="h2" />
+    <div class="statement__text">
+      {STATEMENT.lines.map((l, i) => <p data-ink data-stagger={String(Math.min(i, 5))}>{l}</p>)}
+    </div>
+    <p class="statement__sig label">
+      <span class="seal" aria-hidden="true"><Glyph kind="b" hidden /></span>
+      <span>{STATEMENT.signature}</span>
+    </p>
+  </div>
+</section>

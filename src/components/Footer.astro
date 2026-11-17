@@ -1,0 +1,38 @@
+---
+import { issue } from '../lib/issue-state';
+import { FOOTER } from '../content/copy';
+import brand from '../data/brand.json';
+import KetLine from './KetLine.astro';
+import EngravedRule from './EngravedRule.astro';
+
+const year = new Date().getUTCFullYear();
+const links = [...FOOTER.links, ...(issue.xUrl ? [{ href: issue.xUrl, label: 'X' }] : [])];
+---
+<footer class="footer" id="site-footer">
+  <div class="wrap">
+    <KetLine class="footer__ket" />
+    <EngravedRule lines={3} />
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a class="wordmark" href="/" aria-label="BUFFALO, home">
+          <svg class="wordmark__b" viewBox={brand.b.baked.viewBox} aria-hidden="true" focusable="false"><path fill="#EEE1C6" fill-rule="evenodd" d={brand.b.baked.d} /></svg>
+          <span class="wordmark__text" aria-hidden="true">BUFFALO</span>
+        </a>
+        <p class="footer__tag label">{FOOTER.tagline}</p>
+      </div>
+      <nav class="footer__links" aria-label="Footer">
+        {links.map((l) => (
+          <a href={l.href} {...(l.label === 'X' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{l.label}</a>
+        ))}
+      </nav>
+    </div>
+    <div class="footer__disclaimer">
+      {FOOTER.disclaimer.map((p) => <p>{p}</p>)}
+      <p><em>{FOOTER.disclaimerWit}</em> {FOOTER.disclaimerTail}</p>
+    </div>
+    <div class="footer__bottom label">
+      <span>© {year} BUFFALO</span>
+      <span>{FOOTER.bottom}</span>
+    </div>
+  </div>
+</footer>

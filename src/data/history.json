@@ -1,0 +1,86 @@
+{
+  "note-1901": {
+    "source": "bison-note-1901.webp",
+    "original": {
+      "width": 960,
+      "height": 411
+    },
+    "cutout": false,
+    "sizes": [
+      {
+        "width": 480,
+        "height": 206,
+        "avif": 28682,
+        "webp": 39666
+      },
+      {
+        "width": 720,
+        "height": 308,
+        "avif": 58785,
+        "webp": 86300
+      },
+      {
+        "width": 960,
+        "height": 411,
+        "avif": 125830,
+        "webp": 179186
+      }
+    ]
+  },
+  "nickel-1913": {
+    "source": "buffalo-nickel-optimized.webp",
+    "original": {
+      "width": 900,
+      "height": 900
+    },
+    "cutout": true,
+    "sizes": [
+      {
+        "width": 450,
+        "height": 450,
+        "avif": 34429,
+        "webp": 55238
+      },
+      {
+        "width": 675,
+        "height": 675,
+        "avif": 66243,
+        "webp": 108304
+      },
+      {
+        "width": 900,
+        "height": 900,
+        "avif": 113153,
+        "webp": 174866
+      }
+    ]
+  },
+  "gold-2006": {
+    "source": "2006_American_Buffalo_Proof_Reverse-1280px.jpg",
+    "original": {
+      "width": 1280,
+      "height": 1280
+    },
+    "cutout": true,
+    "sizes": [
+      {
+        "width": 640,
+        "height": 640,
+        "avif": 68446,
+        "webp": 105838
+      },
+      {
+        "width": 960,
+        "height": 960,
+        "avif": 130678,
+        "webp": 200108
+      },
+      {
+        "width": 1280,
+        "height": 1280,
+        "avif": 209145,
+        "webp": 292696
+      }
+    ]
+  }
+}

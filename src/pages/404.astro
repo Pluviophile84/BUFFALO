@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import PlateLabel from '../components/PlateLabel.astro';
+import Action from '../components/Action.astro';
+import { NOT_FOUND } from '../content/copy';
+import brand from '../data/brand.json';
+---
+<Base title={`${NOT_FOUND.h1} · BUFFALO`} path="/404" noindex>
+  <section class="nf">
+    <div class="wrap">
+      <svg class="nf__coin" viewBox={brand.b.baked.viewBox} aria-hidden="true" focusable="false"><path fill="#9A937F" fill-rule="evenodd" d={brand.b.baked.d} /></svg>
+      <PlateLabel text={NOT_FOUND.label} center />
+      <h1>{NOT_FOUND.h1}</h1>
+      <p>{NOT_FOUND.body}</p>
+      <div class="actions"><Action href="/" label={NOT_FOUND.button} primary /></div>
+    </div>
+  </section>
+</Base>

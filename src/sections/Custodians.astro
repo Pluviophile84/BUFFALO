@@ -1,0 +1,62 @@
+---
+import { issue } from '../lib/issue-state';
+import { CUSTODIANS } from '../content/copy';
+import PlateLabel from '../components/PlateLabel.astro';
+import Action from '../components/Action.astro';
+import Glyph from '../components/Glyph.astro';
+import kit from '../data/kit.json';
+
+type Tile = (typeof kit.tiles)[number];
+const tiles: Tile[] = kit.tiles;
+---
+<section class="section paper custodians" id="custodians" aria-labelledby="custodians-title">
+  <div class="wrap">
+    <div class="custodians__grid">
+      <div class="custodians__head">
+        <PlateLabel text={CUSTODIANS.label} />
+        <h2 id="custodians-title" data-ink>{CUSTODIANS.h2}</h2>
+        <p class="custodians__body" data-ink data-stagger="1">{CUSTODIANS.body}</p>
+        <div class="actions custodians__channels">
+          <Action href={issue.xUrl} label={CUSTODIANS.x} helper={CUSTODIANS.opensAtIssue} external />
+          <Action href={issue.telegramUrl} label={CUSTODIANS.chat} helper={CUSTODIANS.opensAtIssue} external />
+        </div>
+        <p class="custodians__note">{CUSTODIANS.channelsNote}</p>
+      </div>
+      <div class="code" role="group" aria-labelledby="code-title">
+        <h3 class="code__title label" id="code-title">{CUSTODIANS.codeTitle}</h3>
+        <ol class="code__list">
+          {CUSTODIANS.code.map((c) => (
+            <li><span class="code__n" aria-hidden="true">{c.n}</span><span class="vh">{c.n} </span><span>{c.text}</span></li>
+          ))}
+        </ol>
+      </div>
+    </div>
+
+    <div class="kit" aria-labelledby="kit-title">
+      <p class="kit__label label">{CUSTODIANS.kitTitle}</p>
+      <h3 class="kit__title" id="kit-title">{CUSTODIANS.kitH3}</h3>
+      <ul class="kit__tiles">
+        {tiles.map((t) => (
+          <li class:list={['tile', `tile--${t.id}`]}>
+            <div class:list={['tile__preview', `tile__preview--${t.bg}`]}>
+              <img src={t.preview.src} alt="" width={t.preview.width} height={t.preview.height} loading="lazy" decoding="async" />
+            </div>
+            <h4 class="tile__name">{t.glyph ? (<>The <Glyph kind="b" /></>) : t.name}</h4>
+            <ul class="tile__files">
+              {t.files.map((f) => (
+                <li>
+                  <a href={f.href} download={f.download} class="tile__dl">
+                    <span class="label">{f.format}</span>
+                    <span class="tile__meta">{f.meta}</span>
+                    <span class="vh"> — download {t.glyph ? 'Ƀ' : t.name}{f.variant ? `, ${f.variant}` : ''}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+      <p class="kit__usage">{CUSTODIANS.usage}</p>
+    </div>
+  </div>
+</section>

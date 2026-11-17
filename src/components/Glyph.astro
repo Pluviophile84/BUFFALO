@@ -1,0 +1,28 @@
+---
+// Inline glyphs that no shipped font contains (verified in scripts/build-fonts.mjs):
+//  • b   — Ƀ (U+0243): the master's own currency-sign path, sized to cap height.
+//  • ket — ⟩ (U+27E9): drawn to JetBrains Mono's metrics (stem and extent of "|").
+// The real character is kept for assistive tech / copy-paste via a visually-hidden span.
+import brand from '../data/brand.json';
+import fonts from '../data/fonts.json';
+
+interface Props {
+  kind: 'b' | 'ket';
+  hidden?: boolean; // when the surrounding text is itself aria-hidden
+}
+const { kind, hidden = false } = Astro.props;
+
+const m = fonts.faces.monoGlyph;
+const top = m.barBBox.maxY; // 830
+const bottom = m.barBBox.minY; // -110
+const mid = (top + bottom) / 2;
+const x0 = 175;
+const x1 = 400;
+const stem = m.stem * 0.85; // diagonals read heavier than verticals
+---
+{/* No whitespace inside: the glyph must sit flush against surrounding punctuation. */}
+{kind === 'b' ? (
+  <span class="glyph-b"><svg viewBox={brand.b.baked.viewBox} aria-hidden="true" focusable="false"><path fill-rule="evenodd" d={brand.b.baked.d} /></svg>{!hidden && <span class="vh">Ƀ</span>}</span>
+) : (
+  <><svg class="glyph-ket" viewBox={`0 ${-(top + 60)} ${m.advance} ${m.unitsPerEm}`} aria-hidden="true" focusable="false"><polyline points={`${x0},${-bottom} ${x1},${-mid} ${x0},${-top}`} stroke-width={stem} stroke-linejoin="miter" stroke-miterlimit="4" stroke-linecap="butt" /></svg>{!hidden && <span class="vh">⟩</span>}</>
+)}

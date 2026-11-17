@@ -1,0 +1,29 @@
+---
+import { issue } from '../lib/issue-state';
+import { ACQUIRE, ACTION } from '../content/copy';
+import PlateLabel from '../components/PlateLabel.astro';
+import Action from '../components/Action.astro';
+---
+<section class="section acquire" id="acquire" aria-labelledby="acquire-title">
+  <div class="wrap">
+    <div class="acquire__head">
+      <PlateLabel text={ACQUIRE.label} />
+      <h2 id="acquire-title" data-ink>{ACQUIRE.h2}</h2>
+      <p class="acquire__intro" data-ink data-stagger="1">{ACQUIRE.intro}</p>
+    </div>
+    <ol class="steps">
+      {ACQUIRE.steps.map((s, i) => (
+        <li class="step" data-ink data-stagger={String(i + 1)}>
+          <span class="step__n label" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <h3 class="step__title">{s.title}</h3>
+          <p class="step__text">{s.text}{s.wit && <> <em class="wit">{s.wit}</em></>}</p>
+        </li>
+      ))}
+    </ol>
+    <div class="actions acquire__actions">
+      <Action href={issue.buyUrl} label={ACTION.acquire} primary helper={ACTION.availableAtIssue} external />
+      <Action href="#specification" label={ACQUIRE.secondary} />
+    </div>
+    <p class="acquire__note">{ACQUIRE.note}</p>
+  </div>
+</section>

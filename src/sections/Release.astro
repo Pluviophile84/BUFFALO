@@ -1,0 +1,27 @@
+---
+import { RELEASE } from '../content/copy';
+import PlateLabel from '../components/PlateLabel.astro';
+---
+<section class="section release" id="release" aria-labelledby="release-title">
+  <div class="wrap release__inner">
+    <div class="release__copy">
+      <PlateLabel text={RELEASE.label} />
+      <h2 id="release-title" data-ink>{RELEASE.h2}</h2>
+      <p class="release__body" data-ink data-stagger="1">{RELEASE.body}</p>
+      <ul class="release__ledger">
+        {RELEASE.ledger.map((l, i) => (
+          <li data-ink data-stagger={String(i + 1)}>
+            <span>{l}</span>
+            <svg class="release__hair hair" viewBox="0 0 100 1" preserveAspectRatio="none" data-draw data-stagger={String(i + 1)} aria-hidden="true" focusable="false"><line x1="0" x2="100" y1="0.5" y2="0.5" pathLength="1" /></svg>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+  <figure class="release__map wrap">
+    <div class="map" aria-hidden="true">
+      <div class="map__hatch"></div>
+    </div>
+    <figcaption class="release__caption label">{RELEASE.caption}</figcaption>
+  </figure>
+</section>

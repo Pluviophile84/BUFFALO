@@ -1,0 +1,46 @@
+---
+import { issue } from '../lib/issue-state';
+import { NAV, ACTION } from '../content/copy';
+import brand from '../data/brand.json';
+import Action from './Action.astro';
+
+interface Props {
+  home?: boolean;
+}
+const { home = true } = Astro.props;
+const prefix = home ? '' : '/';
+const pill = issue.live ? 'In circulation' : 'Pre-issue';
+---
+<header class="nav" id="nav">
+  <div class="wrap nav__bar">
+    <a class="wordmark" href={home ? '#top' : '/'} aria-label="BUFFALO, home">
+      <svg class="wordmark__b" viewBox={brand.b.baked.viewBox} aria-hidden="true" focusable="false"><path fill="#EEE1C6" fill-rule="evenodd" d={brand.b.baked.d} /></svg>
+      <span class="wordmark__text" aria-hidden="true">BUFFALO</span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      {NAV.links.map((l) => <a href={`${prefix}${l.href}`}>{l.label}</a>)}
+    </nav>
+    <div class="nav__right">
+      <span class:list={['pill', issue.live && 'pill--live']}><span class="pill__dot" aria-hidden="true"></span><span class="vh">Status: </span>{pill}</span>
+      <button class="nav__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-open hidden>
+        <span class="nav__menu-icon" aria-hidden="true"></span>Menu
+      </button>
+    </div>
+  </div>
+</header>
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu" hidden data-menu>
+  <div class="menu__bar">
+    <span class="wordmark" aria-hidden="true">
+      <svg class="wordmark__b" viewBox={brand.b.baked.viewBox} focusable="false"><path fill="#EEE1C6" fill-rule="evenodd" d={brand.b.baked.d} /></svg>
+      <span class="wordmark__text">BUFFALO</span>
+    </span>
+    <button class="nav__menu" type="button" data-menu-close>Close</button>
+  </div>
+  <nav class="menu__links" aria-label="Sections">
+    {NAV.links.map((l) => <a href={`${prefix}${l.href}`} data-menu-link>{l.label}</a>)}
+  </nav>
+  <div class="menu__foot">
+    <Action href={issue.buyUrl} label={issue.live ? NAV.cta : ACTION.acquire} primary helper={ACTION.availableAtIssue} external />
+    <span class:list={['pill', issue.live && 'pill--live']}><span class="pill__dot" aria-hidden="true"></span>{pill}</span>
+  </div>
+</div>

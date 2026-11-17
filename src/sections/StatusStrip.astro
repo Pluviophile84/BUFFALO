@@ -1,0 +1,13 @@
+---
+import { STRIP } from '../content/copy';
+---
+<aside class="strip" aria-label="Issue status">
+  <dl class="strip__row wrap">
+    {STRIP.map((c) => (
+      <div class="strip__cell">
+        <dt class="label">{c.label}</dt>
+        <dd>{c.value}</dd>
+      </div>
+    ))}
+  </dl>
+</aside>

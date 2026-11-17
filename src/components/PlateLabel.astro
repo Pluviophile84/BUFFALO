@@ -1,0 +1,10 @@
+---
+interface Props {
+  text: string;
+  center?: boolean;
+  as?: 'p' | 'span' | 'h2';
+  id?: string;
+}
+const { text, center = false, as: Tag = 'p', id } = Astro.props;
+---
+<Tag class:list={['plate-label', 'label', center && 'plate-label--center']} id={id}>{text}</Tag>

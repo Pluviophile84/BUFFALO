@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import PlateLabel from '../components/PlateLabel.astro';
+import { FOOTER } from '../content/copy';
+import { IMAGE_CREDITS, FACT_SOURCES } from '../data/credits';
+---
+<Base title="Disclaimer · BUFFALO ($BUFFALO)" path="/disclaimer" description="Disclaimer, image credits and sources for BUFFALO ($BUFFALO), the Fourth Issue.">
+  <section class="page">
+    <div class="wrap page__inner">
+      <PlateLabel text="NOTICE" />
+      <h1>Disclaimer</h1>
+      <div class="page__prose">
+        {FOOTER.disclaimer.map((p) => <p>{p}</p>)}
+        <p><em>{FOOTER.disclaimerWit}</em> {FOOTER.disclaimerTail}</p>
+      </div>
+
+      <h2>Image credits</h2>
+      <ul class="credits">
+        {IMAGE_CREDITS.map((c) => (
+          <li>
+            <h3>{c.title}</h3>
+            <dl>
+              <dt class="label">Shown</dt><dd>{c.used}</dd>
+              <dt class="label">Source</dt><dd><a href={c.url} rel="noopener noreferrer" target="_blank">{c.source}</a></dd>
+              <dt class="label">License</dt><dd>{c.license}</dd>
+              <dt class="label">File</dt><dd>{c.file}</dd>
+            </dl>
+          </li>
+        ))}
+      </ul>
+
+      <h2>Sources</h2>
+      <ul class="credits">
+        {FACT_SOURCES.map((s) => (
+          <li><a href={s.url} rel="noopener noreferrer" target="_blank">{s.label}</a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>

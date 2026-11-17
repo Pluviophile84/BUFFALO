@@ -1,0 +1,135 @@
+// Build-time validation + derivation for the issue config.
+// Plain ESM (no TS) so astro.config.mjs, build scripts and the site share one
+// implementation. Throws on any violation: the build fails, nothing deploys.
+
+export const BUY_EXPLORER_HOSTS = Object.freeze([
+  'pump.fun',
+  'solscan.io',
+  'explorer.solana.com',
+  'solana.fm',
+  'birdeye.so',
+  'dexscreener.com',
+  'jup.ag',
+  'raydium.io',
+]);
+// Socials are pinned to their platforms so a typo-squatted link cannot ship.
+export const X_HOSTS = Object.freeze(['x.com', 'twitter.com']);
+export const TELEGRAM_HOSTS = Object.freeze(['t.me', 'telegram.me']);
+
+const BASE58 = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+const FIXED = { network: 'Solana', platform: 'pump.fun' };
+
+export class IssueConfigError extends Error {
+  constructor(problems) {
+    super(
+      `\n\n  BUFFALO issue config is invalid (src/config/issue.ts):\n${problems.map((p) => `   • ${p}`).join('\n')}\n\n  The build was stopped so a wrong page cannot ship.\n`,
+    );
+    this.name = 'IssueConfigError';
+    this.problems = problems;
+  }
+}
+
+function parseHttps(value, field, problems) {
+  let u;
+  try {
+    u = new URL(value);
+  } catch {
+    problems.push(`${field} is not a valid URL: "${value}"`);
+    return null;
+  }
+  if (u.protocol !== 'https:') problems.push(`${field} must use https: "${value}"`);
+  if (u.username || u.password) problems.push(`${field} must not contain credentials`);
+  return u;
+}
+
+function checkHost(u, field, allow, problems) {
+  if (u && !allow.includes(u.hostname)) {
+    problems.push(`${field} host "${u.hostname}" is not on the allowlist (${allow.join(', ')}). Extending it is a deliberate code edit in src/lib/validate-issue.mjs.`);
+  }
+}
+
+export function shortSerial(address) {
+  return `${address.slice(0, 6)}…${address.slice(-6)}`;
+}
+
+export function formatIssueDate(iso) {
+  const d = new Date(/^\d{4}-\d{2}-\d{2}$/.test(iso) ? `${iso}T00:00:00Z` : iso);
+  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(d);
+}
+
+/**
+ * Validate the raw config and derive everything the page renders.
+ * @param {import('../config/issue').IssueConfig} cfg
+ */
+export function deriveIssue(cfg) {
+  const problems = [];
+  const str = (k) => (typeof cfg[k] === 'string' ? cfg[k].trim() : '');
+
+  if (cfg.status !== 'pre-issue' && cfg.status !== 'live') problems.push(`status must be 'pre-issue' or 'live' (got "${cfg.status}")`);
+  const live = cfg.status === 'live';
+
+  if (!Number.isInteger(cfg.seriesYear) || cfg.seriesYear < 2000 || cfg.seriesYear > 2100) problems.push('seriesYear must be a four-digit year');
+  for (const [k, v] of Object.entries(FIXED)) if (cfg[k] !== v) problems.push(`${k} is fixed to "${v}"`);
+
+  const contract = str('contractAddress');
+  if (contract && !BASE58.test(contract)) problems.push(`contractAddress must be base58 and 32–44 characters (got ${contract.length} characters)`);
+  if (cfg.contractAddress && cfg.contractAddress !== contract) problems.push('contractAddress has leading/trailing whitespace');
+  if (live && !contract) problems.push("status is 'live' but contractAddress is empty. The serial is the one value required at issue.");
+
+  // siteUrl
+  const site = parseHttps(str('siteUrl'), 'siteUrl', problems);
+  if (site && (site.pathname !== '/' || site.search || site.hash || str('siteUrl').endsWith('/'))) problems.push('siteUrl must be an origin only, with no path and no trailing slash');
+
+  // explorer / buy: overrides or derived
+  const explorerOverride = str('explorerUrl');
+  const buyOverride = str('buyUrl');
+  const explorerUrl = explorerOverride || (contract ? `https://solscan.io/token/${contract}` : '');
+  const buyUrl = buyOverride || (contract ? `https://pump.fun/coin/${contract}` : '');
+  if (explorerUrl) checkHost(parseHttps(explorerUrl, 'explorerUrl', problems), 'explorerUrl', BUY_EXPLORER_HOSTS, problems);
+  if (buyUrl) checkHost(parseHttps(buyUrl, 'buyUrl', problems), 'buyUrl', BUY_EXPLORER_HOSTS, problems);
+  if (explorerOverride && (!contract || !explorerOverride.includes(contract))) problems.push('explorerUrl must contain the exact contractAddress');
+  if (buyOverride && !contract) problems.push('buyUrl is set but contractAddress is empty');
+
+  // socials (may go live before the contract)
+  const xUrl = str('xUrl');
+  const telegramUrl = str('telegramUrl');
+  if (xUrl) checkHost(parseHttps(xUrl, 'xUrl', problems), 'xUrl', X_HOSTS, problems);
+  if (telegramUrl) checkHost(parseHttps(telegramUrl, 'telegramUrl', problems), 'telegramUrl', TELEGRAM_HOSTS, problems);
+
+  // issue date
+  const issueDate = str('issueDate');
+  if (issueDate && Number.isNaN(Date.parse(/^\d{4}-\d{2}-\d{2}$/.test(issueDate) ? `${issueDate}T00:00:00Z` : issueDate))) problems.push(`issueDate is not an ISO date: "${issueDate}"`);
+
+  if (problems.length) throw new IssueConfigError(problems);
+
+  const fact = (k, pre) => (live ? str(k) || 'Pending verification' : pre);
+  const PENDING = 'Pending verification';
+
+  return Object.freeze({
+    live,
+    status: cfg.status,
+    statusLabel: live ? 'In circulation' : 'Pre-issue',
+    seriesYear: cfg.seriesYear,
+    network: FIXED.network,
+    platform: FIXED.platform,
+    siteUrl: site.origin,
+    // The serial is only ever exposed in the live state.
+    serial: live ? contract : null,
+    serialShort: live ? shortSerial(contract) : null,
+    explorerUrl: live ? explorerUrl : null,
+    buyUrl: live ? buyUrl : null,
+    xUrl: xUrl || null,
+    telegramUrl: telegramUrl || null,
+    issueDate: issueDate || null,
+    issueDateLabel: issueDate ? formatIssueDate(issueDate) : 'To be announced',
+    facts: {
+      totalSupply: fact('totalSupply', 'Published at issue'),
+      mintAuthority: fact('mintAuthority', 'Verified at issue'),
+      freezeAuthority: fact('freezeAuthority', 'Verified at issue'),
+      teamAllocation: fact('teamAllocation', 'Published at issue'),
+    },
+    pendingLabel: PENDING,
+    // Staged-but-unissued contract: allowed, never rendered.
+    stagedContract: !live && !!contract,
+  });
+}

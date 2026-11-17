@@ -1,0 +1,142 @@
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  figure,
+  blockquote,
+  dl,
+  dd,
+  ol,
+  ul {
+    margin: 0;
+  }
+  ol,
+  ul {
+    padding: 0;
+    list-style: none;
+  }
+  img,
+  picture,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+  a {
+    color: inherit;
+  }
+}
+
+@layer base {
+  html {
+    background: var(--vault);
+    color: var(--cream);
+    scroll-padding-top: 88px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  body {
+    font-family: var(--f-text);
+    font-size: var(--t-body);
+    line-height: 1.6;
+    font-kerning: normal;
+    font-variant-ligatures: common-ligatures;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+    min-height: 100vh;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--f-display);
+    font-weight: 400;
+    text-wrap: balance;
+  }
+  h2 {
+    font-size: var(--t-h2);
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-size: var(--t-h3);
+    line-height: 1.15;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  em,
+  i {
+    font-style: italic;
+  }
+  strong,
+  b {
+    font-weight: 700;
+  }
+  ::selection {
+    background: var(--bronze-text);
+    color: var(--vault);
+  }
+
+  /* Focus: 2px bronze-text, 3px offset, on every interactive element. Never removed. */
+  :focus-visible {
+    outline: 2px solid var(--bronze-text);
+    outline-offset: 3px;
+  }
+  .paper :focus-visible {
+    outline-color: var(--bronze-ink);
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+  .is-menu-open {
+    overflow: hidden;
+  }
+
+  @media (forced-colors: active) {
+    :focus-visible {
+      outline-color: Highlight;
+    }
+  }
+}
+
+@layer utilities {
+  .vh {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: -1px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+  .nowrap {
+    white-space: nowrap;
+  }
+}
