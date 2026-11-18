@@ -284,17 +284,27 @@ reason is stated.
 | Menu: 10 open/close toggles × top / middle / near the bottom × 1440×900, 390×844, 900×900 (classic scrollbars) | scrollY unchanged after every toggle (difference 0); layout shift 0; nav height constant; focus returned |
 | Menu by keyboard (390, 900): focus the nav, Tab to the toggle, Enter, Tab and Shift+Tab inside, Esc | page never moves; focus trapped; background inert; focus back on the toggle |
 
-**Lighthouse (mobile, median of 3):**
+**Lighthouse (mobile, median over 9 loads per URL):**
 
 | URL | Perf | A11y | Best practices | SEO | LCP | CLS | TBT |
 |---|---|---|---|---|---|---|---|
-| `/` pre-issue | 100 | 100 | 100 | 100 | 1.58 s | 0 | 19 ms |
-| `/` live fixture | 100 | 100 | 100 | 100 | 1.58 s | 0 | 0 ms |
+| `/` pre-issue | 100 | 100 | 100 | 100 | 1.59 s | 0 | 0 ms |
+| `/` live fixture | 100 | 100 | 100 | 100 | 1.59 s | 0 | 0 ms |
 | `/disclaimer` | 100 | 100 | 100 | 100 | 0.80 s | 0 | 0 ms |
 
-TBT varies run to run (0–42 ms here, 0–17 ms for the first version measured
-alongside). In both, the only long tasks are the initial document parse and
-layout around first paint, counted or not depending on where FCP lands.
+Measured alongside the first version, alternating, 18 loads of `/` each:
+
+| Version | Performance | LCP | Outlier (both) | TBT per load |
+|---|---|---|---|---|
+| First version | 100 in every load | 1.58–1.61 s | 1.89 s in 3 of 18 | 0–57 ms |
+| These fixes | 100 in every load | 1.58–1.59 s | 1.89 s in 3 of 18 | 0–64 ms |
+
+The outlier is Lantern's simulation: the observed timings of those loads match
+the others. In both versions the only long tasks are the initial document parse
+and layout around first paint, counted or not depending on where FCP lands.
+Note that the summary table printed by `tests/lighthouse.mjs` shows one load per
+URL, chosen by performance score; with every load at 100 that can be an outlier.
+The CI assertions use the median run.
 
 INP cannot be measured in the lab. TBT is the lab proxy, and the only long work
 on the page is the canvas (fine pointers only, 0.6 ms per frame median).
