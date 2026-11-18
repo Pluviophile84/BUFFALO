@@ -698,21 +698,26 @@
   }
 
   /* ════════════════ III · CHARACTER ════════════════ */
-  .character {
-    overflow: hidden;
-  }
+  /* The watermark: the bison layer, whole and centred behind the content.
+     Its box is the section's middle 90% × 80% (a size container); the image
+     is the largest that fits that box, at most its native 1023px, never
+     upscaled, centred on both axes. Nothing offsets, clips or masks it. */
   .character__mark {
     position: absolute;
     z-index: 0;
-    right: 3vw;
-    bottom: -14%;
-    width: min(1240px, 112vw);
+    inset: 10% 5%;
+    container-type: size;
     opacity: 0.07;
     pointer-events: none;
   }
   .character__mark img {
-    width: 100%;
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: min(100%, 1023px); /* fallback without container units */
+    width: min(100cqw, 1023px, 100cqh * 1023 / 721);
     height: auto;
+    aspect-ratio: 1023 / 721;
   }
   .character__inner {
     position: relative;

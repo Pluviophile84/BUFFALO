@@ -430,6 +430,27 @@ reason is stated.
     - **Unchanged:** the footer's bottom line ("Paper. Nickel. Gold. Now,
       everywhere."), which the batch does not list.
 
+23. **The Character watermark is whole and centred.** The bison layer behind
+    III · Character used to be anchored to the section's bottom-right corner
+    (`right: 3vw; bottom: -14%`) at `min(1240px, 112vw)` wide, and the
+    section's `overflow: hidden` cut off whatever fell outside.
+    - On phones the tall, stacked section put most of the bison below its
+      bottom edge, and part of it past the left edge. At 384×832 only 33% of
+      it was inside.
+    - At 1920×1080 it sat 282 px right of centre, was upscaled past its
+      native 1023 px, and lost 17% at the bottom.
+
+    Now its box is the section's middle 90% × 80%, set up as a size
+    container. The image is the largest that fits that box, capped at its
+    native 1023 px and never upscaled. It is centred on both axes, and no
+    offset, transform, mask or clipping remains. The opacity (7%) and the
+    z-order are unchanged.
+
+    `character-mark.spec.ts` checks seven sizes, from 360×800 to 1920×1080.
+    At each one the image must be fully inside the section, centred within
+    8 px, at most 1023 px wide and undistorted. Screenshots are in
+    `docs/fix-character/`.
+
 ### TODO-ASSET
 
 - None blocking. *Optional:* replace
@@ -447,7 +468,7 @@ reason is stated.
 
 ## Test results (last run)
 
-`npm test` → **163/163 Playwright checks passed; Lighthouse CI assertions passed.**
+`npm test` → **170/170 Playwright checks passed; Lighthouse CI assertions passed.**
 
 | Check | Result |
 |---|---|
