@@ -7,8 +7,6 @@
 // normalizes ’ → ' when comparing against the brief.
 import { issue, pick } from '../lib/issue-state';
 
-export const CORE_LINE = 'The bison has been American money three times. Now it belongs to no nation.';
-
 export const NAV = {
   links: [
     { href: '#provenance', label: 'Provenance' },
@@ -30,13 +28,16 @@ export const ACTION = {
 
 export const HERO = {
   eyebrow: `THE FOURTH ISSUE · SERIES ${issue.seriesYear}`,
-  lead: 'The bison has been American money three times.',
-  h1: 'Now it belongs to no nation.',
-  body: 'Paper in 1901. The nickel in 1913. Gold in 2006. $BUFFALO is the fourth issue: struck on Solana, held anywhere, bounded by nothing.',
+  // H1 in two tones: the three issues, then the new chapter
+  h1: ['Paper. Nickel. Gold.', 'Blockchain.'],
+  sub: 'An American monetary symbol, carried into its next form.',
+  body: 'The bison has been American money three times: on paper in 1901, on the nickel in 1913, in gold in 2006. $BUFFALO is the fourth issue, minted on Solana.',
+  wit: 'A century-long migration. Reasonably on schedule.',
   secondary: 'Read the provenance',
   serialLabel: 'SERIAL · CONTRACT ADDRESS',
   serialPending: 'To be struck at issue',
   note: 'Only this page and the official X account publish the serial. Verify it before every transaction.',
+  noteWit: 'Buffalo are resilient. Incorrect transactions are not.',
   stamp: 'SPECIMEN · PRE-ISSUE',
 };
 
@@ -52,24 +53,32 @@ export const STATEMENT = {
   label: 'I · STATEMENT OF ISSUE',
   lines: [
     'Long before it was money, the bison was a force of nature. Immense. Unbowed. Built to outlast whatever the plains could send against it.',
-    'A nation put it on its money to borrow that character. On paper in 1901. On the nickel in 1913. In gold in 2006.',
-    'For more than a century, its power had borders.',
-    'On the chain, the borders are gone. No treasury. No jurisdiction. No edge of the map.',
-    'Paper. Nickel. Gold. Now, everywhere.',
+    'A nation put it on its money to borrow that character, and each era carried it in the material of its time.',
+    'Printed on paper in 1901. Struck in nickel in 1913. Struck in gold in 2006.',
+    'The fourth issue is minted on-chain: the same symbol, in the medium of this century.',
+    'The history is still being written.',
   ],
   signature: 'BUFFALO — THE FOURTH ISSUE',
 };
 
+// Standalone lines: their own bands, between sections (Interlude.astro).
+export const INTERLUDE = {
+  // between I · Statement and II · Provenance
+  archives: ['Some memecoins begin with invented lore. BUFFALO arrived with archives.'],
+  // between III · Character and IV · The Release: the last part in --cream
+  buffalo: ['Not a dog. Not a frog.', 'A buffalo.'],
+};
+
 export const PROVENANCE = {
   label: 'II · PROVENANCE',
-  h2: 'Three issues. Every one of them bounded by a border.',
-  intro: 'The same symbol, carried by a nation through paper, metal and gold. Each issue traveled only as far as the nation that issued it.',
+  h2: 'Four issues. One symbol.',
+  intro: 'The same symbol, carried through paper, nickel, gold and now the blockchain. Each issue changed the material. None changed the animal.',
   cards: [
     {
       label: 'SERIES 1901 · ISSUE I · PAPER',
       title: 'The bison enters American money.',
       body: 'The ten-dollar United States Note of 1901 places a bison at the center of the design, flanked by portraits of Meriwether Lewis and William Clark. Collectors still call it the Bison Note.',
-      wit: 'Legal tender. Border included.',
+      wit: 'The first financial migration.',
       caption: '1901 United States Note, $10. Public-domain reproduction via Wikimedia Commons.',
     },
     {
@@ -88,9 +97,9 @@ export const PROVENANCE = {
     },
     {
       label: `SERIES ${issue.seriesYear} · ISSUE IV · CHAIN`,
-      title: 'The symbol leaves the jurisdiction.',
-      body: '$BUFFALO is struck on Solana. It can be held in any wallet, in any country, at any hour. For the first time, the bison answers to no treasury.',
-      wit: 'Borders not included.',
+      title: 'The bison enters the blockchain.',
+      body: '$BUFFALO carries the same symbol into its fourth medium: a token minted on Solana. The material changes again. The animal does not.',
+      wit: 'No vault required.',
       caption: pick(
         'Pre-issue. The serial will appear only in the Specification on this page.',
         'In circulation. Verify the serial in the Specification on this page.',
@@ -101,7 +110,7 @@ export const PROVENANCE = {
 
 export const CHARACTER = {
   label: 'III · CHARACTER',
-  h2: 'A force of nature belongs to no nation.',
+  h2: 'The character came first.',
   intro: 'Nations choose symbols for the qualities they want to be seen to have. The United States chose the bison for these.',
   traits: [
     { n: '01', word: 'Strength', text: 'The largest land mammal in North America. A bull can weigh up to a ton and still run at thirty-five miles an hour.' },
@@ -169,6 +178,7 @@ export const SPEC = {
     { title: 'Ignore private messages.', text: 'No one representing BUFFALO will ever ask for a seed phrase, a private key, or a private sale.' },
     { title: 'Expect no promises.', text: 'No post, message or account can guarantee price, liquidity or returns. Anyone who does is not speaking for BUFFALO.' },
   ],
+  wit: 'Conviction is not a substitute for inspection.',
 };
 
 export const ACQUIRE = {
@@ -194,7 +204,7 @@ export const ACQUIRE = {
 export const CUSTODIANS = {
   label: 'VIII · THE CUSTODIANS',
   h2: 'The symbol was never owned. It was carried.',
-  body: 'No nation that printed the bison ever owned what it stood for. $BUFFALO is held the same way: by Custodians, in every time zone, carrying the symbol forward.',
+  body: 'Every era that issued the bison carried it forward. $BUFFALO is carried the same way: by Custodians, in every time zone.',
   x: 'Official X',
   chat: 'Custodian chat',
   opensAtIssue: 'Opens at issue',
@@ -205,6 +215,7 @@ export const CUSTODIANS = {
     { n: 'II.', text: 'No manufactured urgency. No private sales. No promises.' },
     { n: 'III.', text: 'Carry the mark unaltered. The symbol has outlived every market it has appeared in.' },
   ],
+  codeWit: 'Red candles do not qualify as an extinction event.',
   kitTitle: 'The Custodian Kit',
   kitH3: 'Carry the mark.',
   usage: 'Use the mark as issued. Do not redraw, recolor, crop or add to it.',
@@ -237,7 +248,7 @@ export const FOOTER = {
     '$BUFFALO is a memecoin and a cultural token. It makes no promise of returns, utility, price appreciation, liquidity or protection from loss. Digital assets carry substantial risk, including the total loss of funds. Nothing on this site is financial, legal or tax advice.',
     'BUFFALO is an independent project. It is not affiliated with, endorsed by or issued by the United States Mint, the U.S. Department of the Treasury, the Bureau of Engraving and Printing, or any government. $BUFFALO is not legal tender. Historical images are credited to their sources and shown for historical reference.',
   ],
-  disclaimerWit: 'The symbol has no jurisdiction. You still do.',
+  disclaimerWit: 'Historically significant. Financially unserious in the legally appropriate places.',
   disclaimerTail: 'You are responsible for the laws that apply where you live.',
   bottom: 'Paper. Nickel. Gold. Now, everywhere.',
 };
@@ -250,9 +261,9 @@ export const NOT_FOUND = {
 };
 
 export const META = {
-  title: 'BUFFALO ($BUFFALO) · The Fourth Issue',
+  title: 'BUFFALO ($BUFFALO) · Paper. Nickel. Gold. Blockchain.',
   description:
-    'The bison has been American money three times. Now it belongs to no nation. Paper, nickel, gold, and now the chain. $BUFFALO, the Fourth Issue, on Solana.',
+    'An American monetary symbol, carried into its next form. The bison has been American money three times. $BUFFALO is the fourth issue, minted on Solana.',
   coinAlt:
     'BUFFALO emblem: an engraved bison on a green guilloche field within a bronze rim, overlaid by a struck letter B with a currency stroke.',
 };

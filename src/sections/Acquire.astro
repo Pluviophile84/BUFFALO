@@ -16,7 +16,7 @@ import Action from '../components/Action.astro';
         <li class="step" data-ink data-stagger={String(i + 1)}>
           <span class="step__n label" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
           <h3 class="step__title">{s.title}</h3>
-          <p class="step__text">{s.text}{s.wit && <> <em class="wit">{s.wit}</em></>}</p>
+          <p class="step__text">{s.text}</p>{s.wit && <p class="step__wit wit">{s.wit}</p>}
         </li>
       ))}
     </ol>

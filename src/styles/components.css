@@ -11,10 +11,19 @@
     text-transform: uppercase;
     font-weight: 400;
   }
+  /* Wit lines: Caslon Text italic at the body size (never smaller), bronze on
+     dark sections and bronze ink on paper, 14px clear above (12–16px). */
   .wit {
+    display: block;
+    margin-top: 14px;
     font-family: var(--f-text);
     font-style: italic;
-    font-size: inherit;
+    font-size: var(--t-body);
+    line-height: 1.5;
+    color: var(--bronze-text);
+  }
+  .paper .wit {
+    color: var(--bronze-ink);
   }
 
   /* ── Layout ─────────────────────────────────────────────── */

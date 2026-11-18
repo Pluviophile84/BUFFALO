@@ -32,7 +32,7 @@ async function settle(page: Page) {
 
 async function heroBoxes(page: Page) {
   return page.evaluate(() => {
-    const sel = ['.hero__eyebrow', '.hero__lead', '.hero__h1', '.hero__body', '.hero__actions .btn', '.hero__actions .helper', '.hero__serial', '.hero__note', '.hero__stamp'];
+    const sel = ['.hero__eyebrow', '.hero__h1', '.hero__sub', '.hero__body', '.hero__wit', '.hero__actions .btn', '.hero__actions .helper', '.hero__serial', '.hero__note', '.hero__notewit', '.hero__stamp'];
     const boxes: { name: string; r: DOMRect }[] = [];
     for (const s of sel) document.querySelectorAll(s).forEach((el, i) => boxes.push({ name: `${s}#${i}`, r: el.getBoundingClientRect() }));
     // text inside the hero copy must never overlap the coin's circle either
@@ -66,7 +66,6 @@ for (const st of STATES)
         for (let j = i + 1; j < boxes.length; j++) {
           const a = boxes[i]!;
           const b = boxes[j]!;
-          if (a.name.startsWith('.hero__lead') && b.name.startsWith('.hero__h1')) continue; // same <h1>, stacked
           expect(overlap(a, b), `${a.name} overlaps ${b.name}`).toBe(false);
         }
       for (const b of boxes) expect(rectHitsCircle(b, coin), `${b.name} touches the coin`).toBe(false);

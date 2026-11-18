@@ -22,6 +22,9 @@ const ey = (H - E) / 2;
 const FIELD_OPACITY = 0.946;
 
 const left = 72;
+// Headline as in the hero: the three issues in --cream-2, the new chapter in
+// --cream. 74px is the largest size that keeps "Paper. Nickel. Gold." inside the
+// text panel (it ends at x = 609; the panel at 626; the emblem starts at 666).
 const stamp = issue.live
   ? ''
   : `<g transform="translate(${left} 470)" fill="none" stroke="#C29E66" stroke-opacity="0.85"><rect x="0.5" y="0.5" width="171" height="29"/><rect x="3.5" y="3.5" width="165" height="23"/><text x="86" y="19.5" text-anchor="middle" stroke="none" fill="#C29E66" font-family="JetBrains Mono" font-size="12" letter-spacing="3.4">SPECIMEN</text></g>`;
@@ -31,7 +34,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" 
 ${fieldPaths({ R: E / 2, cx: ex + E / 2, cy: ey + E / 2, width: W, height: H, stroke: 1, opacity: FIELD_OPACITY })}
 <rect x="${left - 32}" y="120" width="${ex - left - 8}" height="${H - 240 + 40}" fill="#0E100B"/>
 <text x="${left}" y="182" font-family="JetBrains Mono" font-size="17" letter-spacing="3" fill="#C29E66">THE FOURTH ISSUE</text>
-<text font-family="Libre Caslon Display" font-size="70" fill="#EEE1C6" letter-spacing="-0.8"><tspan x="${left}" y="282">Now it belongs</tspan><tspan x="${left}" y="356">to no nation.</tspan></text>
+<text font-family="Libre Caslon Display" font-size="74" letter-spacing="-0.85"><tspan x="${left}" y="282" fill="#B8AF98">Paper. Nickel. Gold.</tspan><tspan x="${left}" y="360" fill="#EEE1C6">Blockchain.</tspan></text>
 <text x="${left}" y="430" font-family="JetBrains Mono" font-size="16" letter-spacing="3.2" fill="#9A937F">BUFFALO · $BUFFALO</text>
 ${stamp}
 </svg>`;

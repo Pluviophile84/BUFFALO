@@ -1,0 +1,18 @@
+---
+// A standalone line between two sections (Refinement Batch 2): its own band on
+// vault, framed by the section rule above and below, in Caslon Display at the H2
+// size. A line given in parts sets every part but the last in --cream-2 and the
+// last in --cream.
+import EngravedRule from './EngravedRule.astro';
+
+interface Props {
+  parts: string[];
+  id: string;
+}
+const { parts, id } = Astro.props;
+---
+<div class="interlude" id={id}>
+  <EngravedRule lines={3} class="interlude__rule" />
+  <p class="interlude__line" data-ink>{parts.map((p, i) => <>{i > 0 && ' '}<span class="interlude__part">{p}</span></>)}</p>
+  <EngravedRule lines={3} class="interlude__rule" />
+</div>

@@ -46,17 +46,4 @@ export function initReveal(reduced: boolean): void {
     }
   });
   document.querySelectorAll('[data-ink], [data-draw]').forEach((el) => classify.observe(el));
-
-  // Issue IV: its frame draws, then dissolves. The border is removed.
-  const dio = new IntersectionObserver(
-    (entries) => {
-      for (const e of entries) {
-        if (!e.isIntersecting) continue;
-        e.target.classList.add('is-dissolving');
-        dio.unobserve(e.target);
-      }
-    },
-    { threshold: 0.45 },
-  );
-  document.querySelectorAll('[data-dissolve]').forEach((el) => dio.observe(el));
 }

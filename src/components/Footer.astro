@@ -28,7 +28,8 @@ const links = [...FOOTER.links, ...(issue.xUrl ? [{ href: issue.xUrl, label: 'X'
     </div>
     <div class="footer__disclaimer">
       {FOOTER.disclaimer.map((p) => <p>{p}</p>)}
-      <p><em>{FOOTER.disclaimerWit}</em> {FOOTER.disclaimerTail}</p>
+      <p class="footer__wit wit">{FOOTER.disclaimerWit}</p>
+      <p>{FOOTER.disclaimerTail}</p>
     </div>
     <div class="footer__bottom label">
       <span>© {year} BUFFALO</span>

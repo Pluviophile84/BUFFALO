@@ -167,7 +167,7 @@ test('no JavaScript: page complete, coin complete', async ({ browser }) => {
   const ctx = await browser.newContext({ javaScriptEnabled: false });
   const page = await ctx.newPage();
   await page.goto(PRE + '/');
-  await expect(page.locator('h1')).toContainText('Now it belongs to no nation.');
+  await expect(page.locator('h1')).toHaveText('Paper. Nickel. Gold. Blockchain.');
   expect(await page.locator('.hero__coin .coin__b').evaluate((e) => getComputedStyle(e).animationName)).toBe('none');
   expect(await page.locator('.hero__coin .coin__b').evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
   await ctx.close();

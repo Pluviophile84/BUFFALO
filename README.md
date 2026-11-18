@@ -4,7 +4,7 @@ The official pre-launch website for BUFFALO, a Solana token issued on pump.fun.
 It is a static Astro site that deploys to Vercel from GitHub with no configuration
 beyond connecting the repository.
 
-> The bison has been American money three times. Now it belongs to no nation.
+> Paper. Nickel. Gold. Blockchain. An American monetary symbol, carried into its next form.
 
 ---
 
@@ -118,10 +118,10 @@ Independence (1776), was set in Caslon type cast in London. American
 independence was announced in type from abroad. The bison now leaves its origin
 the same way.
 
-**The frameless Fourth Issue.** Issues I–III sit in engraved frames with
-registration marks and a microtext border: bounded. Issue IV has no frame. It
-bleeds to the edge of the viewport, and when it scrolls into view a frame draws
-and then dissolves. The border is removed.
+**The Fourth Issue, in the same series.** All four issues sit in the same
+engraved frame, with registration marks and a microtext border: paper, nickel,
+gold and the chain read as one continuous series, the next chapter of the same
+history rather than a break from it (Refinement Batch 2).
 
 **Read from afar, it is a line.** Rules, borders and the security thread resolve
 into microtext up close, as the logo's ground line does.
@@ -178,7 +178,7 @@ reason is stated.
    inline style and no handler.
 10. **Typography.** The brief's straight apostrophes are set as typographic
     apostrophes (’). The copy test normalises them. **No typos were found in
-    §5; no copy was changed.**
+    §5.** The copy was revised in Refinement Batch 2 (decision 22).
 11. **Structural strings not in §5** (neutral, and covered by the banned-word
     test): "Skip to content", "Menu"/"Close", the screen-reader-only "Status:"
     and "Serial copied.", the `/disclaimer` headings ("NOTICE", "Disclaimer",
@@ -346,6 +346,53 @@ reason is stated.
       4.43 KB → 3.73 KB gz (main 2.63 → 2.70 KB, adding `field.ts`; lazy canvas
       1.80 → 1.03 KB).
 
+22. **Refinement Batch 2: the narrative is a transition.** Paper → nickel →
+    gold → blockchain, each issue described by its material and process. All
+    copy lives in `src/content/copy.ts`, and every string was replaced exactly as
+    given.
+    - **Borderless theme:** it keeps one place, IV · The Release, which is
+      unchanged. A lint test (`copy.spec.ts`) checks that "jurisdiction",
+      "borders", "borderless" and "no nation" appear nowhere else in visible
+      text or accessible names; the disclaimer, microtext and aria-hidden
+      decoration are exempt.
+    - **Hero:** the H1 is "Paper. Nickel. Gold. Blockchain.", the first three
+      words in `--cream-2` and "Blockchain." in `--cream`, at the same display
+      size. Under it comes the italic sub, then the new body and a wit line.
+      The serial note gains a wit line.
+      - In the 1440 column the H1 sets in three lines (Paper. / Nickel. Gold. /
+        Blockchain.).
+      - The longer copy makes the hero taller, so on two-column layouts the
+        coin, centred against the copy, sits lower than before. The layout
+        rules are unchanged.
+    - **Wit lines:** Caslon Text italic at the body size (18 px, never
+      smaller), in `--bronze-text` on dark sections and `--bronze-ink` on
+      paper, 14 px clear above. Wits that were inline (the Acquire step, the
+      footer disclaimer) are now their own lines.
+    - **Standalone lines** (`Interlude.astro`):
+      - Line A sits between I and II, line B between III and IV.
+      - Each is a full-width band on vault, between two engraved section rules.
+      - Caslon Display at `--t-h2`, centred, at most 22ch, inked in like the
+        Statement's lines (static under reduced motion).
+      - In line B, "A buffalo." is set in `--cream`.
+    - **Card IV:** it has the same engraved double frame, registration marks
+      and microtext border as Cards I–III, and its coin sits on the same dark
+      plate as the nickel and the gold.
+      - The edge-to-edge bleed, the wider fourth column, and the
+        frame-dissolve animation (its CSS, its `reveal.ts` observer and its
+        markup) are removed.
+      - No test covered the dissolve itself. The logo-integrity test's Card IV
+        selector, which relied on the frameless class, now targets the card
+        directly.
+    - **Meta and OG:**
+      - The title, description and the OG/Twitter tags carry the new copy.
+      - The OG image's headline is "Paper. Nickel. Gold. Blockchain." in the
+        hero's two tones, at 74 px, the largest size that keeps
+        "Paper. Nickel. Gold." inside the text panel, clear of the emblem.
+      - Both state variants are regenerated.
+    - **Removed:** `CORE_LINE`, an unused constant that held the old line.
+    - **Unchanged:** the footer's bottom line ("Paper. Nickel. Gold. Now,
+      everywhere."), which the batch does not list.
+
 ### TODO-ASSET
 
 - None blocking. *Optional:* replace
@@ -363,7 +410,7 @@ reason is stated.
 
 ## Test results (last run)
 
-`npm test` → **150/150 Playwright checks passed; Lighthouse CI assertions passed.**
+`npm test` → **157/157 Playwright checks passed; Lighthouse CI assertions passed.**
 
 | Check | Result |
 |---|---|
@@ -374,7 +421,7 @@ reason is stated.
 | Edge-to-edge (alpha bbox = canvas ± 1 px) | all 7 emblem PNGs pass |
 | `frame.svg` (SVGO, precision 0.1) vs master `#frame` | under 0.1% |
 | axe-core (WCAG 2.2 AA + best practice): `/`, `/disclaimer`, `/404` × 375/1440 × both states × motion on/off | 0 violations (24 runs) |
-| Copy lint | 171 §5 strings present verbatim per state; banned list clean; no other-state copy shipped |
+| Copy lint | 178 copy strings (§5 as revised in Refinement Batch 2) present verbatim per state; banned list clean; no other-state copy shipped; no borderless wording outside IV · The Release and the disclaimer |
 | Visual QA at 320 · 375 · 414 · 768 · 1024 · 1280 · 1440 · 1920 | no horizontal overflow; no overlapping hero text; no text on the coin; H1 in the first viewport; screenshots in `tests/screenshots/` |
 | Config guards | live without contract fails; bad explorer fails; fixture on Vercel fails; derived URLs exact |
 | Hero coin centring at 375 · 768 · 1024 · 1280 · 1440 · 1920, gutter reserved and not | coin centre = column centre (±1 px); two columns: column = text block edge → hero edge, coin clear of the text block; thread, field, vignette centred on the coin; stamp placement kept |
@@ -476,7 +523,7 @@ src/config/issue.ts          ← the only file edited at launch
 src/lib/validate-issue.mjs   validation + derivation (shared by build, OG script and tests)
 src/lib/issue-state.ts       build-time state; importing it validates the config
 src/lib/map.mjs              borderless map (land geometry only)
-src/content/copy.ts          final copy (§5), paired by state
+src/content/copy.ts          final copy (§5, revised in Refinement Batch 2), paired by state
 src/components/ · src/sections/ · src/layouts/ · src/pages/
 src/scripts/                 vanilla TS islands: strike, nav, reveal, copy-serial, mark, field, guilloche-canvas
 src/styles/                  @layer reset, tokens, base, components, sections, utilities, emblem

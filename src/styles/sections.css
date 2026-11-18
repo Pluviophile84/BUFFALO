@@ -92,19 +92,10 @@
     }
   }
   .hero__title {
-    display: grid;
-    gap: var(--s4);
-    margin-bottom: var(--s8);
-  }
-  .hero__lead {
-    font-family: var(--f-text);
-    font-style: italic;
-    font-size: var(--t-lead);
-    line-height: 1.3;
-    color: var(--cream-2);
-    text-wrap: balance;
+    margin-bottom: var(--s4);
   }
   .hero__h1 {
+    display: block;
     font-family: var(--f-display);
     font-size: var(--t-display);
     line-height: 0.98;
@@ -112,9 +103,29 @@
     color: var(--cream);
     text-wrap: balance;
   }
+  /* the three issues in --cream-2; the new chapter in --cream */
+  .hero__h1-past {
+    color: var(--cream-2);
+  }
+  .hero__h1-past,
+  .hero__h1-now {
+    display: inline-block; /* whole where it fits: the new chapter starts its own line */
+  }
+  .hero__sub {
+    font-family: var(--f-text);
+    font-style: italic;
+    font-size: var(--t-lead);
+    line-height: 1.3;
+    color: var(--cream-2);
+    text-wrap: balance;
+    margin-bottom: var(--s8);
+  }
   .hero__body {
     max-width: 46ch;
     color: var(--cream-2);
+  }
+  .hero__wit {
+    max-width: 46ch;
     margin-bottom: var(--s8);
   }
   .hero__actions {
@@ -413,6 +424,37 @@
     color: var(--cream);
   }
 
+  /* ════════════════ Standalone lines (between sections) ════════════════ */
+  /* A full-width band on vault, its own moment: the line in Caslon Display at
+     the H2 size, centred, at most 22ch, inked in like the Statement's lines
+     (static under reduced motion), between two engraved rules. */
+  .interlude {
+    background: var(--vault);
+    padding-block: clamp(72px, 9vw, 144px);
+    text-align: center;
+  }
+  .interlude__rule {
+    width: min(560px, 72%);
+    margin-inline: auto;
+  }
+  .interlude__line {
+    max-width: 22ch;
+    margin: var(--s10) auto;
+    font-family: var(--f-display);
+    font-size: var(--t-h2);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    color: var(--cream);
+    text-wrap: balance;
+  }
+  /* each part kept whole where it fits, so a line breaks between the parts */
+  .interlude__part {
+    display: inline-block;
+  }
+  .interlude__part:not(:last-child) {
+    color: var(--cream-2);
+  }
+
   /* ════════════════ II · PROVENANCE (paper) ════════════════ */
   .provenance {
     overflow: clip;
@@ -511,7 +553,7 @@
   }
   @media (min-width: 1200px) {
     .provenance__cards {
-      grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.12fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: var(--gutter);
       padding-right: 0;
       margin-right: max(0px, calc((100vw - var(--max) - 2 * var(--margin)) / 2));
@@ -618,8 +660,7 @@
     width: 84%;
   }
   .card__plate--emblem {
-    background: transparent;
-    padding: 0;
+    background: var(--vault-3); /* the same dark plate as the nickel and gold */
   }
   .card__coin {
     width: 84%;
@@ -642,98 +683,8 @@
     color: var(--bison-deep);
   }
   .card__wit {
-    margin-top: auto;
-    padding-top: var(--s2);
-    font-size: 1rem;
-    color: var(--bison);
-  }
-  /* Issue IV: dark, frameless, bleeding to the edge */
-  .card--free {
-    background: var(--vault);
-    color: var(--cream);
-  }
-  .card--free .card__label {
-    color: var(--bronze-text);
-  }
-  .card--free .card__title,
-  .card--free .card__body {
-    color: var(--cream);
-  }
-  .card--free .card__caption {
-    color: var(--cream-3);
-  }
-  .card--free .card__wit {
-    color: var(--bronze-text);
-  }
-  .card--free .card__inner {
-    padding: var(--s10) var(--s8);
-  }
-  @media (min-width: 1200px) {
-    .card--free {
-      margin-right: calc(-1 * max(0px, calc((100vw - var(--max) - 2 * var(--margin)) / 2)));
-      margin-block: calc(-1 * var(--s6));
-    }
-    .card--free .card__inner {
-      padding: calc(var(--s10) + var(--s6)) calc(var(--s8) + max(0px, calc((100vw - var(--max) - 2 * var(--margin)) / 2))) calc(var(--s10) + var(--s6)) var(--s10);
-    }
-  }
-  .card__dissolve {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-    pointer-events: none;
-    opacity: 0;
-  }
-  .card__dissolve rect {
-    width: calc(100% - 1px);
-    height: calc(100% - 1px);
-    fill: none;
-    stroke: var(--cream);
-    stroke-opacity: 0.35;
-    stroke-width: 1;
-    stroke-dasharray: 6 3;
-  }
-  .card__dissolve .card__dissolve-inner {
-    width: calc(100% - 13px);
-    height: calc(100% - 13px);
-    stroke-opacity: 0.2;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .card__dissolve.is-dissolving {
-      animation: dissolve 1600ms var(--ease) both;
-    }
-    .card__dissolve.is-dissolving rect {
-      animation: fragment 1600ms var(--ease) both;
-    }
-  }
-  @keyframes dissolve {
-    0% {
-      opacity: 0;
-    }
-    25% {
-      opacity: 1;
-    }
-    55% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-    }
-  }
-  @keyframes fragment {
-    0% {
-      stroke-dasharray: 6 3;
-      stroke-dashoffset: 0;
-    }
-    55% {
-      stroke-dasharray: 6 3;
-    }
-    100% {
-      stroke-dasharray: 0.5 14;
-      stroke-dashoffset: 18;
-    }
+    margin-top: auto; /* the wits line up at the foot of the cards */
+    padding-top: 14px;
   }
 
   /* ════════════════ III · CHARACTER ════════════════ */
@@ -1187,9 +1138,7 @@
     color: var(--cream-2);
     font-size: 1rem;
   }
-  .step__text .wit {
-    color: var(--cream);
-  }
+
   .acquire__actions {
     margin-bottom: var(--s8);
   }
@@ -1412,9 +1361,7 @@
     text-align: left;
     margin-bottom: var(--s8);
   }
-  .final__wit {
-    color: var(--cream-3);
-  }
+
 
   /* ════════════════ FOOTER ════════════════ */
   .footer {
@@ -1465,6 +1412,9 @@
   }
   .footer__links a:hover {
     color: var(--cream);
+  }
+  .footer__disclaimer .wit {
+    margin-top: 0; /* the grid's 16px gap is the space above */
   }
   .footer__disclaimer {
     max-width: 90ch;

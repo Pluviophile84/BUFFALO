@@ -32,7 +32,7 @@ async function isolate(page: Page, selector: string) {
 const cases = [
   { name: 'hero (strike finished)', sel: '.hero__coin', motion: 'no-preference' as const, wait: 2600 },
   { name: 'hero (reduced motion)', sel: '.hero__coin', motion: 'reduce' as const, wait: 0 },
-  { name: 'card IV', sel: '.card--free .coin', motion: 'reduce' as const, wait: 0 },
+  { name: 'card IV', sel: '[data-card="IV"] .coin', motion: 'reduce' as const, wait: 0 },
   { name: 'the mark', sel: '#mark-coin', motion: 'reduce' as const, wait: 0 },
 ];
 

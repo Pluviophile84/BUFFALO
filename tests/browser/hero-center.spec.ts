@@ -80,7 +80,7 @@ for (const gutter of ['stable', 'auto'] as const)
       await ctx.close();
     });
 
-test('the coin keeps its size and vertical position; no rule under it', async ({ browser }) => {
+test('the coin keeps its size (and, in one column, its vertical position); no rule under it', async ({ browser }) => {
   // values measured on the first version (before these fixes), overlay scrollbars
   const before: Record<number, { top: number; width: number }> = {
     375: { top: 129, width: 292.5 },
@@ -96,7 +96,10 @@ test('the coin keeps its size and vertical position; no rule under it', async ({
     await page.goto(PRE + '/', { waitUntil: 'networkidle' });
     await page.evaluate(() => (document.documentElement.style.scrollbarGutter = 'auto'));
     const g = await geometry(page);
-    expect(Math.abs(g.coin.top - before[width]!.top), `top @${width}`).toBeLessThanOrEqual(0.5);
+    // One column: the coin leads the hero, its top is fixed. Two columns: it is
+    // centred against the copy beside it, which is taller since Refinement Batch 2
+    // (the H1, sub and wit lines), so its top follows that copy's height.
+    if (width < 1024) expect(Math.abs(g.coin.top - before[width]!.top), `top @${width}`).toBeLessThanOrEqual(0.5);
     expect(Math.abs(g.coin.width - before[width]!.width), `width @${width}`).toBeLessThanOrEqual(0.5);
     expect(await page.locator('.hero .engraved-rule, .hero__ground').count()).toBe(0);
     expect(await page.locator('.hero__coin [data-layer="ground"]').count()).toBe(1); // the emblem's own ground line stays

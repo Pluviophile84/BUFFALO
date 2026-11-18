@@ -67,8 +67,13 @@ for (const st of STATES) {
 
     test('title, description, theme, JSON-LD WebSite only', () => {
       const h = fs.readFileSync(path.join(st.dist, 'index.html'), 'utf8');
-      expect(h).toContain('<title>BUFFALO ($BUFFALO) · The Fourth Issue</title>');
-      expect(h).toContain('<meta name="description" content="The bison has been American money three times. Now it belongs to no nation. Paper, nickel, gold, and now the chain. $BUFFALO, the Fourth Issue, on Solana.">');
+      const title = 'BUFFALO ($BUFFALO) · Paper. Nickel. Gold. Blockchain.';
+      const description = 'An American monetary symbol, carried into its next form. The bison has been American money three times. $BUFFALO is the fourth issue, minted on Solana.';
+      expect(h).toContain(`<title>${title}</title>`);
+      expect(h).toContain(`<meta name="description" content="${description}">`);
+      // Open Graph and Twitter carry the same title and description
+      for (const k of ['property="og:title"', 'name="twitter:title"']) expect(h).toContain(`<meta ${k} content="${title}">`);
+      for (const k of ['property="og:description"', 'name="twitter:description"']) expect(h).toContain(`<meta ${k} content="${description}">`);
       expect(h).toContain('<meta name="theme-color" content="#0E100B">');
       expect(h).toContain('<meta name="color-scheme" content="dark">');
       const ld = JSON.parse(h.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)![1]!);

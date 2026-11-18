@@ -11,13 +11,17 @@ import Specification from '../sections/Specification.astro';
 import Acquire from '../sections/Acquire.astro';
 import Custodians from '../sections/Custodians.astro';
 import FinalIssue from '../sections/FinalIssue.astro';
+import Interlude from '../components/Interlude.astro';
+import { INTERLUDE } from '../content/copy';
 ---
 <Base home>
   <Hero />
   <StatusStrip />
   <Statement />
+  <Interlude id="archives" parts={INTERLUDE.archives} />
   <Provenance />
   <Character />
+  <Interlude id="not-a-dog" parts={INTERLUDE.buffalo} />
   <Release />
   <Mark />
   <Specification />
