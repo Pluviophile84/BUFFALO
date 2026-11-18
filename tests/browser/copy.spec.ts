@@ -42,11 +42,14 @@ for (const st of STATES)
       const all = norm(`${text} ${attrs}`);
       for (const w of BANNED_WORDS) expect(all, `banned "${w}"`).not.toMatch(new RegExp(`(^|[^\\p{L}\\p{N}-])${w}($|[^\\p{L}\\p{N}-])`, 'iu'));
       expect(all, 'exclamation mark').not.toContain('!');
+      // the bison was on American money more than three times: 1901, 1913 and 2006 are landmarks
+      expect(all, '"three times"').not.toMatch(/three times/i);
       expect(all, '$BUFF token').not.toMatch(/\$BUFF(?![A-Z])/);
       expect(all, 'emoji').not.toMatch(/(?![©®™])\p{Extended_Pictographic}/u);
       for (const m of all.matchAll(/\bpump\b/gi)) expect(all.slice(m.index!, m.index! + 8).toLowerCase()).toBe('pump.fun');
-      // the project is "BUFFALO", never "Buffalo Coin/Token" ("American Buffalo coins" is the Mint's programme)
-      expect(all, 'name').not.toMatch(/(?<!American )buffalo (coin|token)/i);
+      // the project is "BUFFALO", never "Buffalo Coin/Token" ("American Buffalo coins" is the Mint's
+      // programme; "the official $BUFFALO token" is the ticker, not a name)
+      expect(all, 'name').not.toMatch(/(?<!American |\$)buffalo (coin|token)/i);
       expect(all, 'holders are Custodians').not.toMatch(/\b(army|fam)\b/i);
 
       // "legal tender" only in the Section IV body and the disclaimer

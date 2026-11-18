@@ -68,7 +68,9 @@ for (const st of STATES) {
     test('title, description, theme, JSON-LD WebSite only', () => {
       const h = fs.readFileSync(path.join(st.dist, 'index.html'), 'utf8');
       const title = 'BUFFALO ($BUFFALO) · Paper. Nickel. Gold. Blockchain.';
-      const description = 'An American monetary symbol, carried into its next form. The bison has been American money three times. $BUFFALO is the fourth issue, minted on Solana.';
+      const description = 'Paper. Nickel. Gold. Blockchain. For more than a century, the bison has marked American money. $BUFFALO is an independent Solana memecoin inspired by that history.';
+      // 1901, 1913 and 2006 are landmarks chosen for the story, not a count
+      expect(h).not.toMatch(/three times/i);
       expect(h).toContain(`<title>${title}</title>`);
       expect(h).toContain(`<meta name="description" content="${description}">`);
       // Open Graph and Twitter carry the same title and description

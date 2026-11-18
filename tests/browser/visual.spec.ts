@@ -32,7 +32,7 @@ async function settle(page: Page) {
 
 async function heroBoxes(page: Page) {
   return page.evaluate(() => {
-    const sel = ['.hero__eyebrow', '.hero__h1', '.hero__sub', '.hero__body', '.hero__wit', '.hero__actions .btn', '.hero__actions .helper', '.hero__serial', '.hero__note', '.hero__notewit', '.hero__stamp'];
+    const sel = ['.hero__eyebrow', '.hero__h1', '.hero__sub', '.hero__actions .btn', '.hero__actions .helper', '.hero__serial', '.hero__stamp'];
     const boxes: { name: string; r: DOMRect }[] = [];
     for (const s of sel) document.querySelectorAll(s).forEach((el, i) => boxes.push({ name: `${s}#${i}`, r: el.getBoundingClientRect() }));
     // text inside the hero copy must never overlap the coin's circle either

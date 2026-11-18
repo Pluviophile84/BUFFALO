@@ -55,11 +55,6 @@
   "page": "/"
  },
  {
-  "text": "The bison has been American money three times: on paper in 1901, on the nickel in 1913, in gold in 2006. $BUFFALO is the fourth issue, minted on Solana.",
-  "state": "both",
-  "page": "/"
- },
- {
   "text": "A century-long migration. Reasonably on schedule.",
   "state": "both",
   "page": "/"
@@ -80,7 +75,7 @@
   "page": "/"
  },
  {
-  "text": "SERIAL · CONTRACT ADDRESS",
+  "text": "SERIAL · MINT ADDRESS",
   "state": "both",
   "page": "/"
  },
@@ -91,11 +86,6 @@
  },
  {
   "text": "Copy",
-  "state": "both",
-  "page": "/"
- },
- {
-  "text": "Only this page and the official X account publish the serial. Verify it before every transaction.",
   "state": "both",
   "page": "/"
  },
@@ -155,11 +145,6 @@
   "page": "/"
  },
  {
-  "text": "Printed on paper in 1901. Struck in nickel in 1913. Struck in gold in 2006.",
-  "state": "both",
-  "page": "/"
- },
- {
   "text": "The fourth issue is minted on-chain: the same symbol, in the medium of this century.",
   "state": "both",
   "page": "/"
@@ -190,12 +175,12 @@
   "page": "/"
  },
  {
-  "text": "Four issues. One symbol.",
+  "text": "Four forms. One symbol.",
   "state": "both",
   "page": "/"
  },
  {
-  "text": "The same symbol, carried through paper, nickel, gold and now the blockchain. Each issue changed the material. None changed the animal.",
+  "text": "For more than a century, the bison has marked American money. Here are three of its landmarks, and the fourth form. Each changed the material. None changed the animal.",
   "state": "both",
   "page": "/"
  },
@@ -205,7 +190,7 @@
   "page": "/"
  },
  {
-  "text": "The bison enters American money.",
+  "text": "The bison takes center stage.",
   "state": "both",
   "page": "/"
  },
@@ -235,7 +220,7 @@
   "page": "/"
  },
  {
-  "text": "James Earle Fraser's Buffalo nickel carries the bison into everyday circulation from 1913 to 1938. It stops being pictured as value and starts moving as value.",
+  "text": "James Earle Fraser’s Buffalo nickel takes the bison from a ten-dollar note to a five-cent coin, in everyday circulation from 1913 to 1938.",
   "state": "both",
   "page": "/"
  },
@@ -295,12 +280,12 @@
   "page": "/"
  },
  {
-  "text": "Pre-issue. The serial will appear only in the Specification on this page.",
+  "text": "Pre-issue. See the Specification for the official mint address.",
   "state": "pre",
   "page": "/"
  },
  {
-  "text": "In circulation. Verify the serial in the Specification on this page.",
+  "text": "In circulation. Verify the official mint address in the Specification.",
   "state": "live",
   "page": "/"
  },
@@ -355,7 +340,7 @@
   "page": "/"
  },
  {
-  "text": "Not a dog. Not a frog. A buffalo.",
+  "text": "Not a dog. Not a frog.",
   "state": "both",
   "page": "/"
  },
@@ -455,7 +440,7 @@
   "page": "/"
  },
  {
-  "text": "A B struck through like a currency sign. A letter that became a denomination.",
+  "text": "The project’s own B, struck through like a currency sign.",
   "state": "both",
   "page": "/"
  },
@@ -465,7 +450,12 @@
   "page": "/"
  },
  {
-  "text": "BUFFALO in binary, written in the ket notation used for quantum states. From a distance it reads as ground. Up close, it reads as a name.",
+  "text": "BUFFALO in binary, framed in quantum ket notation. From a distance it reads as ground. Up close, it reads as a name.",
+  "state": "both",
+  "page": "/"
+ },
+ {
+  "text": "DECODE THE GROUND LINE",
   "state": "both",
   "page": "/"
  },
@@ -500,12 +490,12 @@
   "page": "/"
  },
  {
-  "text": "Counterfeit notice. Until a serial appears here and resolves on an explorer, any token presented as $BUFFALO is a counterfeit.",
+  "text": "Counterfeit notice. The official mint address has yet to be published. Until it appears here and resolves on an explorer, any token presented as $BUFFALO is a counterfeit.",
   "state": "pre",
   "page": "/"
  },
  {
-  "text": "Counterfeit notice. Any address that differs from the serial below by even one character is a counterfeit.",
+  "text": "Counterfeit notice. Only the mint address below identifies the official $BUFFALO token. Any address that differs by even one character is a counterfeit.",
   "state": "live",
   "page": "/"
  },
@@ -555,7 +545,7 @@
   "page": "/"
  },
  {
-  "text": "Serial (contract)",
+  "text": "Serial (mint address)",
   "state": "both",
   "page": "/"
  },
@@ -825,12 +815,12 @@
   "page": "/"
  },
  {
-  "text": "When it is issued, the serial, the explorer, the acquisition route and the official channels will appear on this page, together, at the same moment.",
+  "text": "At issue, the official mint address, the explorer link and the acquisition route will appear on this page.",
   "state": "pre",
   "page": "/"
  },
  {
-  "text": "The serial, the explorer, the acquisition route and the official channels are published on this page, together. Verify before you move.",
+  "text": "The official mint address, the explorer link and the acquisition route are published on this page. Verify before you move.",
   "state": "live",
   "page": "/"
  },

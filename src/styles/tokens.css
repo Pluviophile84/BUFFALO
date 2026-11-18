@@ -23,6 +23,7 @@
     --rule-strong: rgb(238 225 198 / 0.24);
     --rule-paper-strong: rgb(27 21 16 / 0.28);
     --nav-bg: rgb(14 16 11 / 0.88);
+    --nav-h: 65px; /* the sticky nav: 64px bar + 1px rule */
 
     /* Type */
     --f-display: 'Libre Caslon Display', 'Libre Caslon Display Fallback', 'Times New Roman', serif;

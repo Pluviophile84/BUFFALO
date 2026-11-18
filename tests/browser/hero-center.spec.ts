@@ -106,3 +106,35 @@ test('the coin keeps its size (and, in one column, its vertical position); no ru
     await ctx.close();
   }
 });
+
+// Refinement Batch 2: on desktop the hero is one screen. It spans the viewport (at
+// least 720px) from the page's top edge, the sticky nav over its first 65px, and its
+// content fits without growing it; the text block and the coin are each centred in
+// the content area below the nav.
+for (const gutter of ['stable', 'auto'] as const)
+  for (const [width, height] of [[1366, 768], [1440, 900], [1920, 1080]] as const)
+    test(`hero is one screen; coin and text centred below the nav — ${width}×${height}, gutter ${gutter}`, async ({ browser }) => {
+      const ctx = await browser.newContext({ viewport: { width, height }, reducedMotion: 'reduce' });
+      const page = await ctx.newPage();
+      await page.goto(PRE + '/', { waitUntil: 'networkidle' });
+      await page.evaluate(async (g) => {
+        document.documentElement.style.scrollbarGutter = g;
+        await document.fonts.ready;
+      }, gutter);
+      await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+      const m = await page.evaluate(() => {
+        const r = (s: string) => document.querySelector(s)!.getBoundingClientRect();
+        const hero = r('.hero');
+        const nav = r('.nav');
+        const coin = r('.hero__coin');
+        const copy = r('.hero__copy');
+        const area = { top: nav.bottom, bottom: hero.bottom };
+        return { heroTop: hero.top + scrollY, heroH: hero.height, vh: innerHeight, areaCy: (area.top + area.bottom) / 2, coinCy: coin.top + coin.height / 2, copyCy: copy.top + copy.height / 2, copyTop: copy.top, copyBottom: copy.bottom, navBottom: nav.bottom };
+      });
+      expect(m.heroTop).toBeCloseTo(0, 0);
+      expect(Math.abs(m.heroH - Math.max(m.vh, 720)), 'hero height').toBeLessThanOrEqual(0.5);
+      expect(Math.abs(m.coinCy - m.areaCy), 'coin centre').toBeLessThanOrEqual(4);
+      expect(Math.abs(m.copyCy - m.areaCy), 'text centre').toBeLessThanOrEqual(4);
+      expect(m.copyTop).toBeGreaterThanOrEqual(m.navBottom); // the text clears the nav
+      await ctx.close();
+    });

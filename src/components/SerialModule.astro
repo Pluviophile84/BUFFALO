@@ -1,5 +1,5 @@
 ---
-// The serial (contract address). Every instance renders from the single config
+// The serial (the mint address). Every instance renders from the single config
 // value. Pre-issue: pending text, copy disabled, SPECIMEN overprint.
 import { issue } from '../lib/issue-state';
 import { HERO, ACTION } from '../content/copy';
@@ -15,7 +15,7 @@ const live = issue.live;
   <div class="serial__head">
     <span class="label">{HERO.serialLabel}</span>
     {live ? (
-      <button class="serial__copy" type="button" data-copy={issue.serial} data-copied={ACTION.copied} aria-label={`${ACTION.copy} serial`}>
+      <button class="serial__copy" type="button" data-copy={issue.serial} data-copied={ACTION.copied} aria-label={`${ACTION.copy} mint address`}>
         <span data-copy-label>{ACTION.copy}</span>
       </button>
     ) : (

@@ -32,7 +32,7 @@ const pendingCls = (v: string) => (v === issue.pendingLabel || !live ? 'is-pendi
           {live ? (
             <dd>
               <code class="spec__serial" data-serial>{issue.serial}</code>
-              <button class="serial__copy" type="button" data-copy={issue.serial} data-copied={ACTION.copied} aria-label={`${ACTION.copy} serial`}><span data-copy-label>{ACTION.copy}</span></button>
+              <button class="serial__copy" type="button" data-copy={issue.serial} data-copied={ACTION.copied} aria-label={`${ACTION.copy} mint address`}><span data-copy-label>{ACTION.copy}</span></button>
             </dd>
           ) : (
             <dd class="is-pending">To be struck at issue</dd>

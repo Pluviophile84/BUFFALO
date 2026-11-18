@@ -31,13 +31,9 @@ export const HERO = {
   // H1 in two tones: the three issues, then the new chapter
   h1: ['Paper. Nickel. Gold.', 'Blockchain.'],
   sub: 'An American monetary symbol, carried into its next form.',
-  body: 'The bison has been American money three times: on paper in 1901, on the nickel in 1913, in gold in 2006. $BUFFALO is the fourth issue, minted on Solana.',
-  wit: 'A century-long migration. Reasonably on schedule.',
   secondary: 'Read the provenance',
-  serialLabel: 'SERIAL · CONTRACT ADDRESS',
+  serialLabel: 'SERIAL · MINT ADDRESS',
   serialPending: 'To be struck at issue',
-  note: 'Only this page and the official X account publish the serial. Verify it before every transaction.',
-  noteWit: 'Buffalo are resilient. Incorrect transactions are not.',
   stamp: 'SPECIMEN · PRE-ISSUE',
 };
 
@@ -54,7 +50,6 @@ export const STATEMENT = {
   lines: [
     'Long before it was money, the bison was a force of nature. Immense. Unbowed. Built to outlast whatever the plains could send against it.',
     'A nation put it on its money to borrow that character, and each era carried it in the material of its time.',
-    'Printed on paper in 1901. Struck in nickel in 1913. Struck in gold in 2006.',
     'The fourth issue is minted on-chain: the same symbol, in the medium of this century.',
     'The history is still being written.',
   ],
@@ -65,18 +60,19 @@ export const STATEMENT = {
 export const INTERLUDE = {
   // between I · Statement and II · Provenance
   archives: ['Some memecoins begin with invented lore. BUFFALO arrived with archives.'],
-  // between III · Character and IV · The Release: the last part in --cream
-  buffalo: ['Not a dog. Not a frog.', 'A buffalo.'],
+  // between III · Character and IV · The Release: "Not a dog." in --cream-2,
+  // "Not a frog." in --cream; nothing after them (the reader completes the line)
+  buffalo: ['Not a dog.', 'Not a frog.'],
 };
 
 export const PROVENANCE = {
   label: 'II · PROVENANCE',
-  h2: 'Four issues. One symbol.',
-  intro: 'The same symbol, carried through paper, nickel, gold and now the blockchain. Each issue changed the material. None changed the animal.',
+  h2: 'Four forms. One symbol.',
+  intro: 'For more than a century, the bison has marked American money. Here are three of its landmarks, and the fourth form. Each changed the material. None changed the animal.',
   cards: [
     {
       label: 'SERIES 1901 · ISSUE I · PAPER',
-      title: 'The bison enters American money.',
+      title: 'The bison takes center stage.',
       body: 'The ten-dollar United States Note of 1901 places a bison at the center of the design, flanked by portraits of Meriwether Lewis and William Clark. Collectors still call it the Bison Note.',
       wit: 'The first financial migration.',
       caption: '1901 United States Note, $10. Public-domain reproduction via Wikimedia Commons.',
@@ -84,7 +80,7 @@ export const PROVENANCE = {
     {
       label: 'SERIES 1913 · ISSUE II · NICKEL',
       title: 'The symbol goes into every pocket.',
-      body: 'James Earle Fraser’s Buffalo nickel carries the bison into everyday circulation from 1913 to 1938. It stops being pictured as value and starts moving as value.',
+      body: 'James Earle Fraser’s Buffalo nickel takes the bison from a ten-dollar note to a five-cent coin, in everyday circulation from 1913 to 1938.',
       wit: 'Portable conviction. Five cents at a time.',
       caption: 'Buffalo nickel, reverse. Design by James Earle Fraser. Image: United States Mint.',
     },
@@ -101,8 +97,8 @@ export const PROVENANCE = {
       body: '$BUFFALO carries the same symbol into its fourth medium: a token minted on Solana. The material changes again. The animal does not.',
       wit: 'No vault required.',
       caption: pick(
-        'Pre-issue. The serial will appear only in the Specification on this page.',
-        'In circulation. Verify the serial in the Specification on this page.',
+        'Pre-issue. See the Specification for the official mint address.',
+        'In circulation. Verify the official mint address in the Specification.',
       ),
     },
   ],
@@ -124,6 +120,7 @@ export const RELEASE = {
   label: 'IV · THE RELEASE',
   h2: 'For a century, its power had borders. On the chain, it has none.',
   body: 'A banknote stops at a border. A coin is legal tender in one country. The Fourth Issue moves at the speed of a block, to anyone holding a wallet, anywhere on the map.',
+  wit: 'A century-long migration. Reasonably on schedule.',
   ledger: ['No treasury.', 'No border.', 'No jurisdiction.'],
   caption: 'MAP DRAWN WITHOUT A SINGLE BORDER LINE.',
 };
@@ -138,11 +135,12 @@ export const MARK = {
     { id: 'field', title: 'The field.', text: 'Greenback green, for the paper issue and the century of notes that followed.' },
     { id: 'bison', title: 'The bison.', text: 'Drawn in the intaglio tradition of banknote engraving. Not a mascot. A specimen.' },
     { id: 'guilloche', title: 'The guilloche.', text: 'The security pattern of paper money, redrawn as flowing, computed line. Engraving, as the future would draw it.' },
-    { id: 'b', title: 'The Ƀ.', glyph: true, text: 'A B struck through like a currency sign. A letter that became a denomination.' },
-    { id: 'ground', title: 'The ground line.', text: 'BUFFALO in binary, written in the ket notation used for quantum states. From a distance it reads as ground. Up close, it reads as a name.' },
+    { id: 'b', title: 'The Ƀ.', glyph: true, text: 'The project’s own B, struck through like a currency sign.' },
+    { id: 'ground', title: 'The ground line.', text: 'BUFFALO in binary, framed in quantum ket notation. From a distance it reads as ground. Up close, it reads as a name.' },
   ],
   ketBytes: ['01000010', '01010101', '01000110', '01000110', '01000001', '01001100', '01001111'],
   ketLetters: ['B', 'U', 'F', 'F', 'A', 'L', 'O'],
+  ketLabel: 'DECODE THE GROUND LINE',
   ketSr: 'Ket notation line, binary for BUFFALO.',
   principle: 'Read from afar, it is a line. Read up close, it is a message.',
 };
@@ -156,8 +154,8 @@ export const SPEC = {
   ),
   noticeTitle: 'Counterfeit notice.',
   notice: pick(
-    'Until a serial appears here and resolves on an explorer, any token presented as $BUFFALO is a counterfeit.',
-    'Any address that differs from the serial below by even one character is a counterfeit.',
+    'The official mint address has yet to be published. Until it appears here and resolves on an explorer, any token presented as $BUFFALO is a counterfeit.',
+    'Only the mint address below identifies the official $BUFFALO token. Any address that differs by even one character is a counterfeit.',
   ),
   verify: 'Verify on explorer',
   viewOnExplorer: 'View on explorer',
@@ -165,7 +163,7 @@ export const SPEC = {
     denomination: 'Denomination',
     network: 'Network',
     issuance: 'Issuance',
-    serial: 'Serial (contract)',
+    serial: 'Serial (mint address)',
     explorer: 'Explorer',
     totalSupply: 'Total supply',
     mintAuthority: 'Mint authority',
@@ -199,6 +197,7 @@ export const ACQUIRE = {
     '$BUFFALO has not been issued. This site will never ask you to connect a wallet, send funds, or share a recovery phrase.',
     'This site will never ask you to connect a wallet or share a recovery phrase. Every transaction happens in your own wallet, under your own review.',
   ),
+  noteWit: 'Buffalo are resilient. Incorrect transactions are not.',
 };
 
 export const CUSTODIANS = {
@@ -225,8 +224,8 @@ export const FINAL = {
   label: 'THE FOURTH ISSUE',
   display: pick('The Fourth Issue is being struck.', 'The Fourth Issue is in circulation.'),
   sub: pick(
-    'When it is issued, the serial, the explorer, the acquisition route and the official channels will appear on this page, together, at the same moment.',
-    'The serial, the explorer, the acquisition route and the official channels are published on this page, together. Verify before you move.',
+    'At issue, the official mint address, the explorer link and the acquisition route will appear on this page.',
+    'The official mint address, the explorer link and the acquisition route are published on this page. Verify before you move.',
   ),
   spec: 'Check the specification',
   provenance: 'Read the provenance',
@@ -263,7 +262,7 @@ export const NOT_FOUND = {
 export const META = {
   title: 'BUFFALO ($BUFFALO) · Paper. Nickel. Gold. Blockchain.',
   description:
-    'An American monetary symbol, carried into its next form. The bison has been American money three times. $BUFFALO is the fourth issue, minted on Solana.',
+    'Paper. Nickel. Gold. Blockchain. For more than a century, the bison has marked American money. $BUFFALO is an independent Solana memecoin inspired by that history.',
   coinAlt:
     'BUFFALO emblem: an engraved bison on a green guilloche field within a bronze rim, overlaid by a struck letter B with a currency stroke.',
 };

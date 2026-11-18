@@ -346,50 +346,87 @@ reason is stated.
       4.43 KB → 3.73 KB gz (main 2.63 → 2.70 KB, adding `field.ts`; lazy canvas
       1.80 → 1.03 KB).
 
-22. **Refinement Batch 2: the narrative is a transition.** Paper → nickel →
-    gold → blockchain, each issue described by its material and process. All
-    copy lives in `src/content/copy.ts`, and every string was replaced exactly as
-    given.
+22. **Refinement Batch 2 (revised): the narrative is a transition.** Paper →
+    nickel → gold → blockchain, each issue described by its material. All copy
+    lives in `src/content/copy.ts`, and every string was replaced exactly as
+    given. The site never says the bison was on American money "three times":
+    the 1901 note, the 1913 nickel and the 2006 gold coin are presented as
+    landmarks, and a lint test (`copy.spec.ts`, `output.spec.ts`) rejects the
+    phrase in visible text, accessible names and the meta tags.
     - **Borderless theme:** it keeps one place, IV · The Release, which is
-      unchanged. A lint test (`copy.spec.ts`) checks that "jurisdiction",
-      "borders", "borderless" and "no nation" appear nowhere else in visible
-      text or accessible names; the disclaimer, microtext and aria-hidden
-      decoration are exempt.
+      unchanged apart from a wit line after its body. A lint test checks that
+      "jurisdiction", "borders", "borderless" and "no nation" appear nowhere
+      else in visible text or accessible names; the disclaimer, microtext and
+      aria-hidden decoration are exempt.
     - **Hero:** the H1 is "Paper. Nickel. Gold. Blockchain.", the first three
       words in `--cream-2` and "Blockchain." in `--cream`, at the same display
-      size. Under it comes the italic sub, then the new body and a wit line.
-      The serial note gains a wit line.
-      - In the 1440 column the H1 sets in three lines (Paper. / Nickel. Gold. /
-        Blockchain.).
-      - The longer copy makes the hero taller, so on two-column layouts the
-        coin, centred against the copy, sits lower than before. The layout
-        rules are unchanged.
+      size. The sub follows. The body paragraph and the serial note are gone.
+      The serial module keeps its label, value, Copy and overprint. The buttons
+      and the stamp are unchanged.
+      - **One screen (≥ 1024 px):** the hero is pulled up under the sticky nav
+        (`--nav-h`, 65 px) and spans `max(720px, 100svh)`. Its content area is
+        everything below the nav, and the text block and the coin are each
+        centred in it.
+      - The text block's vertical padding scales with the viewport height:
+        48 px at 900 px tall, none at 768. On viewports up to 820 px tall, the
+        gaps below the sub and the buttons tighten. This keeps the copy inside
+        the hero at 1366×768.
+      - `hero-center.spec.ts` asserts this at 1366×768, 1440×900 and
+        1920×1080, with and without a scrollbar gutter: the hero height is
+        within 0.5 px of the viewport height (or 720), and the coin and text
+        centres are within 4 px of the content area's centre. Measured, all
+        three are exact to the pixel.
+      - Below 1024 px nothing changed except the removed text.
+      - *Trade-off:* the nav is translucent (`--nav-bg`, 88 % opacity), so at
+        scroll 0 the top of the hero's dark ground shows faintly through it.
+    - **Mint address:** the serial is named as what it is. The serial module's
+      label is `SERIAL · MINT ADDRESS` everywhere. The ledger row is "Serial
+      (mint address)". The copy buttons are named "Copy mint address", and the
+      counterfeit notice and Card IV caption speak of the mint address. The
+      copy-confirmation status ("Serial copied.") is unchanged, because the
+      batch does not list it.
     - **Wit lines:** Caslon Text italic at the body size (18 px, never
       smaller), in `--bronze-text` on dark sections and `--bronze-ink` on
-      paper, 14 px clear above. Wits that were inline (the Acquire step, the
-      footer disclaimer) are now their own lines.
+      paper, 14 px clear above. They appear on:
+      - Card I ("The first financial migration.") and Card IV ("No vault
+        required.");
+      - Release, after the body;
+      - Specification, after the rule cards;
+      - Acquisition, after the pre-issue/live note;
+      - Custodians, after the Code;
+      - the footer, before "You are responsible for the laws that apply where
+        you live."
     - **Standalone lines** (`Interlude.astro`):
-      - Line A sits between I and II, line B between III and IV.
-      - Each is a full-width band on vault, between two engraved section rules.
-      - Caslon Display at `--t-h2`, centred, at most 22ch, inked in like the
-        Statement's lines (static under reduced motion).
-      - In line B, "A buffalo." is set in `--cream`.
+      - Line A ("Some memecoins begin with invented lore. BUFFALO arrived with
+        archives.") sits between I and II.
+      - Line B ("Not a dog. Not a frog.") sits between III and IV, with "Not a
+        dog." in `--cream-2` and "Not a frog." in `--cream`. Each part is
+        unbreakable, so a narrow screen breaks the line only between them.
+      - Each line is a full-width band on vault between two engraved section
+        rules, padded `clamp(72px, 9vw, 144px)`.
+      - The type is Caslon Display at `--t-h2`, centred, at most 22ch, inked in
+        like the Statement's lines (static under reduced motion).
+    - **The Mark:** annotations 5 and 6 carry the new copy. A mono label,
+      `DECODE THE GROUND LINE`, sits above the decoder line inside its button,
+      so the whole block is the target and hover, focus or tap still decodes.
+      The label is part of the button's accessible name, which keeps the
+      visible label in the name (WCAG 2.5.3).
     - **Card IV:** it has the same engraved double frame, registration marks
       and microtext border as Cards I–III, and its coin sits on the same dark
-      plate as the nickel and the gold.
-      - The edge-to-edge bleed, the wider fourth column, and the
-        frame-dissolve animation (its CSS, its `reveal.ts` observer and its
-        markup) are removed.
-      - No test covered the dissolve itself. The logo-integrity test's Card IV
-        selector, which relied on the frameless class, now targets the card
-        directly.
+      plate as the nickel and the gold. The edge-to-edge bleed, the wider
+      fourth column and the frame-dissolve animation are removed.
     - **Meta and OG:**
-      - The title, description and the OG/Twitter tags carry the new copy.
+      - The title is "BUFFALO ($BUFFALO) · Paper. Nickel. Gold. Blockchain.".
+        The description is the new one. og:title and twitter:title equal the
+        title, and og:description and twitter:description equal the
+        description.
       - The OG image's headline is "Paper. Nickel. Gold. Blockchain." in the
-        hero's two tones, at 74 px, the largest size that keeps
+        hero's two tones, at 74 px. That is the largest size that keeps
         "Paper. Nickel. Gold." inside the text panel, clear of the emblem.
       - Both state variants are regenerated.
-    - **Removed:** `CORE_LINE`, an unused constant that held the old line.
+    - **Name lint:** the lint that keeps "Buffalo Coin/Token" from being used
+      as a name now also exempts the ticker. The live counterfeit notice reads
+      "the official $BUFFALO token", as given.
     - **Unchanged:** the footer's bottom line ("Paper. Nickel. Gold. Now,
       everywhere."), which the batch does not list.
 
@@ -410,7 +447,7 @@ reason is stated.
 
 ## Test results (last run)
 
-`npm test` → **157/157 Playwright checks passed; Lighthouse CI assertions passed.**
+`npm test` → **163/163 Playwright checks passed; Lighthouse CI assertions passed.**
 
 | Check | Result |
 |---|---|

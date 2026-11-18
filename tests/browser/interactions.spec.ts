@@ -148,7 +148,8 @@ test('the Mark: hotspots and annotations highlight together; arrows cycle; ket d
   }
   // ket decoder
   const ket = page.locator('[data-ket]');
-  await expect(ket).toHaveAccessibleName('Ket notation line, binary for BUFFALO.');
+  // the visible label is part of the name (WCAG 2.5.3, label in name), then the description
+  await expect(ket).toHaveAccessibleName('DECODE THE GROUND LINE Ket notation line, binary for BUFFALO.');
   await ket.focus();
   await page.waitForTimeout(900);
   const read = await page.locator('.ket__byte.is-read .ket__letter').allTextContents();

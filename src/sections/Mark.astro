@@ -41,6 +41,7 @@ import Glyph from '../components/Glyph.astro';
           ))}
         </ol>
         <button class="ket-decoder" type="button" data-ket>
+          <span class="ket-decoder__label label">{MARK.ketLabel}</span>
           <span class="vh">{MARK.ketSr}</span>
           <span class="ket" aria-hidden="true">|{MARK.ketBytes.map((b, i) => (
             <span class="ket__byte" data-letter={MARK.ketLetters[i]}><span class="ket__bits">{b}</span><span class="ket__letter">{MARK.ketLetters[i]}</span></span>

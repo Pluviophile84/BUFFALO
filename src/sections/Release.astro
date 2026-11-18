@@ -8,6 +8,7 @@ import PlateLabel from '../components/PlateLabel.astro';
       <PlateLabel text={RELEASE.label} />
       <h2 id="release-title" data-ink>{RELEASE.h2}</h2>
       <p class="release__body" data-ink data-stagger="1">{RELEASE.body}</p>
+      <p class="release__wit wit" data-ink data-stagger="1">{RELEASE.wit}</p>
       <ul class="release__ledger">
         {RELEASE.ledger.map((l, i) => (
           <li data-ink data-stagger={String(i + 1)}>
