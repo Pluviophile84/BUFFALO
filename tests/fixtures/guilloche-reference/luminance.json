@@ -1,0 +1,62 @@
+{
+  "hero@390x844 static": {
+    "contribution": 0.00363735,
+    "meanY": 0.00949889,
+    "pixels": 103483
+  },
+  "final@390x844 static": {
+    "contribution": 0.000831389,
+    "meanY": 0.00571245,
+    "pixels": 64160
+  },
+  "hero@768x1024 static": {
+    "contribution": 0.00259582,
+    "meanY": 0.00828456,
+    "pixels": 307316
+  },
+  "final@768x1024 static": {
+    "contribution": 0.00113455,
+    "meanY": 0.00608374,
+    "pixels": 189248
+  },
+  "hero@1440x900 static": {
+    "contribution": 0.00213245,
+    "meanY": 0.00793918,
+    "pixels": 376333
+  },
+  "final@1440x900 static": {
+    "contribution": 0.000904378,
+    "meanY": 0.00578544,
+    "pixels": 689080
+  },
+  "hero@1440x900 canvas": {
+    "contribution": 0.00178787,
+    "meanY": 0.0075946,
+    "pixels": 376333
+  },
+  "final@1440x900 canvas": {
+    "contribution": 0.000870132,
+    "meanY": 0.00575119,
+    "pixels": 655080
+  },
+  "hero@1920x1080 static": {
+    "contribution": 0.00193827,
+    "meanY": 0.00746808,
+    "pixels": 716311
+  },
+  "final@1920x1080 static": {
+    "contribution": 0.000848356,
+    "meanY": 0.00572942,
+    "pixels": 1361760
+  },
+  "hero@1920x1080 canvas": {
+    "contribution": 0.0016277,
+    "meanY": 0.00715751,
+    "pixels": 716311
+  },
+  "final@1920x1080 canvas": {
+    "contribution": 0.000818029,
+    "meanY": 0.00569909,
+    "pixels": 1267680
+  }
+}

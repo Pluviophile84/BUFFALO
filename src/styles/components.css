@@ -700,6 +700,29 @@
     white-space: nowrap;
     background: var(--vault);
   }
+  /* Phones (< 480px): beside the thread there is no room for one line (it needs
+     15.2em of text + 28px of box; the box is capped at half the column minus
+     16px), so the stamp sets in two lines, SPECIMEN / PRE-ISSUE, in the same
+     box. The box hugs its content, each line is centred, and the left padding
+     carries the trailing letter-spacing (0.16em) so the ink sits optically
+     centred: equal space left and right. From 480px up the one-line stamp is
+     the original text node, rendered exactly as before. */
+  .stamp__two {
+    display: none;
+  }
+  @media (max-width: 479.98px) {
+    .stamp {
+      text-align: center;
+      padding-inline: calc(10px + 0.16em) 10px;
+    }
+    .stamp__one {
+      display: none;
+    }
+    .stamp__two,
+    .stamp__line {
+      display: block;
+    }
+  }
 
   /* ── Ledger (dl) ────────────────────────────────────────── */
   .ledger {
@@ -794,6 +817,10 @@
   .seal svg {
     height: 18px;
     width: auto;
+  }
+  .seal__b {
+    display: block;
+    fill: currentColor;
   }
 
   /* ── Ket line ───────────────────────────────────────────── */

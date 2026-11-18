@@ -1,5 +1,15 @@
 {
-  "guillocheExtent": 4.93,
+  "field": {
+    "center": [
+      500,
+      500
+    ],
+    "disc": 426.52,
+    "extent": 4.93,
+    "inner": 1.07,
+    "outer": 4.4,
+    "paths": 162
+  },
   "map": {
     "width": 1200,
     "height": 593

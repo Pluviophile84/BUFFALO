@@ -15,5 +15,5 @@ const { kind, class: cls = '' } = Astro.props;
     <text x="150" y="44" text-anchor="middle">SPECIMEN</text>
   </svg>
 ) : (
-  <span class:list={['stamp', cls]} aria-hidden="true" data-specimen>SPECIMEN · PRE-ISSUE</span>
+  <span class:list={['stamp', cls]} aria-hidden="true" data-specimen><span class="stamp__one">SPECIMEN · PRE-ISSUE</span><span class="stamp__two"><span class="stamp__line">SPECIMEN</span><span class="stamp__line">PRE-ISSUE</span></span></span>
 )}

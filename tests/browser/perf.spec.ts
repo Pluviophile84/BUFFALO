@@ -1,4 +1,4 @@
-// §9 budgets and the living-guilloche frame budget.
+// §9 budgets and the guilloche canvas draw budget.
 import { test, expect, devices } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -30,13 +30,15 @@ test('hero assets on mobile at 1x ≤ 220 KB; no third-party requests', async ({
   page.on('response', async (r) => {
     const u = new URL(r.url());
     expect(u.origin, `third-party: ${r.url()}`).toBe(PRE);
-    if (u.pathname.startsWith('/brand/')) {
+    // the hero's raster and line-work files, the guilloche field included (/_astro/)
+    if (u.pathname.startsWith('/brand/') || /\/_astro\/guilloche-field\./.test(u.pathname)) {
       const body = await r.body().catch(() => Buffer.alloc(0));
       sizes[u.pathname] = u.pathname.endsWith('.svg') ? zlib.gzipSync(body).length : body.length; // Vercel compresses SVG
     }
   });
   await page.goto(PRE + '/', { waitUntil: 'networkidle' });
-  const hero = Object.entries(sizes).filter(([p]) => /guilloche\.svg|bison-\d+\.(avif|webp)|ground\.webp/.test(p));
+  const hero = Object.entries(sizes).filter(([p]) => /guilloche(-field\.[\w-]+)?\.svg|bison-\d+\.(avif|webp)|ground\.webp/.test(p));
+  expect(hero.some(([p]) => p.includes('guilloche-field'))).toBe(true);
   const total = hero.reduce((s, [, v]) => s + v, 0);
   report['hero assets, mobile 1x'] = `${total} B (${hero.map(([p, v]) => `${path.basename(p)} ${v}`).join(', ')})`;
   expect(total).toBeLessThanOrEqual(220 * 1024);
@@ -45,23 +47,38 @@ test('hero assets on mobile at 1x ≤ 220 KB; no third-party requests', async ({
   await ctx.close();
 });
 
-test('living guilloche: canvas on fine pointers, < 1.5 ms per frame, DPR ≤ 2', async ({ browser }) => {
+test('guilloche canvas on fine pointers: drawn once per layout (static lines), < 50 ms per draw, DPR ≤ 2', async ({ browser }) => {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
   const page = await ctx.newPage();
   await page.goto(PRE + '/', { waitUntil: 'networkidle' });
   await page.waitForSelector('.hero.has-canvas');
-  const r = await page.evaluate(() => {
-    const host = document.querySelector('.hero') as HTMLElement & { __guillocheFrame: () => number };
-    for (let i = 0; i < 20; i++) host.__guillocheFrame(); // warm up
-    const t: number[] = [];
-    for (let i = 0; i < 120; i++) t.push(host.__guillocheFrame());
-    t.sort((a, b) => a - b);
+  await page.waitForTimeout(500);
+  const r = await page.evaluate(async () => {
+    const host = document.querySelector('.hero') as HTMLElement & { __guillocheDraw: () => number };
     const c = host.querySelector('canvas')!;
-    return { median: t[60]!, p90: t[108]!, dpr: c.width / c.clientWidth };
+    // no animation loop: count frames requested by the page over one second
+    let frames = 0;
+    const raf = window.requestAnimationFrame.bind(window);
+    window.requestAnimationFrame = (cb) => raf((t) => (frames++, cb(t)));
+    await new Promise((res) => setTimeout(res, 1000));
+    // a draw is recorded, then rasterized: reading one pixel back forces the raster
+    const g = c.getContext('2d')!;
+    const timed = () => {
+      const t0 = performance.now();
+      host.__guillocheDraw();
+      g.getImageData(0, 0, 1, 1);
+      return performance.now() - t0;
+    };
+    for (let i = 0; i < 3; i++) timed(); // warm up
+    const t: number[] = [];
+    for (let i = 0; i < 9; i++) t.push(timed());
+    t.sort((a, b) => a - b);
+    return { median: t[4]!, frames, dpr: c.width / c.clientWidth };
   });
-  report['guilloche frame (median / p90, ms)'] = `${r.median.toFixed(3)} / ${r.p90.toFixed(3)}`;
+  report['guilloche canvas draw (median, ms, DPR 2)'] = r.median.toFixed(2);
+  expect(r.frames).toBe(0);
   expect(r.dpr).toBeLessThanOrEqual(2);
-  expect(r.median).toBeLessThan(1.5);
+  expect(r.median).toBeLessThan(50);
   await ctx.close();
 });
 

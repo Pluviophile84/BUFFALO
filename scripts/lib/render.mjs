@@ -5,7 +5,7 @@ import path from 'node:path';
 import subsetFont from 'subset-font';
 import { Resvg } from '@resvg/resvg-js';
 import { ROOT, readMaster } from './master.mjs';
-import { ringRadius } from '../../src/lib/guilloche.mjs';
+import generated from '../../src/data/generated.json' with { type: 'json' };
 
 let fontFiles;
 /** resvg needs TTF/OTF: convert the site's own fonts (same faces as the web). */
@@ -47,28 +47,22 @@ export function renderMaster(size) {
 }
 
 /**
- * Guilloche rings in absolute pixel space for rasters (no <use>, fixed stroke).
- * Points outside the canvas are culled so files stay small.
+ * The guilloche field for rasters (OG image, Custodian Kit): the logo's own 162
+ * guilloche paths (src/assets/generated/guilloche-field.svg), placed as on the
+ * site: centred on an emblem of radius R at (cx, cy), the logo's disc scaled so
+ * its edge falls at 4.4R, clear inside 1.07R. The stroke is in output px (resvg
+ * has no non-scaling stroke, so it is compensated for the scale); `opacity` is
+ * each path's stroke opacity.
  */
-export function fieldPaths({ field, R, cx, cy, width, height, stroke = 1, opacity = 1, step = 3, every = 1 }) {
-  let out = '';
-  for (const g of field.rings) {
-    if (g.i % every) continue;
-    const n = Math.max(48, Math.ceil((2 * Math.PI * g.base * R) / step));
-    let d = '';
-    let pen = false;
-    for (let j = 0; j <= n; j++) {
-      const th = (j / n) * 2 * Math.PI;
-      const r = ringRadius(field, g, th) * R;
-      const x = cx + r * Math.cos(th);
-      const y = cy + r * Math.sin(th);
-      const inside = x > -20 && x < width + 20 && y > -20 && y < height + 20;
-      if (inside) {
-        d += `${pen ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`;
-        pen = true;
-      } else pen = false;
-    }
-    if (d) out += `<path d="${d}" stroke-opacity="${(g.alpha * opacity).toFixed(3)}"/>`;
-  }
-  return `<g fill="none" stroke="#5E634A" stroke-width="${stroke}" stroke-linecap="round">${out}</g>`;
+export function fieldPaths({ cx, cy, R, width, height, stroke = 1, opacity = 1, id = 'field' }) {
+  const f = generated.field;
+  const svg = fs.readFileSync(path.join(ROOT, 'src/assets/generated/guilloche-field.svg'), 'utf8');
+  const paths = svg.match(/<g id="field"[^>]*>([\s\S]*)<\/g>/)[1].replaceAll(' vector-effect="non-scaling-stroke"', '');
+  const k = (f.outer * R) / f.disc;
+  const r0 = f.inner * R;
+  const n = (v) => Number(v.toFixed(3));
+  return (
+    `<defs><clipPath id="${id}-clip"><path clip-rule="evenodd" d="M0 0h${width}v${height}h${-width}z M${n(cx + r0)} ${n(cy)}a${n(r0)} ${n(r0)} 0 1 0 ${n(-2 * r0)} 0a${n(r0)} ${n(r0)} 0 1 0 ${n(2 * r0)} 0z"/></clipPath></defs>` +
+    `<g clip-path="url(#${id}-clip)"><g transform="translate(${n(cx - f.center[0] * k)} ${n(cy - f.center[1] * k)}) scale(${n(k)})" fill="none" stroke="#5E634A" stroke-width="${n(stroke / k)}" stroke-opacity="${opacity}" stroke-linecap="round">${paths}</g></g>`
+  );
 }

@@ -158,7 +158,12 @@
     }
   }
 
-  /* Living guilloche — centred on the coin, scaled with it */
+  /* Living guilloche — centred on the coin, scaled with it. The lines are the
+     logo's own guilloche (GuillocheField.astro); box, position, stroke and
+     z-order are those of the generated field it replaced. The old rings each
+     had their own opacity (0.35–0.60); the logo's paths share one, set per
+     breakpoint to keep the field's measured luminance (README). --field-alpha:
+     the static SVG; --field-canvas-alpha: the canvas (scripts/guilloche-canvas.ts). */
   .field {
     position: absolute;
     z-index: 0;
@@ -169,12 +174,30 @@
     transform: translate(-50%, -50%);
     pointer-events: none;
   }
+  /* Hero: at the logo's line density even full opacity gives 65–68% of the
+     generated field's light (the most opacity can do; see README). */
+  .field--hero {
+    --field-alpha: 1;
+    --field-canvas-alpha: 1;
+  }
+  .field--final {
+    --field-alpha: 0.71;
+    --field-canvas-alpha: 0.66;
+  }
+  @media (min-width: 1024px) {
+    .field--final {
+      --field-alpha: 0.67;
+    }
+  }
   .field__svg {
+    position: absolute; /* over the box: the <noscript> copy (no JS) sits on the same spot */
+    inset: 0;
     display: block;
     width: 100%;
     height: 100%;
     max-width: none;
     overflow: visible;
+    stroke-opacity: var(--field-alpha);
   }
   .has-canvas .field__svg {
     visibility: hidden;
@@ -388,9 +411,6 @@
   }
   .statement__sig .seal {
     color: var(--cream);
-  }
-  .statement__sig .glyph-b svg {
-    height: 18px;
   }
 
   /* ════════════════ II · PROVENANCE (paper) ════════════════ */

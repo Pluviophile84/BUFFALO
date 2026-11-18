@@ -6,7 +6,6 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { ROOT } from './lib/master.mjs';
 import { renderSvg, renderMaster, fieldPaths } from './lib/render.mjs';
-import { makeField } from '../src/lib/guilloche.mjs';
 import { deriveIssue } from '../src/lib/validate-issue.mjs';
 
 // Load the same config the site build will use (fixture support mirrors astro.config.mjs).
@@ -19,7 +18,8 @@ const H = 630;
 const E = 470; // emblem, whole and uncropped
 const ex = W - E - 64;
 const ey = (H - E) / 2;
-const field = makeField({ seed: 1913, rings: 96 });
+// field opacity: calibrated to the generated field's measured luminance in this image
+const FIELD_OPACITY = 0.946;
 
 const left = 72;
 const stamp = issue.live
@@ -28,7 +28,7 @@ const stamp = issue.live
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
 <rect width="100%" height="100%" fill="#0E100B"/>
-${fieldPaths({ field, R: E / 2, cx: ex + E / 2, cy: ey + E / 2, width: W, height: H, stroke: 1, opacity: 0.75 })}
+${fieldPaths({ R: E / 2, cx: ex + E / 2, cy: ey + E / 2, width: W, height: H, stroke: 1, opacity: FIELD_OPACITY })}
 <rect x="${left - 32}" y="120" width="${ex - left - 8}" height="${H - 240 + 40}" fill="#0E100B"/>
 <text x="${left}" y="182" font-family="JetBrains Mono" font-size="17" letter-spacing="3" fill="#C29E66">THE FOURTH ISSUE</text>
 <text font-family="Libre Caslon Display" font-size="70" fill="#EEE1C6" letter-spacing="-0.8"><tspan x="${left}" y="282">Now it belongs</tspan><tspan x="${left}" y="356">to no nation.</tspan></text>

@@ -106,8 +106,8 @@ other host appears in built absolute URLs.
 (engraved bison, bronze rim, greenback field, cream), the present (the Ƀ as a
 currency sign) and the future (computed guilloche, the ket-notation ground line).
 The site keeps that mapping. Caslon and intaglio textures carry the past;
-monospace ledgers carry the present; one living guilloche field and one
-iridescent security thread carry the future.
+monospace ledgers carry the present; the logo's own guilloche, enlarged into a
+field around the coin, and one iridescent security thread carry the future.
 
 **Palette.** Every canonical colour is sampled from the master SVG. Derived
 colours exist only for legibility, and every text pair meets WCAG 2.2 AA.
@@ -248,6 +248,104 @@ reason is stated.
     - At ≥ 1100 px the toggle is hidden (the nav links show), so the 1440×900
       test drives the same open/close code through the buttons themselves.
 
+19. **The SPECIMEN · PRE-ISSUE stamp fits its box on phones.**
+    - **Cause:** below 1024 px the stamp is capped at half the column minus
+      16 px, to stay left of the security thread. But it was a single
+      `white-space: nowrap` line of 15.2 em (20 monospaced characters at
+      0.6 em, plus 0.16 em letter-spacing) with 28 px of padding and border.
+      That is wider than the cap on every phone, so the text ran out of the box
+      on the right: 14 px at 320, 6 px at 390. The 12/10 px padding also only
+      approximated the trailing letter-spacing.
+    - **Fix:** below 480 px, where one line cannot fit beside the thread at any
+      font size above the stamp's 8 px floor, it sets in two lines,
+      SPECIMEN / PRE-ISSUE, in the same box style. The box hugs its content, the
+      lines are centred, and the left padding carries the trailing
+      letter-spacing, so left and right spacing are equal (within 0.02 px).
+    - From 480 px up, the one-line stamp is the original text node, rendered
+      pixel-identical to before.
+20. **The Statement seal's Ƀ is centred in its ring.**
+    - **Cause:** the Ƀ was already the extracted vector with a tight viewBox,
+      but it sat inside the inline glyph wrapper used in running text: an
+      inline-block span on the text baseline, 23 px tall (the label's line box:
+      the 18 px glyph plus the font's descent). The ring centred that span, so
+      the Ƀ rode 2.5 px above the ring's centre.
+    - **Fix:** the seal now draws the Ƀ from the extracted vector (the path and
+      tight viewBox of `public/brand/b-symbol.svg`) as its own block, so the
+      ring centres its bounding box, as the master logo centres it. The Ƀ is
+      18 px tall in a 40 px ring, as before; it is centred within 0.01 px at
+      375, 768, 1440 and 1920.
+21. **The guilloche field shows the logo's own guilloche.** The lines are the
+    master's 162 frame guilloche paths (`<g id="frame">` → `<g stroke="#5E634A"
+    stroke-width="1.1">`; no rim, ring or field circles). They replace the
+    generated rings in the unchanged mechanism: the same component, the static
+    SVG (no JS, reduced motion, touch) and the canvas (fine pointers). Every
+    other value was kept:
+
+    | Parameter | Current value | Now |
+    |---|---|---|
+    | Component, renderers | `GuillocheField.astro`: static SVG by `<use>`; canvas on fine pointers without reduced motion, hiding the SVG once drawn | kept |
+    | Stroke | `#5E634A`, 0.75 CSS px, non-scaling | kept (canvas: `lineWidth` 0.75 CSS px) |
+    | Box and position | ±4.93R, centred on the anchor (coin; final field wrap) | kept |
+    | Coverage | lines from 1.07R to 4.4R | kept: the logo's disc scaled so its edge is at 4.4R, clipped clear inside 1.07R |
+    | Fade / mask | none (the outer edge lies beyond the visible area) | kept: none; the disc edge falls where the outermost ring was |
+    | z-order | field 0 (thread 1, coin 2, copy 3) | kept |
+    | Reveal | none on the field (the strike reveals the coin's own layer) | kept |
+    | Breakpoints, touch, reduced motion | static SVG on touch and under reduced motion; canvas on fine pointers | kept |
+    | Motion | canvas phase drift (90 s) and pointer bend, computed from the ring equations | static: these recompute the generated equations and cannot apply to fixed paths; no new effect |
+    | Final section | every 2nd ring of its own seed | all 162 paths (a subset would alter the logo's pattern); opacity calibrated |
+    | Opacity | per ring 0.35–0.60 (mean 0.475) | one value per breakpoint and renderer (below) |
+    | OG image, Custodian Kit | same field, path stroke-opacity 0.75× / 0.9× the ring's | same placement and stroke; opacity calibrated per file |
+
+    - **Opacity, the only adjustment.** It was calibrated by measuring the mean
+      linear luminance of the guilloche area (coin, thread, stamp, nav and the
+      text block excluded) against captures of the generated field taken
+      before the swap (`tests/fixtures/guilloche-reference/`). Values:
+
+      | Where | Opacity | Mean luminance vs reference |
+      |---|---|---|
+      | Final section, static SVG, below 1024 px | 0.71 | +1.2% at 390×844 (+0.3% at 768) |
+      | Final section, static SVG, 1024 px and up | 0.67 | +0.3% at 1440×900, +0.4% at 1920 |
+      | Final section, canvas | 0.66 | +0.1% at 1440×900, +0.3% at 1920 |
+      | OG image | 0.946 | line light within 0.4% |
+      | X header | 0.954 | within 0.4% |
+      | Phone wallpaper | 0.954 | within 0.9% |
+      | Desktop wallpaper | 0.994 | within 0.7% |
+      | **Hero, all breakpoints** | **1.0 (maximum)** | **−13.2% at 390×844, −8.7% at 1440×900 (static), −8.3% (canvas)** |
+
+    - **Deviation: the hero is darker than the reference.** At the logo's line
+      density (the disc scaled to 4.4R spaces its lines 15–25 px apart at
+      1440, where the 96 rings were about 9 px apart), even full opacity gives
+      only 65–68% of the old field's line light. That is −8% to −13% in mean
+      luminance, outside ±5%, and opacity cannot go higher.
+      - What would close the gap (measured, not applied): a 1 px stroke instead
+        of 0.75 px. With it, opacity 1.0 at 390 (+1.3%), about 0.85 at
+        1440 static (−0.7%) and about 0.95 for the canvas would land within
+        ±5%.
+      - The rasters (OG, kit) already draw at ≥ 1 px, so opacity alone matched
+        them.
+    - **Deviation: path data encoding, not geometry.** The master writes each
+      point absolutely in hundredths
+      (`M 901.57,639.56 L 900.38,638.50 …`: 519 KB, 198 KB gz). The field
+      file writes the same points as exact hundredth steps
+      (`M901.57 639.56l-1.19-1.06…`: 298 KB, 44 KB gz). Every one of the
+      32,484 points decodes identically (tested). Shipped verbatim, the strings
+      would have taken hero assets past the 220 KB budget.
+    - **Performance.** The field's path data (44 KB gz) loads after the page
+      has loaded: `scripts/field.ts` sets the `<use>` href on `load`, and the
+      canvas fetches the same cached file. Without JS, a `<noscript>` copy
+      references it at once.
+      - Loaded with the page, it cost about 150 ms of Lighthouse LCP (bandwidth
+        shared with the bison). Deferred, LCP is unchanged (1.58–1.60 s).
+      - The visible consequence: on a slow connection the field appears once
+        the page has loaded, during the strike, rather than with first paint.
+      - The canvas draws once per layout: 31 ms at DPR 2 in this container's
+        software renderer, against 0.6 ms on every frame before. No layout
+        shift.
+    - The generator (`src/lib/guilloche.mjs`, `.d.mts`) and its output
+      (`src/assets/generated/guilloche-{hero,final}.svg`) are deleted. JS:
+      4.43 KB → 3.73 KB gz (main 2.63 → 2.70 KB, adding `field.ts`; lazy canvas
+      1.80 → 1.03 KB).
+
 ### TODO-ASSET
 
 - None blocking. *Optional:* replace
@@ -265,7 +363,7 @@ reason is stated.
 
 ## Test results (last run)
 
-`npm test` → **130/130 Playwright checks passed; Lighthouse CI assertions passed.**
+`npm test` → **150/150 Playwright checks passed; Lighthouse CI assertions passed.**
 
 | Check | Result |
 |---|---|
@@ -280,6 +378,9 @@ reason is stated.
 | Visual QA at 320 · 375 · 414 · 768 · 1024 · 1280 · 1440 · 1920 | no horizontal overflow; no overlapping hero text; no text on the coin; H1 in the first viewport; screenshots in `tests/screenshots/` |
 | Config guards | live without contract fails; bad explorer fails; fixture on Vercel fails; derived URLs exact |
 | Hero coin centring at 375 · 768 · 1024 · 1280 · 1440 · 1920, gutter reserved and not | coin centre = column centre (±1 px); two columns: column = text block edge → hero edge, coin clear of the text block; thread, field, vignette centred on the coin; stamp placement kept |
+| SPECIMEN stamp at 320 · 360 · 375 · 390 · 414 · 430 | text inside its box; left/right spacing equal (≤ 0.02 px); two lines, clear of the thread; one line, unchanged, at 768 and 1440 |
+| Statement seal at 375 · 768 · 1440 · 1920 | the Ƀ's bounding-box centre is the ring's centre within 0.01 px; the extracted vector, tight viewBox; 18 px Ƀ, 40 px ring |
+| Guilloche field | 162 paths, every one of 32,484 points identical to the master; box ±4.93R, disc edge 4.4R, clear inside 1.07R; canvas static on fine pointers, none on touch or reduced motion; final section within ±5% of the reference luminance, hero at full opacity |
 | Hero coin size and vertical position vs the first version; rule removed | identical (±0.5 px) at all six widths; no rule in the hero; emblem `#ground` present |
 | Menu: 10 open/close toggles × top / middle / near the bottom × 1440×900, 390×844, 900×900 (classic scrollbars) | scrollY unchanged after every toggle (difference 0); layout shift 0; nav height constant; focus returned |
 | Menu by keyboard (390, 900): focus the nav, Tab to the toggle, Enter, Tab and Shift+Tab inside, Esc | page never moves; focus trapped; background inert; focus back on the toggle |
@@ -288,9 +389,13 @@ reason is stated.
 
 | URL | Perf | A11y | Best practices | SEO | LCP | CLS | TBT |
 |---|---|---|---|---|---|---|---|
-| `/` pre-issue | 100 | 100 | 100 | 100 | 1.59 s | 0 | 0 ms |
+| `/` pre-issue | 100 | 100 | 100 | 100 | 1.60 s | 0 | 0 ms |
 | `/` live fixture | 100 | 100 | 100 | 100 | 1.59 s | 0 | 0 ms |
 | `/disclaimer` | 100 | 100 | 100 | 100 | 0.80 s | 0 | 0 ms |
+
+With the logo guilloche field (decision 21), every load scored 100 in all four
+categories, with LCP 1.58–1.60 s, CLS 0 and TBT 0–41 ms per load (24 loads of
+`/` across two runs).
 
 Measured alongside the first version, alternating, 18 loads of `/` each:
 
@@ -306,17 +411,17 @@ Note that the summary table printed by `tests/lighthouse.mjs` shows one load per
 URL, chosen by performance score; with every load at 100 that can be an outlier.
 The CI assertions use the median run.
 
-INP cannot be measured in the lab. TBT is the lab proxy, and the only long work
-on the page is the canvas (fine pointers only, 0.6 ms per frame median).
+INP cannot be measured in the lab. TBT is the lab proxy. The guilloche canvas
+(fine pointers only) draws once per layout, with no animation loop.
 
 **Bundle sizes:**
 
 | Asset | Size | Budget |
 |---|---|---|
-| JS, all chunks | 4.3 KB gz (2.6 main + 1.8 lazy canvas) | 30 KB |
-| CSS | 9.4 KB gz | 35 KB |
+| JS, all chunks | 3.7 KB gz (2.7 main + 1.0 lazy canvas) | 30 KB |
+| CSS | 9.6 KB gz | 35 KB |
 | Fonts | 91 KB woff2 (5 faces, subset) | 140 KB |
-| Hero assets, mobile 1x | 87 KB (bison 480 AVIF 34 KB, ground WebP 31 KB, guilloche SVG 22 KB) | 220 KB |
+| Hero assets, mobile 1x | 131 KB (bison 480 AVIF 34 KB, ground WebP 31 KB, coin guilloche 22 KB, field guilloche 46 KB, loaded after `load`) | 220 KB |
 | HTML `/` | 11.8 KB gz | — |
 | Third-party requests | 0 | 0 |
 
@@ -352,14 +457,14 @@ on the page is the canvas (fine pointers only, 0.6 ms per frame median).
 | `public/brand/manifest.json` | dimensions, sizes, SHA-256 of every layer | — |
 | `src/assets/fonts/*.woff2` | fontsource, subset + metric-matched fallbacks (`src/styles/fonts.css`) | 16–21 KB each |
 | `src/assets/history/*` | historical plates, 3 widths each, AVIF + WebP | see `ASSET-SOURCES.md` |
-| `src/assets/generated/guilloche-{hero,final}.svg` | seeded generator `src/lib/guilloche.mjs` | 62 / 31 KB (6 / 4 KB br) |
+| `src/assets/generated/guilloche-field.svg` | the master's 162 frame guilloche paths, every point exact (hundredth steps), stroke #5E634A 0.75 px non-scaling | 298 KB (44 KB gz) |
 | `src/assets/generated/land.svg` | `world-atlas` land-110m, Equal Earth | 57 KB (17 KB br) |
 | `public/kit/buffalo-emblem-{512,1024,2048}.png` | pack / pack / master render | 246 KB / 844 KB / 2.6 MB |
 | `public/kit/buffalo-b-{cream,ink,bronze}.{svg,png}` | extracted Ƀ (PNG 854×1000) | 1 KB / 22 KB |
-| `public/kit/buffalo-x-header-1500x500.png` | vault + guilloche + whole emblem | 464 KB |
-| `public/kit/buffalo-wallpaper-{phone-1290x2796,desktop-2560x1440}.png` | same | 1.2 / 1.5 MB |
+| `public/kit/buffalo-x-header-1500x500.png` | vault + the logo's guilloche field + whole emblem | 225 KB |
+| `public/kit/buffalo-wallpaper-{phone-1290x2796,desktop-2560x1440}.png` | same | 690 / 687 KB |
 | `public/favicon.{svg,ico}`, `favicon-{16,32}x….png` | Ƀ in cream on vault | 1–2 KB |
-| `public/og/buffalo-fourth-issue[-specimen].png` | **generated at build**, by state | ≈ 408 KB, 1200×630 |
+| `public/og/buffalo-fourth-issue[-specimen].png` | **generated at build**, by state | ≈ 288 KB, 1200×630 |
 | `tests/fixtures/master-{1000,2000}.png` | resvg render of the untouched master | reference for every diff |
 
 ---
@@ -370,11 +475,10 @@ on the page is the canvas (fine pointers only, 0.6 ms per frame median).
 src/config/issue.ts          ← the only file edited at launch
 src/lib/validate-issue.mjs   validation + derivation (shared by build, OG script and tests)
 src/lib/issue-state.ts       build-time state; importing it validates the config
-src/lib/guilloche.mjs        deterministic guilloche (build SVG + runtime canvas)
 src/lib/map.mjs              borderless map (land geometry only)
 src/content/copy.ts          final copy (§5), paired by state
 src/components/ · src/sections/ · src/layouts/ · src/pages/
-src/scripts/                 vanilla TS islands: strike, nav, reveal, copy-serial, mark, guilloche-canvas
+src/scripts/                 vanilla TS islands: strike, nav, reveal, copy-serial, mark, field, guilloche-canvas
 src/styles/                  @layer reset, tokens, base, components, sections, utilities, emblem
 scripts/                     extract-layers, build-fonts, build-historical, reference-render,
                              build-generated, build-kit, build-og

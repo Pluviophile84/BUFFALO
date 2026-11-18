@@ -7,7 +7,6 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { ROOT, PACK_DIR, BRAND_DIR } from './lib/master.mjs';
 import { renderSvg, renderMaster, fieldPaths } from './lib/render.mjs';
-import { makeField } from '../src/lib/guilloche.mjs';
 
 const KIT = path.join(ROOT, 'public/kit');
 const PREV = path.join(KIT, 'previews');
@@ -51,13 +50,13 @@ for (const v of bVariants) {
 const bMeta = await sharp(path.join(KIT, 'buffalo-b-cream.png')).metadata();
 
 // ── Composites: guilloche field + whole emblem (master render, never cropped) ─
-async function composite({ width, height, emblemSize, ex, ey, seed, text }) {
+// opacity per file: calibrated to the generated field's measured luminance in that file
+async function composite({ width, height, emblemSize, ex, ey, opacity, text }) {
   const R = emblemSize / 2;
-  const field = makeField({ seed, rings: 96 });
   const svg =
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">` +
     `<rect width="100%" height="100%" fill="${VAULT}"/>` +
-    fieldPaths({ field, R, cx: ex + R, cy: ey + R, width, height, stroke: Math.max(1, emblemSize / 560), opacity: 0.9 }) +
+    fieldPaths({ R, cx: ex + R, cy: ey + R, width, height, stroke: Math.max(1, emblemSize / 560), opacity }) +
     (text ?? '') +
     `</svg>`;
   const bg = await renderSvg(svg);
@@ -72,19 +71,19 @@ fs.writeFileSync(
   path.join(KIT, 'buffalo-x-header-1500x500.png'),
   await composite({
     ...xh,
-    seed: 1901,
+    opacity: 0.954,
     text: `<rect x="${xh.ex - 196}" y="234" width="160" height="32" fill="${VAULT}"/><text x="${xh.ex - 52}" y="255" text-anchor="end" font-family="JetBrains Mono" font-size="15" letter-spacing="4.2" fill="#9A937F">BUFFALO</text>`,
   }),
 );
 const phone = { width: 1290, height: 2796, emblemSize: 780 };
 fs.writeFileSync(
   path.join(KIT, 'buffalo-wallpaper-phone-1290x2796.png'),
-  await composite({ ...phone, ex: (phone.width - phone.emblemSize) / 2, ey: (phone.height - phone.emblemSize) / 2, seed: 1913 }),
+  await composite({ ...phone, ex: (phone.width - phone.emblemSize) / 2, ey: (phone.height - phone.emblemSize) / 2, opacity: 0.954 }),
 );
 const desk = { width: 2560, height: 1440, emblemSize: 720 };
 fs.writeFileSync(
   path.join(KIT, 'buffalo-wallpaper-desktop-2560x1440.png'),
-  await composite({ ...desk, ex: (desk.width - desk.emblemSize) / 2, ey: (desk.height - desk.emblemSize) / 2, seed: 2006 }),
+  await composite({ ...desk, ex: (desk.width - desk.emblemSize) / 2, ey: (desk.height - desk.emblemSize) / 2, opacity: 0.994 }),
 );
 
 // ── Previews for the kit tiles ──────────────────────────────────────────────

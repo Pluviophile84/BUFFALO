@@ -1,20 +1,39 @@
 ---
-// Living guilloche (§3.5 A). The static, seeded SVG is the baseline (no JS,
-// reduced motion, coarse pointers). It is drawn by <use> from the generated
-// file, so it is vector line work (never an LCP candidate) and stays out of the
-// HTML. scripts/guilloche-canvas.ts layers a canvas over it on fine pointers
-// and hides the static field once the canvas has drawn.
-import heroSvg from '../assets/generated/guilloche-hero.svg?url';
-import finalSvg from '../assets/generated/guilloche-final.svg?url';
+// The guilloche field (§3.5 A): the logo's own guilloche, the master's 162 paths
+// (scripts/build-generated.mjs), in place of the generated rings it replaces.
+// Everything else is as it was:
+// - the static SVG is the baseline (no JS, reduced motion, coarse pointers);
+// - it draws the paths by <use> from the external file, so they are vector line
+//   work (never an LCP candidate) and stay out of the HTML; the file is
+//   referenced once the page has loaded (scripts/field.ts);
+// - scripts/guilloche-canvas.ts draws the same paths on a canvas on fine
+//   pointers and hides this SVG once it has drawn.
+// Geometry, in the anchor's radius R: box ±4.93R, centred on the anchor; the
+// logo's disc scaled so its edge falls at 4.4R (the old outermost ring); clear
+// inside 1.07R (the old calm ring around the coin).
+import fieldSvg from '../assets/generated/guilloche-field.svg?url';
 import generated from '../data/generated.json';
 
 interface Props {
   variant: 'hero' | 'final';
 }
 const { variant } = Astro.props;
-const src = variant === 'hero' ? heroSvg : finalSvg;
-const h = Math.ceil(generated.guillocheExtent * 100);
+const f = generated.field;
+const [cx, cy] = f.center;
+const half = (f.extent / f.outer) * f.disc; // the box's half-size, in master units
+const r0 = (f.inner / f.outer) * f.disc; // the calm ring, in master units
+const n = (v: number) => Number(v.toFixed(2));
+const x0 = n(cx - half);
+const y0 = n(cy - half);
+const side = n(2 * half);
+const viewBox = `${x0} ${y0} ${side} ${side}`;
+const clip = `M${x0} ${y0}h${side}v${side}h${-side}z M${n(cx + r0)} ${cy}a${n(r0)} ${n(r0)} 0 1 0 ${n(-2 * r0)} 0a${n(r0)} ${n(r0)} 0 1 0 ${n(2 * r0)} 0z`;
+const clipId = `field-clip-${variant}`;
 ---
-<div class:list={['field', `field--${variant}`]} aria-hidden="true">
-  <svg class="field__svg" viewBox={`${-h} ${-h} ${2 * h} ${2 * h}`} focusable="false"><use href={`${src}#field`} /></svg>
+{/* The path data (≈44 KB) loads after the page (scripts/field.ts sets the href on
+    load), so it never competes with the LCP image; without JavaScript, the
+    <noscript> copy references it at once, as before. */}
+<div class:list={['field', `field--${variant}`]} aria-hidden="true" data-field-src={fieldSvg}>
+  <svg class="field__svg" viewBox={viewBox} focusable="false"><clipPath id={clipId}><path clip-rule="evenodd" d={clip} /></clipPath><use data-field-href={`${fieldSvg}#field`} clip-path={`url(#${clipId})`} /></svg>
+  <noscript><svg class="field__svg" viewBox={viewBox} focusable="false"><use href={`${fieldSvg}#field`} clip-path={`url(#${clipId})`} /></svg></noscript>
 </div>
