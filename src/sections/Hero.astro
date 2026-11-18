@@ -6,7 +6,6 @@ import SerialModule from '../components/SerialModule.astro';
 import Specimen from '../components/Specimen.astro';
 import SecurityThread from '../components/SecurityThread.astro';
 import GuillocheField from '../components/GuillocheField.astro';
-import EngravedRule from '../components/EngravedRule.astro';
 import Action from '../components/Action.astro';
 ---
 <section class="hero" id="top" aria-labelledby="hero-title" data-guilloche-host="hero">
@@ -36,7 +35,6 @@ import Action from '../components/Action.astro';
           <svg class={`thread__win thread__win--${n}`} width="9" height="50" aria-hidden="true" focusable="false"><text transform="rotate(90) translate(1 -1.5)">BUFFALO</text></svg>
         ))}
       </div>
-      <EngravedRule lines={4} class="hero__ground" />
     </div>
   </div>
 </section>

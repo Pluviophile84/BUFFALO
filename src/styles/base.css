@@ -50,7 +50,18 @@
   html {
     background: var(--vault);
     color: var(--cream);
-    scroll-padding-top: 88px;
+    /* the scrollbar's space is always reserved: locking scroll for the menu
+       (overflow: hidden) never changes the page width */
+    scrollbar-gutter: stable;
+  }
+  /* Clearance under the sticky nav (88px) for in-page jumps and for focus in the
+     content: set on the targets, not as scroll-padding on <html>. With
+     scroll-padding, everything in the sticky nav itself (wordmark, menu toggle)
+     sat inside the padded band, counted as obscured, and focusing it scrolled
+     the page about half a viewport. */
+  main,
+  :is(main, footer) :is([id], a[href], button, [tabindex], input, select, textarea, summary) {
+    scroll-margin-top: 88px;
   }
   @media (prefers-reduced-motion: no-preference) {
     html {
@@ -112,7 +123,8 @@
   [hidden] {
     display: none !important;
   }
-  .is-menu-open {
+  /* menu scroll lock: on <html> only (nav.ts), no position:fixed, no scrollTo */
+  html.is-menu-open {
     overflow: hidden;
   }
 

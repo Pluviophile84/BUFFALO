@@ -158,9 +158,9 @@ reason is stated.
    The coin is `min(78vw, 42vh, 560px)`, which is exactly 78vw on phones and
    smaller on tablets, so the H1 lands in the first viewport.
    - Below 1024px, two of the three security-thread windows fit (one above the
-     coin, one below the ground line). All three show on desktop.
-   - On phones the SPECIMEN stamp sits under the ground line, left of the
-     thread: beside the coin, never over it.
+     coin, one below it). All three show on desktop.
+   - On phones the SPECIMEN stamp sits under the coin, left of the thread:
+     beside the coin, never over it.
 6. **Microtext card borders are four SVG text strips**, not one `textPath`. The
    cards are fluid, and a `textPath` rectangle would need JS to size it.
 7. **The LCP element is the preloaded hero bison**, not the H1. At both mobile
@@ -204,6 +204,49 @@ reason is stated.
     HTTP/2 + TLS, brotli, cleanUrls, the exact `vercel.json` headers, and
     Lantern's simulated mobile throttling. Plain HTTP/1.1 without compression
     scores much lower. Re-check on the deployed URL.
+16. **No rule under the hero coin.** The engraved rule that sat under the coin
+    (`<EngravedRule lines={4} class="hero__ground">` in `Hero.astro`, with its
+    `.hero__ground` styles and the 4-line rule variant, used nowhere else) is
+    removed; it had no meaning outside the logo. It had no strike step of its
+    own. The space it took (16 px gap + 13 px rule) is kept as the coin's bottom
+    margin, so nothing else moves: coin, stamp and H1 are at the same positions
+    as before at every width (tested). The only ground line in the hero is the
+    one inside the emblem (`#ground`, with the ket microtext), untouched.
+17. **The hero coin is centred in its own column.** On two-column layouts
+    (≥ 1024 px) the coin was centred in grid track 7–12. That track is not the
+    open area to the right of the text block: it starts a column gap (24 px)
+    after the text block's edge and ends at the page margin, and above 1416 px
+    short of the space beside the max-width container. Meanwhile the field and
+    the dark ground run on to the hero's edge, so the coin read as left of centre
+    (at 1440: 87 px of field on its left, 123 px on its right; at 1920: 68 px and
+    344 px).
+    - The coin's column now spans that open area exactly, from the text block's
+      edge to the hero's right edge. It is measured with the hero as a size
+      container (`100cqw`), so scrollbars never skew it.
+    - The coin keeps its size and vertical position.
+    - The security thread, the guilloche field, the vignette and the SPECIMEN
+      stamp all centre on, or align to, the coin, so they move with it.
+    - Single-column layouts are unchanged.
+18. **Opening and closing the menu never moves the page.**
+    - **Root cause:** closing the menu returned focus to the toggle with a plain
+      `focus()`. The toggle sits in the sticky nav, inside `html`'s 88 px
+      `scroll-padding-top` band, so the browser treated it as obscured and
+      scrolled the page about half a viewport on every close: −4,260 px after 10
+      toggles at 390×844. Opening also removed a classic scrollbar, so the page
+      reflowed 15 px wider and back (layout shift 0.32 at 1440×900).
+    - **Scroll lock:** `overflow: hidden` on `<html>` only, with
+      `scrollbar-gutter: stable` on `<html>` globally. There is no
+      `position: fixed` body and no `scrollTo`.
+    - **Focus:** every focus call in the menu (open, focus trap, and the return
+      to the toggle) uses `preventScroll`.
+    - **Nav clearance:** the 88 px clearance under the sticky nav moved from
+      `scroll-padding-top` on `<html>` to `scroll-margin-top` on the content's
+      targets. Anchor jumps land at exactly the same place (88 px), and Tabbing
+      onto the toggle no longer scrolls the page.
+    - The focus trap, Esc to close, the inert background and focus return are
+      unchanged. The nav is 65 px tall, open or closed.
+    - At ≥ 1100 px the toggle is hidden (the nav links show), so the 1440×900
+      test drives the same open/close code through the buttons themselves.
 
 ### TODO-ASSET
 
@@ -222,7 +265,7 @@ reason is stated.
 
 ## Test results (last run)
 
-`npm test` → **105/105 Playwright checks passed; Lighthouse CI assertions passed.**
+`npm test` → **130/130 Playwright checks passed; Lighthouse CI assertions passed.**
 
 | Check | Result |
 |---|---|
@@ -236,14 +279,22 @@ reason is stated.
 | Copy lint | 171 §5 strings present verbatim per state; banned list clean; no other-state copy shipped |
 | Visual QA at 320 · 375 · 414 · 768 · 1024 · 1280 · 1440 · 1920 | no horizontal overflow; no overlapping hero text; no text on the coin; H1 in the first viewport; screenshots in `tests/screenshots/` |
 | Config guards | live without contract fails; bad explorer fails; fixture on Vercel fails; derived URLs exact |
+| Hero coin centring at 375 · 768 · 1024 · 1280 · 1440 · 1920, gutter reserved and not | coin centre = column centre (±1 px); two columns: column = text block edge → hero edge, coin clear of the text block; thread, field, vignette centred on the coin; stamp placement kept |
+| Hero coin size and vertical position vs the first version; rule removed | identical (±0.5 px) at all six widths; no rule in the hero; emblem `#ground` present |
+| Menu: 10 open/close toggles × top / middle / near the bottom × 1440×900, 390×844, 900×900 (classic scrollbars) | scrollY unchanged after every toggle (difference 0); layout shift 0; nav height constant; focus returned |
+| Menu by keyboard (390, 900): focus the nav, Tab to the toggle, Enter, Tab and Shift+Tab inside, Esc | page never moves; focus trapped; background inert; focus back on the toggle |
 
 **Lighthouse (mobile, median of 3):**
 
 | URL | Perf | A11y | Best practices | SEO | LCP | CLS | TBT |
 |---|---|---|---|---|---|---|---|
-| `/` pre-issue | 100 | 100 | 100 | 100 | 1.59 s | 0 | 0 ms |
-| `/` live fixture | 100 | 100 | 100 | 100 | 1.59 s | 0 | 0 ms |
-| `/disclaimer` | 100 | 100 | 100 | 100 | 0.83 s | 0 | 0 ms |
+| `/` pre-issue | 100 | 100 | 100 | 100 | 1.58 s | 0 | 19 ms |
+| `/` live fixture | 100 | 100 | 100 | 100 | 1.58 s | 0 | 0 ms |
+| `/disclaimer` | 100 | 100 | 100 | 100 | 0.80 s | 0 | 0 ms |
+
+TBT varies run to run (0–42 ms here, 0–17 ms for the first version measured
+alongside). In both, the only long tasks are the initial document parse and
+layout around first paint, counted or not depending on where FCP lands.
 
 INP cannot be measured in the lab. TBT is the lab proxy, and the only long work
 on the page is the canvas (fine pointers only, 0.6 ms per frame median).

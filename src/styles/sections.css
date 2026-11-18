@@ -5,6 +5,9 @@
     isolation: isolate;
     overflow: hidden;
     background: var(--vault);
+    /* a size container, so the coin's column can reach the hero's own right
+       edge (100cqw: the hero's width, scrollbar excluded) */
+    container-type: inline-size;
   }
   .hero__inner {
     position: relative;
@@ -44,6 +47,9 @@
   .hero__coinwrap {
     position: relative;
     width: min(78vw, 42vh, 560px);
+    /* the space the engraved rule under the coin took (16px gap + 13px rule),
+       kept so removing the rule moves nothing else */
+    margin-bottom: calc(var(--s4) + 13px);
   }
   .hero__coin {
     z-index: 2;
@@ -55,18 +61,11 @@
     background: radial-gradient(closest-side, rgb(122 128 98 / 0.08), rgb(122 128 98 / 0) 100%);
     pointer-events: none;
   }
-  .hero__ground {
-    position: relative;
-    z-index: 2;
-    width: min(78vw, 42vh, 560px);
-    margin-top: var(--s4);
-  }
-  .hero__ground,
   .hero__stamp {
     background: var(--vault);
   }
   /* Beside the coin, never over it, and clear of the thread.
-     < 1024px: below the ground line, aligned to the text column, left of the thread. */
+     < 1024px: below the coin, aligned to the text column, left of the thread. */
   .hero__stamp {
     position: absolute;
     z-index: 2;
@@ -140,14 +139,22 @@
     .hero__copy::before {
       inset: -100vh 0 -100vh -100vw;
     }
+    /* The coin's column is the open field to the right of the text block:
+       from the text block's edge (back across the column gap) to the hero's
+       right edge (out across the page margin and, above 1416px, the space
+       beside the container), so the coin sits in its middle. Grid track 7–12
+       alone ended short on the right and the coin read as left of centre.
+       The thread (left: 50%) and the field, vignette and stamp (on the coin)
+       follow. The coin keeps its old size cap: the track's own width. */
     .hero__coincol {
+      --hero-end: calc((100cqw - min(100cqw, var(--max) + 2 * var(--margin))) / 2 + var(--margin));
       grid-column: 7 / -1;
       grid-row: 1;
+      margin-inline: calc(-1 * var(--gutter)) calc(-1 * var(--hero-end));
       padding-block: 150px var(--s20);
     }
-    .hero__coinwrap,
-    .hero__ground {
-      width: min(58vh, 560px, 100%);
+    .hero__coinwrap {
+      width: min(58vh, 560px, 100% - var(--gutter) - var(--hero-end));
     }
   }
 

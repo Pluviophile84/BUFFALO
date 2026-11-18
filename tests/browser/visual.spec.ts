@@ -10,6 +10,10 @@ const SHOTS = path.join(ROOT, 'tests/screenshots');
 fs.mkdirSync(SHOTS, { recursive: true });
 
 async function settle(page: Page) {
+  // Headless Chromium hides scrollbars yet still reserves `scrollbar-gutter: stable`
+  // (base.css), which no real browser does: a classic scrollbar fills the gutter,
+  // overlay scrollbars (phones, macOS) reserve none. Emulate overlay scrollbars.
+  await page.evaluate(() => (document.documentElement.style.scrollbarGutter = 'auto'));
   await page.evaluate(() => document.fonts.ready);
   // full-page captures paint beyond the viewport: render content-visibility:auto sections
   await page.evaluate(() => document.querySelectorAll<HTMLElement>('section, footer').forEach((s) => (s.style.contentVisibility = 'visible')));
@@ -19,6 +23,9 @@ async function settle(page: Page) {
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.evaluate(() => document.querySelectorAll('img').forEach((i) => (i.loading = 'eager')));
   await page.waitForFunction(() => [...document.images].every((i) => i.complete && i.naturalWidth > 0), null, { timeout: 20_000 });
+  // after the scroll pass, images far off screen may have been dropped from the
+  // decode cache; the capture must not race their re-decode (the hero bison was blank)
+  await page.evaluate(() => Promise.all([...document.images].map((i) => i.decode().catch(() => undefined))));
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(300);
 }
