@@ -27,6 +27,30 @@ import Glyph from '../components/Glyph.astro';
             );
           })}
         </Coin>
+        {/* Single-column guided tour (scripts/mark.ts): one caption card directly
+            under the coin, replacing the list below. Hidden until the script turns
+            it on, so without JavaScript the full list stays as it is. Every item
+            is stacked, invisible, in one grid cell ([data-tour-size]), so the card
+            is always as tall as its tallest item at the current width: switching
+            never shifts the layout. [data-tour-live] shows the active one. */}
+        <div class="mark__tour" role="region" aria-label="Parts of the mark" aria-live="polite" data-tour hidden>
+          <div class="tour__head">
+            <span class="tour__count label"><span aria-hidden="true" data-tour-count>01 / {String(MARK.items.length).padStart(2, '0')}</span><span class="vh" data-tour-count-sr>Part 1 of {MARK.items.length}.</span></span>
+            <span class="tour__navs">
+              <button class="tour__nav" type="button" data-tour-prev aria-label="Previous part"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><polyline points="10,3 5,8 10,13" /></svg></button>
+              <button class="tour__nav" type="button" data-tour-next aria-label="Next part"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><polyline points="6,3 11,8 6,13" /></svg></button>
+            </span>
+          </div>
+          <div class="tour__stage">
+            {MARK.items.map((it) => (
+              <div class="tour__size" aria-hidden="true" data-tour-size={it.id}>
+                <p class="tour__title">{it.glyph ? (<>The <Glyph kind="b" />.</>) : it.title}</p>
+                <p class="tour__text">{it.text}</p>
+              </div>
+            ))}
+            <div class="tour__live" data-tour-live></div>
+          </div>
+        </div>
       </div>
       <div class="mark__notes">
         <ol class="mark__list">

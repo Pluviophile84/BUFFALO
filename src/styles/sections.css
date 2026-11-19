@@ -989,6 +989,86 @@
   .mark__item.is-hot {
     background: var(--vault-2);
   }
+  /* One column: the guided tour (scripts/mark.ts adds .mark--tour). The card sits
+     directly under the coin and replaces the list; the ket decoder and the
+     principle stay below it. */
+  .mark__tour {
+    display: none;
+  }
+  @media (max-width: 1023px) {
+    .mark--tour .mark__list {
+      display: none;
+    }
+    .mark--tour .mark__notes .ket-decoder {
+      margin-top: 0;
+    }
+    .mark--tour .mark__body {
+      gap: var(--s8);
+    }
+    .mark--tour .mark__tour:not([hidden]) {
+      display: block;
+      margin-top: var(--s5);
+      padding: var(--s2) var(--s2) var(--s5) var(--s4);
+      border: 1px solid var(--rule);
+      background: var(--vault-2);
+      touch-action: pan-y; /* vertical drags scroll the page; horizontal ones swipe */
+    }
+  }
+  .tour__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s4);
+  }
+  .tour__count {
+    color: var(--bronze-text);
+  }
+  .tour__navs {
+    display: flex;
+    gap: var(--s2);
+  }
+  .tour__nav {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--rule);
+    color: var(--cream);
+  }
+  .tour__nav:hover {
+    border-color: var(--cream-2);
+  }
+  .tour__nav svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+  }
+  .tour__stage {
+    display: grid;
+    padding-right: var(--s2);
+  }
+  .tour__stage > * {
+    grid-area: 1 / 1;
+  }
+  .tour__size {
+    visibility: hidden;
+  }
+  .tour__title {
+    margin: var(--s2) 0 var(--s2);
+    font-family: var(--f-display);
+    font-size: 1.5rem;
+    line-height: 1.2;
+    color: var(--cream);
+  }
+  .tour__title .glyph-b svg {
+    height: 0.69em;
+  }
+  .tour__text {
+    color: var(--cream-2);
+    font-size: 1rem;
+  }
   .ket-decoder {
     display: block;
     width: 100%;

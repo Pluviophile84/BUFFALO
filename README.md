@@ -597,6 +597,35 @@ reason is stated.
         | 375×667 H1 | 584.1–733.3 | 435.0–584.2 |
         | 375×667 sub | 749.3–801.3 | 600.2–652.2 |
         | 375×667 coin width | 280.1 | 240.0 (64vw) |
+    - **Part 6, the Mark as a guided tour (one column, < 1024 px):** the
+      list explaining each part sat far below the coin, off screen, so a tap
+      on a hotspot seemed to do nothing.
+      - One caption card now sits directly under the coin. It shows the
+        counter (`02 / 06`), the title (the Ƀ drawn by `Glyph`) and the text,
+        from the same `MARK.items`.
+      - Item 1 is active from the start. A hotspot, the ‹ › buttons (44 px,
+        "Previous part" / "Next part", wrapping), a swipe (at least 40 px and
+        mostly horizontal) or the arrow keys on the card or the hotspots change
+        it. Nothing advances on its own.
+      - The pressed hotspot, the coin's dimmed layers and the card always show
+        the same item. In the tour, hover and focus no longer preview another
+        part.
+      - **No layout shift:** every item is stacked invisibly in one grid cell,
+        so the card is always as tall as its tallest item at the current
+        width, with no measuring script.
+      - The card is `touch-action: pan-y`, so a vertical drag stays a page
+        scroll.
+      - At 384×832, with the coin just below the nav, the card ends at 637 px.
+        The coin keeps its size.
+      - The card is a region (`aria-live="polite"`). Its counter is read as
+        "Part 2 of 6."; the visible "02 / 06" is hidden from screen readers.
+      - Without JavaScript, the list stays and the card is never shown. The
+        ket decoder and the principle stay below the card. Two columns are
+        unchanged.
+      - The tests are in `tests/browser/mark-tour.spec.ts` (the brief named
+        `character-mark.spec.ts`, but that file tests the Character
+        watermark). They swipe with real touch events through Chromium's
+        input pipeline, so `touch-action` is exercised for real.
 
 ### TODO-ASSET
 
@@ -615,7 +644,7 @@ reason is stated.
 
 ## Test results (last run)
 
-`npm test` → **203/203 Playwright checks passed; Lighthouse CI assertions passed.**
+`npm test` → **220/220 Playwright checks passed; Lighthouse CI assertions passed.**
 
 | Check | Result |
 |---|---|
