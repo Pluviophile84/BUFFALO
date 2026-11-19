@@ -456,6 +456,21 @@ reason is stated.
     - **Part 1, footer:** the bottom line is now "Paper. Nickel. Gold.
       Blockchain.". The copy lint checks that "Now, everywhere" appears on no
       page (`/`, `/disclaimer`, `/404`, both states).
+    - **Part 2, The Release and Character:**
+      - The Release's H2 is "From American money to Solana." and its body is
+        the new text.
+      - The ledger ("No treasury. / No border. / No jurisdiction.") is
+        removed, along with its markup, its styles (`.release__ledger`,
+        `.release__hair` and the `.hair` line rule) and its ink and hairline
+        reveals.
+      - The label, the migration wit, the map and its caption stay.
+      - Without the ledger the wit is the copy's last line. The gap from it to
+        the map is still 64 px, the gap the ledger used to leave. The section's
+        top and bottom padding stay equal: 96/96 px at 384 wide, 192/192 px at
+        1920.
+      - Character's intro and the Resilience text carry the new copy.
+      - The copy test checks the new Release copy in both states, and that
+        the ledger is gone.
 
 ### TODO-ASSET
 

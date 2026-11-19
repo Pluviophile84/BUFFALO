@@ -564,8 +564,7 @@
   .engraved-rule--ink {
     color: var(--bison-deep);
   }
-  .engraved-rule line,
-  .hair line {
+  .engraved-rule line {
     stroke: currentColor;
     stroke-width: 1;
     stroke-dasharray: 1 1;

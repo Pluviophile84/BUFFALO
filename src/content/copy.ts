@@ -107,10 +107,10 @@ export const PROVENANCE = {
 export const CHARACTER = {
   label: 'III · CHARACTER',
   h2: 'The character came first.',
-  intro: 'Nations choose symbols for the qualities they want to be seen to have. The United States chose the bison for these.',
+  intro: 'Nations choose symbols for the qualities they want to be seen to have. Read the bison, and three stand out.',
   traits: [
     { n: '01', word: 'Strength', text: 'The largest land mammal in North America. A bull can weigh up to a ton and still run at thirty-five miles an hour.' },
-    { n: '02', word: 'Resilience', text: 'Tens of millions once crossed the plains. By 1900, fewer than a thousand remained. It came back.' },
+    { n: '02', word: 'Resilience', text: 'Tens of millions once crossed the plains. By 1900, fewer than a thousand remained. Conservation brought it back.' },
     { n: '03', word: 'Boldness', text: 'Nothing about it asks permission. Not its size, not its stride, not its stare.' },
   ],
   closing: 'The nation did not invent these qualities. It borrowed them. The Fourth Issue returns them to the symbol.',
@@ -118,10 +118,9 @@ export const CHARACTER = {
 
 export const RELEASE = {
   label: 'IV · THE RELEASE',
-  h2: 'For a century, its power had borders. On the chain, it has none.',
-  body: 'A banknote stops at a border. A coin is legal tender in one country. The Fourth Issue moves at the speed of a block, to anyone holding a wallet, anywhere on the map.',
+  h2: 'From American money to Solana.',
+  body: 'The bison traveled from printed notes to struck coins. In the Fourth Issue, the emblem travels again, carried by a token on a public blockchain.',
   wit: 'A century-long migration. Reasonably on schedule.',
-  ledger: ['No treasury.', 'No border.', 'No jurisdiction.'],
   caption: 'MAP DRAWN WITHOUT A SINGLE BORDER LINE.',
 };
 

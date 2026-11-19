@@ -109,11 +109,18 @@ for (const st of STATES)
       expect(hits).toEqual([]);
     });
 
-test('the borderless theme stays in IV · The Release, unchanged', async ({ page }) => {
-  await page.goto(STATES[0].base + '/', { waitUntil: 'domcontentloaded' });
-  const release = norm((await page.locator('#release').textContent())!); // rendered or not (content-visibility)
-  for (const t of ['For a century, its power had borders. On the chain, it has none.', 'No treasury.', 'No border.', 'No jurisdiction.']) expect(release).toContain(norm(t));
-});
+// Batch 3: IV · The Release carries the new copy; the ledger (its markup, styles and
+// hairline draws) is gone; the label, the wit, the map and its caption stay.
+for (const st of STATES)
+  test(`IV · The Release: new copy, no ledger; label, wit, map and caption stay — ${st.name}`, async ({ page }) => {
+    await page.goto(st.base + '/', { waitUntil: 'domcontentloaded' });
+    const release = norm((await page.locator('#release').textContent())!); // rendered or not (content-visibility)
+    for (const t of ['IV · THE RELEASE', 'From American money to Solana.', 'The bison traveled from printed notes to struck coins. In the Fourth Issue, the emblem travels again, carried by a token on a public blockchain.', 'A century-long migration. Reasonably on schedule.', 'MAP DRAWN WITHOUT A SINGLE BORDER LINE.'])
+      expect(release).toContain(norm(t));
+    for (const t of ['For a century, its power had borders', 'A banknote stops at a border', 'No treasury.', 'No border.', 'No jurisdiction.']) expect(release).not.toContain(t);
+    await expect(page.locator('#release .release__ledger, #release li, #release .release__hair')).toHaveCount(0);
+    await expect(page.locator('#release .map')).toHaveCount(1);
+  });
 
 test('disclaimer page carries the full disclaimer and credits', async ({ page }) => {
   await page.goto(STATES[0].base + '/disclaimer');

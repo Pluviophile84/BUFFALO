@@ -9,14 +9,6 @@ import PlateLabel from '../components/PlateLabel.astro';
       <h2 id="release-title" data-ink>{RELEASE.h2}</h2>
       <p class="release__body" data-ink data-stagger="1">{RELEASE.body}</p>
       <p class="release__wit wit" data-ink data-stagger="1">{RELEASE.wit}</p>
-      <ul class="release__ledger">
-        {RELEASE.ledger.map((l, i) => (
-          <li data-ink data-stagger={String(i + 1)}>
-            <span>{l}</span>
-            <svg class="release__hair hair" viewBox="0 0 100 1" preserveAspectRatio="none" data-draw data-stagger={String(i + 1)} aria-hidden="true" focusable="false"><line x1="0" x2="100" y1="0.5" y2="0.5" pathLength="1" /></svg>
-          </li>
-        ))}
-      </ul>
     </div>
   </div>
   <figure class="release__map wrap">
