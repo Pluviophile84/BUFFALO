@@ -566,6 +566,37 @@ reason is stated.
       - Tests cover all three places with the clipboard denied (`writeText`
         rejects) and unavailable (no Clipboard API), and the granted path
         ("Copied") in each.
+    - **Part 5, hero actions and the mobile first screen:**
+      - **Pre-issue:** the disabled "Issue pending" button and its helper are
+        gone. The one action is "Read the provenance" (primary, `#provenance`).
+        The mobile menu has no CTA. The serial module's Copy stays disabled
+        until issue, as it was: the serial module is unchanged.
+      - **Live:** the primary is "Buy on pump.fun" → `buyUrl`. On another buy
+        route (Jupiter, Raydium) it reads "Buy $BUFFALO". The secondary is
+        "Verify mint address" → `explorerUrl`. The menu CTA repeats the
+        primary.
+      - **First screen (< 1024 px):**
+        - Spacing first. Below the coin, 141 px became 72 px: the stamp now sits
+          12 px under the coin, the lower thread window 6 px under it, and the
+          copy follows.
+        - Then the coin: 78vw → 74vw.
+        - On phones up to 760 px tall, the coin goes to 64vw, its floor. The
+          space above it shrinks from 64 px to 24 px, and the upper thread
+          window is left out, because it needs 62 px there. The thread and the
+          lower window stay.
+        - Desktop is unchanged.
+
+        Positions (top–bottom, px):
+
+        | | before | after |
+        |---|---|---|
+        | 384×832 H1 | 603.5–754.0 | 519.2–669.7 |
+        | 384×832 sub | 770.0–822.0 | 685.7–737.7 |
+        | 384×832 primary | 854.0–906.0 | 769.7–821.7 |
+        | 384×832 coin width | 299.5 | 284.2 |
+        | 375×667 H1 | 584.1–733.3 | 435.0–584.2 |
+        | 375×667 sub | 749.3–801.3 | 600.2–652.2 |
+        | 375×667 coin width | 280.1 | 240.0 (64vw) |
 
 ### TODO-ASSET
 
@@ -584,7 +615,7 @@ reason is stated.
 
 ## Test results (last run)
 
-`npm test` → **196/196 Playwright checks passed; Lighthouse CI assertions passed.**
+`npm test` → **203/203 Playwright checks passed; Lighthouse CI assertions passed.**
 
 | Check | Result |
 |---|---|

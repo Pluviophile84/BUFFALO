@@ -56,7 +56,7 @@ test.describe('shipped config (pre-issue)', () => {
     expect(action).not.toMatch(/globalThis|__actionSeq/);
     const h = html('dist');
     const ids = [...h.matchAll(/<span class="helper" id="([^"]+)"/g)].map((m) => m[1]);
-    expect(ids.sort()).toEqual(['help-acquire-buy', 'help-custodians-chat', 'help-custodians-x', 'help-hero-acquire', 'help-menu-acquire', 'help-spec-acquire', 'help-spec-verify'].sort());
+    expect(ids.sort()).toEqual(['help-acquire-buy', 'help-custodians-chat', 'help-custodians-x', 'help-spec-acquire', 'help-spec-verify'].sort());
     for (const id of ids) expect(h, id).toContain(`aria-describedby="${id}"`);
   });
 
@@ -144,6 +144,20 @@ test.describe('builds that must fail', () => {
     expect(h).toContain('content="https://fixture.example.org/og/');
     const sitemap = fs.readdirSync(r.out).filter((f) => /^sitemap-\d+\.xml$/.test(f)).map((f) => fs.readFileSync(path.join(r.out, f), 'utf8')).join('');
     expect(sitemap).toContain('<loc>https://fixture.example.org</loc>');
+    fs.rmSync(r.out, { recursive: true, force: true });
+  });
+
+  test('a buy override on another defined route: the hero and menu read "Buy $BUFFALO"', () => {
+    const r = build('tests/fixtures/issue/live-jup.ts');
+    expect(r.status, r.output).toBe(0);
+    const h = fs.readFileSync(path.join(r.out, 'index.html'), 'utf8');
+    const jup = `https://jup.ag/swap/SOL-${LIVE_CONTRACT}`;
+    const hero = h.slice(h.indexOf('class="actions hero__actions"'), h.indexOf('data-serial-module'));
+    expect(hero).toMatch(new RegExp(`<a class="btn btn--primary" href="${jup}"[^>]*>\\s*Buy \\$BUFFALO\\s*</a>`));
+    expect(hero).toContain('Verify mint address');
+    expect(hero).not.toContain('pump.fun');
+    const menu = h.slice(h.indexOf('class="menu__foot"'), h.indexOf('</div>', h.indexOf('class="menu__foot"')));
+    expect(menu).toMatch(new RegExp(`<a class="btn btn--primary" href="${jup}"[^>]*>\\s*Buy \\$BUFFALO\\s*</a>`));
     fs.rmSync(r.out, { recursive: true, force: true });
   });
 

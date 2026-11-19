@@ -863,5 +863,15 @@
   "text": "Return to the Fourth Issue",
   "state": "both",
   "page": "/404"
+ },
+ {
+  "text": "Buy on pump.fun",
+  "state": "live",
+  "page": "/"
+ },
+ {
+  "text": "Verify mint address",
+  "state": "live",
+  "page": "/"
  }
 ]

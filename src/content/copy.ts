@@ -16,7 +16,6 @@ export const NAV = {
     { href: '#acquire', label: 'Acquire' },
     { href: '#custodians', label: 'Custodians' },
   ],
-  cta: 'Acquire $BUFFALO',
 };
 
 export const ACTION = {
@@ -34,7 +33,11 @@ export const HERO = {
   // H1 in two tones: the three issues, then the new chapter
   h1: ['Paper. Nickel. Gold.', 'Blockchain.'],
   sub: 'An American monetary symbol, carried into its next form.',
+  // pre-issue: the one (primary) action; live: the actions below
   secondary: 'Read the provenance',
+  // live: buy on the configured route (the mobile menu's CTA too), then verify
+  buy: issue.buyHost === 'pump.fun' ? 'Buy on pump.fun' : 'Buy $BUFFALO',
+  verify: 'Verify mint address',
   serialLabel: 'SERIAL · MINT ADDRESS',
   serialPending: 'To be struck at issue',
   stamp: 'SPECIMEN · PRE-ISSUE',

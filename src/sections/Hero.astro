@@ -1,6 +1,6 @@
 ---
 import { issue } from '../lib/issue-state';
-import { HERO, ACTION } from '../content/copy';
+import { HERO } from '../content/copy';
 import Coin from '../components/Coin.astro';
 import SerialModule from '../components/SerialModule.astro';
 import Specimen from '../components/Specimen.astro';
@@ -14,9 +14,17 @@ import Action from '../components/Action.astro';
       <p class="hero__eyebrow label">{HERO.eyebrow}</p>
       <h1 class="hero__title" id="hero-title"><span class="hero__h1"><span class="hero__h1-past">{HERO.h1[0]}</span> <span class="hero__h1-now">{HERO.h1[1]}</span></span></h1>
       <p class="hero__sub">{HERO.sub}</p>
+      {/* Pre-issue: one action, the provenance (the serial module and the stamp say
+          the issue is pending; no disabled button). Live: buy, then verify. */}
       <div class="actions hero__actions">
-        <Action href={issue.buyUrl} label={ACTION.acquire} primary helper={ACTION.availableAtIssue} external id="hero-acquire" />
-        <Action href="#provenance" label={HERO.secondary} />
+        {issue.live ? (
+          <>
+            <Action href={issue.buyUrl} label={HERO.buy} primary external />
+            <Action href={issue.explorerUrl} label={HERO.verify} external />
+          </>
+        ) : (
+          <Action href="#provenance" label={HERO.secondary} primary />
+        )}
       </div>
       <SerialModule class="hero__serial" />
     </div>

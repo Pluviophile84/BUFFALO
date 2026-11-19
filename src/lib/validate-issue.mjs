@@ -197,6 +197,8 @@ export function deriveIssue(cfg) {
     serialShort: live ? shortSerial(contract) : null,
     explorerUrl: live ? explorerUrl : null,
     buyUrl: live ? buyUrl : null,
+    // the host of the buy route in use: pump.fun (derived or override), jup.ag or raydium.io
+    buyHost: live ? new URL(buyUrl).hostname : null,
     xUrl: xUrl || null,
     telegramUrl: telegramUrl || null,
     issueDate: issueDate || null,

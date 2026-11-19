@@ -82,8 +82,10 @@ for (const gutter of ['stable', 'auto'] as const)
 
 test('the coin keeps its size (and, in one column, its vertical position); no rule under it', async ({ browser }) => {
   // values measured on the first version (before these fixes), overlay scrollbars
+  // One column: Batch 3 sets the mobile coin to min(74vw, 42vh, 560px) (64vw on phones up
+  // to 760px tall) so the first screen fits; its top below the nav is unchanged.
   const before: Record<number, { top: number; width: number }> = {
-    375: { top: 129, width: 292.5 },
+    375: { top: 129, width: 277.5 },
     768: { top: 129, width: 430.08 },
     1024: { top: 352.44, width: 445.44 },
     1280: { top: 284.92, width: 464 },

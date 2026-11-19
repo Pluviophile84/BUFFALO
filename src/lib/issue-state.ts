@@ -15,6 +15,7 @@ export type IssueState = {
   serialShort: string | null;
   explorerUrl: string | null;
   buyUrl: string | null;
+  buyHost: string | null;
   xUrl: string | null;
   telegramUrl: string | null;
   issueDate: string | null;

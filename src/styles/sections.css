@@ -22,7 +22,7 @@
     grid-column: 1 / -1;
     grid-row: 2;
     align-self: center;
-    padding: var(--s6) 0 var(--s16);
+    padding: 0 0 var(--s16);
   }
   /* Clear field: text never sits on the guilloche. The backing runs to the
      viewport edge and the full hero height, so the line field terminates in one
@@ -42,14 +42,29 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding-block: 64px 88px;
+    /* One column (Batch 3): the H1, the sub and the primary action fit the first
+       screen of a 384×832 phone. Below the coin, 72px hold the stamp (12px down)
+       and the thread's lower window (6px down) clear of the copy; the coin is
+       74vw. Above it, 64px hold the upper window. */
+    padding-block: 64px 72px;
   }
   .hero__coinwrap {
     position: relative;
-    width: min(78vw, 42vh, 560px);
-    /* the space the engraved rule under the coin took (16px gap + 13px rule),
-       kept so removing the rule moves nothing else */
-    margin-bottom: calc(var(--s4) + 13px);
+    width: min(74vw, 42vh, 560px);
+  }
+  /* Short phones (375×667): the H1 and the sub fit. The coin goes to 64vw (its
+     floor), the space above it to 24px, and the upper window, which needs 62px
+     there, is left out; the thread and the lower window stay. */
+  @media (max-width: 1023px) and (max-height: 760px) {
+    .hero__coincol {
+      padding-top: 24px;
+    }
+    .hero__coinwrap {
+      width: min(64vw, 42vh, 560px);
+    }
+    .thread__win--1 {
+      display: none;
+    }
   }
   .hero__coin {
     z-index: 2;
@@ -69,7 +84,7 @@
   .hero__stamp {
     position: absolute;
     z-index: 2;
-    top: calc(100% + 44px);
+    top: calc(100% + 12px);
     left: calc((100% - (100vw - 2 * var(--margin))) / 2);
     max-width: calc((100vw - 2 * var(--margin)) / 2 - 16px);
   }
@@ -305,7 +320,7 @@
     bottom: calc(100% + 6px);
   }
   .thread__win--2 {
-    top: calc(100% + 40px);
+    top: calc(100% + 6px);
   }
   .thread__win--3 {
     display: none;

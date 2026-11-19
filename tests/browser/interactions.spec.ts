@@ -11,7 +11,7 @@ test.describe('pre-issue state', () => {
       const help = await a.getAttribute('aria-describedby');
       await expect(page.locator(`#${help}`)).toBeVisible();
     }
-    await expect(page.locator('.hero .btn[aria-disabled="true"]').first()).toHaveText('Issue pending');
+    await expect(page.locator('.hero a[aria-disabled="true"]')).toHaveCount(0); // Batch 3: no disabled hero action
     await expect(page.locator('button.serial__copy').first()).toBeDisabled();
     // keyboard never lands on a disabled action
     for (let i = 0; i < 12; i++) {
