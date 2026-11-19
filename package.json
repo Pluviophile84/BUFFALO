@@ -16,7 +16,8 @@
     "test": "node tests/build-states.mjs && playwright test && node tests/lighthouse.mjs",
     "test:static": "playwright test --project=static",
     "lighthouse": "node tests/lighthouse.mjs",
-    "test:browser": "playwright test --project=browser"
+    "test:browser": "playwright test --project=browser",
+    "verify-mint": "node --use-env-proxy --disable-warning=UNDICI-EHPA scripts/verify-mint.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.5",

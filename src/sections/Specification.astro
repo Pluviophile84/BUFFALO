@@ -18,8 +18,8 @@ const pendingCls = (v: string) => (v === issue.pendingLabel || !live ? 'is-pendi
         <p><strong>{SPEC.noticeTitle}</strong> {SPEC.notice}</p>
       </div>
       <div class="actions spec__actions">
-        <Action href={issue.explorerUrl} label={SPEC.verify} primary helper={ACTION.availableAtIssue} external />
-        <Action href={issue.buyUrl} label={ACTION.acquire} helper={ACTION.availableAtIssue} external />
+        <Action href={issue.explorerUrl} label={SPEC.verify} primary helper={ACTION.availableAtIssue} external id="spec-verify" />
+        <Action href={issue.buyUrl} label={ACTION.acquire} helper={ACTION.availableAtIssue} external id="spec-acquire" />
       </div>
     </div>
     <div class="spec__ledger-wrap">

@@ -39,38 +39,74 @@ Other scripts:
 | `npm run test:static` | Node-only checks (config guards, CSP output, asset integrity). Fast. |
 | `npm run test:browser` | Playwright checks (logo diff, axe, copy lint, visual QA, interactions, fonts, budgets). |
 | `npm run lighthouse` | Lighthouse CI with the §9 budgets as assertions. |
+| `npm run verify-mint` | Checks the configured mint on Solana mainnet: owner, mint type, supply and authorities against the published facts. Required at launch (see below). Needs network access. |
 
 ---
 
 ## Launch procedure
 
-**Only one file changes at launch: `src/config/issue.ts`.**
+**Only one file changes at launch: `src/config/issue.ts`.** Follow these steps in
+order. Do not skip one because the one before passed.
 
-1. Edit `src/config/issue.ts`:
+1. **Set the config.** Edit `src/config/issue.ts`:
    - `status: 'live'`
    - `contractAddress: '<the mint address>'`
 
-   The explorer link (`https://solscan.io/token/{address}`) and the acquisition link
-   (`https://pump.fun/coin/{address}`) are derived automatically. Override them only
-   after a DEX migration (`explorerUrl`, `buyUrl`; the hosts are allowlisted).
-2. Add what is verified:
-   - `xUrl`, `telegramUrl` (these may go live before the contract; buttons enable
-     as soon as a URL is set)
-   - `totalSupply`, `mintAuthority`, `freezeAuthority`, `teamAllocation`
-   - `issueDate` (optional, ISO `YYYY-MM-DD`)
+   The explorer link (`https://solscan.io/token/{mint}`) and the acquisition link
+   (`https://pump.fun/coin/{mint}`) are derived from the mint automatically.
+   Override them only after a DEX migration, and only with a defined route, the
+   mint exactly in place of `{mint}`:
+   - `explorerUrl`: `https://solscan.io/token/{mint}`,
+     `https://explorer.solana.com/address/{mint}`,
+     `https://solana.fm/address/{mint}` or `https://birdeye.so/token/{mint}`
+     (optionally `?chain=solana`). Pair and pool pages are not explorer links.
+   - `buyUrl`: `https://pump.fun/coin/{mint}`, `https://jup.ag/swap/SOL-{mint}`
+     or `https://raydium.io/swap/?…outputMint={mint}`.
+
+   Add what is verified:
+   - `xUrl`, `telegramUrl`. These may go live before the contract: buttons enable
+     as soon as a URL is set. In the live state an unset channel is hidden, and
+     with neither set the page says "No official chat channel has been
+     published."
+   - `totalSupply`, `mintAuthority`, `freezeAuthority`, `teamAllocation`. Write
+     an authority as `Revoked` or as its exact address.
+   - `issueDate` (optional, `YYYY-MM-DD`, a real calendar date).
 
    Unset facts render as **Pending verification**: never blank, never guessed.
-3. Commit and push. Vercel builds and deploys.
-   - The build **fails instead of publishing** if anything is wrong: `live`
-     without an address, an address that is not base58 or not 32–44 characters,
-     a non-`https` URL, a host off the allowlist, or an explorer override that
-     doesn't contain the exact address. Read the build log; it lists every problem.
-4. Verify, in a clean browser profile:
-   - [ ] Open every link on the page: Acquire, Verify on explorer, View on explorer, Official X, Custodian chat.
-   - [ ] Match the serial **character by character** against the explorer: hero, Specification and final section. They render from one value, but check.
-   - [ ] Check supply, mint authority and freeze authority on-chain against the Specification ledger.
-   - [ ] Confirm the X card with the X card validator. The OG image switches from the SPECIMEN variant to `/og/buffalo-fourth-issue.png`, a new filename, so caches refresh.
-   - [ ] Publish the same serial from the official X account.
+2. **Run `npm run verify-mint`. It must pass.** It asks Solana mainnet
+   (`getAccountInfo`, jsonParsed) about `contractAddress`:
+   - the account must be owned by the SPL Token or Token-2022 program, and must
+     be a mint;
+   - it prints the decimals, the supply, the mint authority and the freeze
+     authority;
+   - it fails if `totalSupply`, `mintAuthority` or `freezeAuthority`, when set,
+     differ from the chain.
+
+   It is deliberately not part of the Vercel build, so an RPC hiccup cannot block
+   a deploy. Set `SOLANA_RPC_URL` to use another endpoint.
+3. **Commit and push.** Vercel builds the deployment. The build **fails instead of
+   publishing** if anything is wrong, and the build log lists every problem:
+   - `live` without an address;
+   - an address that is not base58, not 32–44 characters, or does not decode to
+     exactly 32 bytes;
+   - a non-`https` URL, or a social link off its allowlist;
+   - an explorer or buy override that is not one of the defined routes for this
+     exact mint;
+   - an `issueDate` that is not a real `YYYY-MM-DD` date.
+4. **Check the Vercel preview in a clean browser profile** (no extensions, no
+   saved sessions):
+   - [ ] Open every link on the page: the hero's buy and verify actions, Verify on
+     explorer, View on explorer, Official X, Custodian chat (where set).
+   - [ ] Confirm the X card with the X card validator. The OG image switches from
+     the SPECIMEN variant to `/og/buffalo-fourth-issue.png`, a new filename, so
+     caches refresh.
+   - [ ] If you pushed a branch, promote the preview (or merge it) only once these
+     checks pass, then repeat them on the production URL.
+5. **Verify the mint character by character on the explorer:** the hero, the
+   Specification and the final section each against the explorer page. They
+   render from one value, but check every character, not just the first and last
+   four.
+6. **Publish the same mint from the official X account.**
 
 Before launch, the page is incapable of showing a live state: in pre-issue
 builds, acquire and explorer controls render as `<a aria-disabled="true">` with
@@ -471,6 +507,51 @@ reason is stated.
       - Character's intro and the Resilience text carry the new copy.
       - The copy test checks the new Release copy in both states, and that
         the ledger is gone.
+    - **Part 3, launch validation** (`src/lib/validate-issue.mjs`):
+      - **The mint is a real Solana public key.** The character and length
+        check comes first. Then a small local base58 decoder must produce
+        exactly 32 bytes.
+        - The old live test fixture, `TestFixtureMint7pQ…Npump` (44
+          characters), failed this check: a 44-character key starting with
+          "T" decodes to 33 bytes.
+        - The fixture is now `TestFixtureMintpQ2rS9vWxYz3aBcDeFgHjKmNpump`
+          (43 characters, 32 bytes). Its short form is still `TestFi…mNpump`.
+      - **Explorer and buy overrides must be a defined route**
+        (`EXPLORER_ROUTES`, `BUY_ROUTES`). The host must match exactly, with no
+        port. The mint must be the exact path segment, or Raydium's single
+        `outputMint`.
+        - No other query or fragment is allowed, except birdeye's
+          `?chain=solana` and the other Raydium parameters.
+        - So `?cluster=devnet` fails, and so do referral parameters. The mint
+          in a query, a fragment or a longer segment fails, and so do pair and
+          pool pages.
+        - The error names every accepted route and says how to extend the list.
+      - **Channels in the live state:** an unset channel has no button. With
+        neither set, Custodians shows "No official chat channel has been
+        published." The pre-issue state is unchanged.
+      - **Strict `issueDate`:** `YYYY-MM-DD` and a real calendar date, so
+        `2026-02-30` fails.
+      - **One config source:** `src/lib/load-issue.mjs` resolves the config
+        file and runs it through `deriveIssue()`. The fixture rules (fixtures
+        only from `tests/fixtures/issue/`, never on Vercel) are the same
+        everywhere. It is used by:
+        - `astro.config.mjs`, for the site URL, which was previously read with
+          a regex over the TypeScript source;
+        - the OG build;
+        - `verify-mint`.
+
+        A fixture with another `siteUrl` builds with that URL in the
+        canonical, the OG tags and the sitemap.
+      - **Stable ids:** `Action.astro` no longer counts instances in a
+        process-global map, so ids no longer depend on render order. A disabled
+        action with helper text takes its id from the caller (`hero-acquire`,
+        `spec-verify`, …), and the build throws if one is missing.
+      - **`npm run verify-mint`** (`scripts/verify-mint.mjs`): the checks live
+        in `scripts/lib/mint-check.mjs`, tested against recorded responses.
+        - `--mint <address>` checks another mint as a smoke test, without
+          comparing the config's facts.
+        - The script runs with Node's `--use-env-proxy`, so it also works
+          behind an HTTPS proxy.
 
 ### TODO-ASSET
 
@@ -489,7 +570,7 @@ reason is stated.
 
 ## Test results (last run)
 
-`npm test` → **170/170 Playwright checks passed; Lighthouse CI assertions passed.**
+`npm test` → **187/187 Playwright checks passed; Lighthouse CI assertions passed.**
 
 | Check | Result |
 |---|---|

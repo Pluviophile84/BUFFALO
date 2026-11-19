@@ -1173,6 +1173,12 @@
   .custodians__channels {
     margin-bottom: var(--s5);
   }
+  /* live, no channel set: one line in the channels' place */
+  .custodians__none {
+    margin-bottom: var(--s5);
+    color: var(--bison-deep);
+    max-width: 48ch;
+  }
   .custodians__note {
     color: var(--ink-2);
     font-size: var(--t-small);

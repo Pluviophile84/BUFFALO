@@ -4,26 +4,15 @@ import sitemap from '@astrojs/sitemap';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { loadIssue } from './src/lib/load-issue.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 
-// Issue config source. Tests may point a build at a fixture in tests/fixtures/issue/;
-// production (Vercel) builds always use src/config/issue.ts — a fixture can never deploy.
-const fixture = process.env.BUFFALO_ISSUE_FIXTURE;
-let issueConfigPath = path.join(root, 'src/config/issue.ts');
-if (fixture) {
-  if (process.env.VERCEL) throw new Error('BUFFALO_ISSUE_FIXTURE is not allowed in Vercel builds.');
-  const p = path.resolve(root, fixture);
-  if (!p.startsWith(path.join(root, 'tests/fixtures/issue') + path.sep) || !fs.existsSync(p)) {
-    throw new Error(`BUFFALO_ISSUE_FIXTURE must name a file in tests/fixtures/issue/ (got ${fixture})`);
-  }
-  issueConfigPath = p;
-}
-
-// siteUrl is read from the config file text so canonical/OG/sitemap share one source.
-const siteMatch = fs.readFileSync(path.join(root, 'src/config/issue.ts'), 'utf8').match(/siteUrl:\s*'([^']+)'/);
-if (!siteMatch) throw new Error('siteUrl not found in src/config/issue.ts');
-const site = siteMatch[1];
+// The issue config (shipped file, or a test fixture outside Vercel) through the same
+// deriveIssue() the page and the OG build use: canonical, OG and sitemap share its
+// validated siteUrl, and an invalid config fails here, before anything is built.
+const { path: issueConfigPath, issue } = await loadIssue(root);
+const site = issue.siteUrl;
 
 export default defineConfig({
   site,

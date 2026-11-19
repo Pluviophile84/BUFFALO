@@ -16,10 +16,21 @@ const tiles: Tile[] = kit.tiles;
         <PlateLabel text={CUSTODIANS.label} />
         <h2 id="custodians-title" data-ink>{CUSTODIANS.h2}</h2>
         <p class="custodians__body" data-ink data-stagger="1">{CUSTODIANS.body}</p>
-        <div class="actions custodians__channels">
-          <Action href={issue.xUrl} label={CUSTODIANS.x} helper={CUSTODIANS.opensAtIssue} external />
-          <Action href={issue.telegramUrl} label={CUSTODIANS.chat} helper={CUSTODIANS.opensAtIssue} external />
-        </div>
+        {/* Pre-issue: both channels, an unset one disabled with "Opens at issue".
+            Live: only the channels that are set; none set → one plain line. */}
+        {!issue.live ? (
+          <div class="actions custodians__channels">
+            <Action href={issue.xUrl} label={CUSTODIANS.x} helper={CUSTODIANS.opensAtIssue} external id="custodians-x" />
+            <Action href={issue.telegramUrl} label={CUSTODIANS.chat} helper={CUSTODIANS.opensAtIssue} external id="custodians-chat" />
+          </div>
+        ) : issue.xUrl || issue.telegramUrl ? (
+          <div class="actions custodians__channels">
+            {issue.xUrl && <Action href={issue.xUrl} label={CUSTODIANS.x} external />}
+            {issue.telegramUrl && <Action href={issue.telegramUrl} label={CUSTODIANS.chat} external />}
+          </div>
+        ) : (
+          <p class="custodians__none" data-no-channels>{CUSTODIANS.noChannels}</p>
+        )}
         <p class="custodians__note">{CUSTODIANS.channelsNote}</p>
       </div>
       <div class="code" role="group" aria-labelledby="code-title">

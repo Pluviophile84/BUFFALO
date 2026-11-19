@@ -40,7 +40,7 @@ const pill = issue.live ? 'In circulation' : 'Pre-issue';
     {NAV.links.map((l) => <a href={`${prefix}${l.href}`} data-menu-link>{l.label}</a>)}
   </nav>
   <div class="menu__foot">
-    <Action href={issue.buyUrl} label={issue.live ? NAV.cta : ACTION.acquire} primary helper={ACTION.availableAtIssue} external />
+    <Action href={issue.buyUrl} label={issue.live ? NAV.cta : ACTION.acquire} primary helper={ACTION.availableAtIssue} external id="menu-acquire" />
     <span class:list={['pill', issue.live && 'pill--live']}><span class="pill__dot" aria-hidden="true"></span>{pill}</span>
   </div>
 </div>

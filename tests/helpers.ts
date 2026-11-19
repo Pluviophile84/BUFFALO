@@ -11,7 +11,7 @@ export const STATES = [
   { name: 'pre-issue', base: PRE, dist: path.join(ROOT, 'dist') },
   { name: 'live', base: LIVE, dist: path.join(ROOT, 'dist-live') },
 ] as const;
-export const LIVE_CONTRACT = 'TestFixtureMint7pQ2rS9vWxYz3aBcDeFgHjKmNpump';
+export const LIVE_CONTRACT = 'TestFixtureMintpQ2rS9vWxYz3aBcDeFgHjKmNpump';
 
 export function walk(dir: string, filter: (f: string) => boolean = () => true): string[] {
   const out: string[] = [];

@@ -8,16 +8,15 @@ interface Props {
   helper?: string;
   external?: boolean;
   class?: string;
+  /** Required for a disabled action with helper text: names its aria-describedby target. */
+  id?: string;
 }
-const { href, label, primary = false, helper, external = false, class: cls = '' } = Astro.props;
+const { href, label, primary = false, helper, external = false, class: cls = '', id } = Astro.props;
 const disabled = !href;
-// Deterministic id for aria-describedby (stable across builds).
-const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-const g = globalThis as unknown as { __actionSeq?: Map<string, number> };
-g.__actionSeq ??= new Map();
-const n = (g.__actionSeq.get(slug) ?? 0) + 1;
-g.__actionSeq.set(slug, n);
-const hid = disabled && helper ? `help-${slug}-${n}` : undefined;
+// Stable per-instance id for aria-describedby, given by the caller (no global
+// counter: the same markup on every build and every render, in any order).
+if (disabled && helper && !id) throw new Error(`Action "${label}": a disabled action with helper text needs an id`);
+const hid = disabled && helper ? `help-${id}` : undefined;
 ---
 {disabled ? (
   <span class:list={['action', cls]}>

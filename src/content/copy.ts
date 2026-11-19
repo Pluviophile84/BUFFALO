@@ -206,6 +206,8 @@ export const CUSTODIANS = {
   x: 'Official X',
   chat: 'Custodian chat',
   opensAtIssue: 'Opens at issue',
+  // live, when neither channel is set
+  noChannels: 'No official chat channel has been published.',
   channelsNote: 'Official channels appear here first. Anything not linked from this page is not official.',
   codeTitle: 'The Custodian Code',
   code: [

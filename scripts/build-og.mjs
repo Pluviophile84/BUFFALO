@@ -6,12 +6,11 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { ROOT } from './lib/master.mjs';
 import { renderSvg, renderMaster, fieldPaths } from './lib/render.mjs';
-import { deriveIssue } from '../src/lib/validate-issue.mjs';
+import { loadIssue } from '../src/lib/load-issue.mjs';
 
-// Load the same config the site build will use (fixture support mirrors astro.config.mjs).
-const cfgPath = process.env.BUFFALO_ISSUE_FIXTURE && !process.env.VERCEL ? path.resolve(ROOT, process.env.BUFFALO_ISSUE_FIXTURE) : path.join(ROOT, 'src/config/issue.ts');
-const { ISSUE } = await import(cfgPath);
-const issue = deriveIssue(ISSUE); // throws (fails the build) on an invalid config
+// The same config the site build will use, through the same loader and validator
+// (throws, failing the build, on an invalid config or a fixture on Vercel).
+const { issue } = await loadIssue(ROOT);
 
 const W = 1200;
 const H = 630;

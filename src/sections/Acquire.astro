@@ -21,7 +21,7 @@ import Action from '../components/Action.astro';
       ))}
     </ol>
     <div class="actions acquire__actions">
-      <Action href={issue.buyUrl} label={ACTION.acquire} primary helper={ACTION.availableAtIssue} external />
+      <Action href={issue.buyUrl} label={ACTION.acquire} primary helper={ACTION.availableAtIssue} external id="acquire-buy" />
       <Action href="#specification" label={ACQUIRE.secondary} />
     </div>
     <p class="acquire__note">{ACQUIRE.note}</p>

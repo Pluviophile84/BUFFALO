@@ -731,12 +731,12 @@
  },
  {
   "text": "Custodian chat",
-  "state": "both",
+  "state": "pre",
   "page": "/"
  },
  {
   "text": "Opens at issue",
-  "state": "both",
+  "state": "pre",
   "page": "/"
  },
  {
