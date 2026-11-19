@@ -310,6 +310,49 @@
     }
   }
 
+  /* No-JS navigation (removed by scripts/nav.ts): the summary is the Menu button's
+     twin; open, the section links drop below the bar, two to a row. */
+  .nav__fallback > summary {
+    cursor: pointer;
+    list-style: none;
+  }
+  .nav__fallback > summary::-webkit-details-marker {
+    display: none;
+  }
+  .nav__fallback-close,
+  .nav__fallback[open] .nav__fallback-open {
+    display: none;
+  }
+  .nav__fallback[open] .nav__fallback-close {
+    display: inline;
+  }
+  .nav__fallback-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    padding: var(--s2) var(--margin) var(--s4);
+    background: var(--vault);
+    border-bottom: 1px solid var(--rule);
+  }
+  .nav__fallback-links a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--t-small);
+    color: var(--cream-2);
+    text-decoration: none;
+    border-top: 1px solid var(--rule);
+  }
+  @media (min-width: 1100px) {
+    .nav__fallback {
+      display: none;
+    }
+  }
+
   /* Overlay menu (mobile) */
   .menu {
     position: fixed;

@@ -25,6 +25,16 @@ const pill = issue.live ? 'In circulation' : 'Pre-issue';
       <button class="nav__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-open hidden>
         <span class="nav__menu-icon" aria-hidden="true"></span>Menu
       </button>
+      {/* Navigation without JavaScript (disabled, or the script blocked or failed):
+          a native disclosure with the section links. scripts/nav.ts removes it
+          first thing and shows the overlay menu's button in its place (same box,
+          so nothing moves), so with JavaScript the menu is exactly as before. */}
+      <details class="nav__fallback" data-nav-fallback>
+        <summary class="nav__menu"><span class="nav__menu-icon" aria-hidden="true"></span><span class="nav__fallback-open">Menu</span><span class="nav__fallback-close">Close</span></summary>
+        <nav class="nav__fallback-links" aria-label="Sections">
+          {NAV.links.map((l) => <a href={`${prefix}${l.href}`}>{l.label}</a>)}
+        </nav>
+      </details>
     </div>
   </div>
 </header>

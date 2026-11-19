@@ -640,6 +640,18 @@ reason is stated.
       - Without JavaScript the controls stay hidden and the cards swipe as
         before. At 768 px and wider the cards are a grid and none of this
         shows.
+    - **Part 8, mobile navigation without JavaScript:** the overlay menu's
+      button needs the script, so without JavaScript the mobile header offered
+      no navigation at all.
+      - The header now also holds a native `<details>`. Its summary is a twin
+        of the Menu button, and it opens the six section links, two to a row,
+        44 px each.
+      - It covers JavaScript disabled and also a script that is blocked or
+        fails to load. A `<noscript>` would only cover the first.
+      - `scripts/nav.ts` removes it first thing and shows the overlay's
+        button in exactly its box (tested to within 1 px), so nothing moves.
+        With JavaScript the menu is as before: focus trap, Esc, inert, and the
+        scroll-position fix. `menu.spec.ts` passes unchanged.
 
 ### TODO-ASSET
 
@@ -658,7 +670,7 @@ reason is stated.
 
 ## Test results (last run)
 
-`npm test` → **226/226 Playwright checks passed; Lighthouse CI assertions passed.**
+`npm test` → **230/230 Playwright checks passed; Lighthouse CI assertions passed.**
 
 | Check | Result |
 |---|---|

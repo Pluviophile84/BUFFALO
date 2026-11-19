@@ -10,6 +10,8 @@ export function initNav(): void {
   const menu = document.querySelector<HTMLElement>('[data-menu]');
   const close = document.querySelector<HTMLButtonElement>('[data-menu-close]');
   if (!open || !menu || !close) return;
+  // The no-JS fallback (a <details> link list, Nav.astro) gives way to the overlay.
+  document.querySelector('[data-nav-fallback]')?.remove();
   open.hidden = false;
 
   const outside = () => [...document.body.children].filter((el) => el !== menu && el.tagName !== 'SCRIPT') as HTMLElement[];
