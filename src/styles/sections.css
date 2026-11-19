@@ -545,6 +545,42 @@
     width: 25%;
     background: var(--bison-deep);
   }
+  /* the counter and ‹ › (scripts/cards.ts); they replace the "I — IV" range */
+  .provenance__progress.has-nav .provenance__range {
+    display: none;
+  }
+  .cards-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+  }
+  .cards-nav[hidden] {
+    display: none;
+  }
+  .cards-nav__count {
+    min-width: 4.5em;
+    text-align: center;
+    color: var(--bison-deep);
+  }
+  .cards-nav__btn {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--rule-paper-strong);
+    color: var(--bison-deep);
+  }
+  .cards-nav__btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .cards-nav__btn svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+  }
   @supports (animation-timeline: scroll()) {
     .provenance__bar {
       animation: progress linear both;

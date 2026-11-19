@@ -626,6 +626,20 @@ reason is stated.
         `character-mark.spec.ts`, but that file tests the Character
         watermark). They swipe with real touch events through Chromium's
         input pipeline, so `touch-action` is exercised for real.
+    - **Part 7, Provenance scroll cue (< 768 px):** under the card scroller
+      there is now a counter (`1 / 4`) and ‹ › buttons (44 px, "Previous
+      card" / "Next card"), from `scripts/cards.ts`.
+      - Each button scrolls the scroller (never the page) by exactly one card,
+        to its snap position, so `scroll-snap-type: x mandatory` still holds.
+        The buttons disable at the ends.
+      - The counter follows swipes: the current card is the most visible one,
+        tracked by an IntersectionObserver, so scrolling forces no layout.
+      - Screen readers hear "Card 2 of 4." politely.
+      - The scroll-linked progress line stays. Its "I — IV" label is hidden
+        while the counter shows.
+      - Without JavaScript the controls stay hidden and the cards swipe as
+        before. At 768 px and wider the cards are a grid and none of this
+        shows.
 
 ### TODO-ASSET
 
@@ -644,7 +658,7 @@ reason is stated.
 
 ## Test results (last run)
 
-`npm test` → **220/220 Playwright checks passed; Lighthouse CI assertions passed.**
+`npm test` → **226/226 Playwright checks passed; Lighthouse CI assertions passed.**
 
 | Check | Result |
 |---|---|
