@@ -5,12 +5,27 @@
 // generated field's phase drift and pointer bend recomputed its ring equations
 // and cannot apply to fixed paths. Redrawn only when the layout changes.
 // DPR capped at 2. The path data is fetched from the same file the SVG uses,
-// after the page has loaded, so it never blocks first render or competes with
-// the LCP image; until it is drawn the static SVG stays hidden, as before, and
-// it is shown again if the file cannot be read.
+// after the page has loaded and when the main thread is idle, so it never blocks
+// first render or competes with the LCP image. It is fetched and parsed once and
+// shared by every host. The static SVG under a canvas is never attached (it would
+// be hidden); if the file cannot be read, the canvas goes and the SVG is attached.
 import generated from '../data/generated.json';
+import { attachField, idle } from './field';
 
 const F = generated.field;
+
+// One fetch and one parse for all hosts (the hero and the final section).
+const shared = new Map<string, Promise<Path2D[]>>();
+const pathsFrom = (src: string) => {
+  let p = shared.get(src);
+  if (!p) {
+    p = fetch(src)
+      .then((r) => (r.ok ? r.text() : Promise.reject(new Error(String(r.status)))))
+      .then((svg) => [...svg.matchAll(/\sd="([^"]+)"/g)].map((m) => new Path2D(m[1])));
+    shared.set(src, p);
+  }
+  return p;
+};
 
 export function initGuilloche(): void {
   document.querySelectorAll<HTMLElement>('[data-guilloche-host]').forEach(setup);
@@ -19,13 +34,14 @@ export function initGuilloche(): void {
 function setup(host: HTMLElement): void {
   const field = host.querySelector<HTMLElement>('.field');
   const src = field?.dataset.fieldSrc;
-  if (!field || !src) return;
+  if (!field) return;
+  if (!src) return attachField(field);
   const canvas = document.createElement('canvas');
   canvas.className = 'guilloche-canvas';
   canvas.setAttribute('aria-hidden', 'true');
-  host.prepend(canvas);
   const ctx = canvas.getContext('2d', { alpha: true });
-  if (!ctx) return;
+  if (!ctx) return attachField(field); // no canvas here: the static SVG instead
+  host.prepend(canvas);
   host.classList.add('has-canvas');
 
   let paths: Path2D[] = [];
@@ -59,18 +75,19 @@ function setup(host: HTMLElement): void {
     ctx!.restore();
   }
 
-  // after the page has loaded, as the static field's file (scripts/field.ts)
+  // after the page has loaded and the main thread is idle (as the static field)
   const loaded = new Promise<void>((res) => (document.readyState === 'complete' ? res() : window.addEventListener('load', () => res(), { once: true })));
   loaded
-    .then(() => fetch(src))
-    .then((r) => (r.ok ? r.text() : Promise.reject(new Error(String(r.status)))))
-    .then((svg) => {
-      paths = [...svg.matchAll(/\sd="([^"]+)"/g)].map((m) => new Path2D(m[1]));
-      draw();
+    .then(() => new Promise<void>((res) => idle(res)))
+    .then(() => pathsFrom(src))
+    .then((p) => {
+      paths = p;
+      idle(draw);
     })
     .catch(() => {
       canvas.remove();
       host.classList.remove('has-canvas');
+      attachField(field); // back to the static SVG
     });
 
   let rt = 0;

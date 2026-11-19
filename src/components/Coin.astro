@@ -8,6 +8,7 @@
 // Every composite is pixel-diffed against a resvg render of the master (tests/logo.spec.ts).
 import brand from '../data/brand.json';
 import { META } from '../content/copy';
+import { brandUrl } from '../lib/assets';
 
 interface Props {
   sizes: string;
@@ -20,7 +21,7 @@ interface Props {
 }
 const { sizes, eager = false, strike = false, id, class: cls = '', decorative = false, interactive = false } = Astro.props;
 const [rim, ring, field] = brand.circles;
-const srcset = (ext: string) => brand.bison.srcset.map((s) => `/brand/bison-${s.width}.${ext} ${s.width}w`).join(', ');
+const srcset = (ext: string) => brand.bison.srcset.map((s) => `${brandUrl(`bison-${s.width}.${ext}`)} ${s.width}w`).join(', ');
 const fallback = brand.bison.srcset[1]!;
 const loading = eager ? 'eager' : 'lazy';
 ---
@@ -40,13 +41,13 @@ const loading = eager ? 'eager' : 'lazy';
     </g>
     <circle class="coin__field" data-layer="field" cx={field.cx} cy={field.cy} r={field.r} fill={field.fill} />
   </svg>
-  <svg class="coin__layer coin__guilloche" data-layer="guilloche" viewBox={brand.viewBox} aria-hidden="true" focusable="false"><use href="/brand/guilloche.svg#guilloche" /></svg>
-  <img class="coin__ground" data-layer="ground" src="/brand/ground.webp" alt="" width={brand.ground.native.width} height={brand.ground.native.height} loading={loading} decoding="async" fetchpriority="low" />
+  <svg class="coin__layer coin__guilloche" data-layer="guilloche" viewBox={brand.viewBox} aria-hidden="true" focusable="false"><use href={`${brandUrl('guilloche.svg')}#guilloche`} /></svg>
+  <img class="coin__ground" data-layer="ground" src={brandUrl('ground.webp')} alt="" width={brand.ground.native.width} height={brand.ground.native.height} loading={loading} decoding="async" fetchpriority="low" />
   <picture class="coin__bison" data-layer="bison">
     <source type="image/avif" srcset={srcset('avif')} sizes={sizes} />
     <source type="image/webp" srcset={srcset('webp')} sizes={sizes} />
     <img
-      src={`/brand/bison-${fallback.width}.webp`}
+      src={brandUrl(`bison-${fallback.width}.webp`)}
       alt=""
       width={brand.bison.native.width}
       height={brand.bison.native.height}

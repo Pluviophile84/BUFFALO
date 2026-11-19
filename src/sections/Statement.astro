@@ -10,7 +10,7 @@ import brand from '../data/brand.json';
       {STATEMENT.lines.map((l, i) => <p data-ink data-stagger={String(Math.min(i, 5))}>{l}</p>)}
     </div>
     <p class="statement__sig label">
-      {/* The Ƀ from the extracted vector (public/brand/b-symbol.svg: same path, viewBox
+      {/* The Ƀ from the extracted vector (tests/fixtures/layers/b-symbol.svg: same path, viewBox
           tight to its bounding box), as its own block, so the ring centres the glyph's
           bounding box, as the master logo centres it, not a text line box. */}
       <span class="seal" aria-hidden="true"><svg class="seal__b" viewBox={brand.b.baked.viewBox} focusable="false"><path fill-rule="evenodd" d={brand.b.baked.d} /></svg></span>

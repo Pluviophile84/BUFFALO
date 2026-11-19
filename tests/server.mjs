@@ -4,7 +4,6 @@
 // brotli/gzip for text types as Vercel's edge applies automatically.
 import http from 'node:http';
 import http2 from 'node:http2';
-import os from 'node:os';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -66,10 +65,15 @@ function handler(req, res) {
 }
 
 if (h2) {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'buffalo-tls-'));
+  // the throwaway certificate lives on the workspace filesystem, like test builds
+  fs.mkdirSync(path.join(root, '.test-builds'), { recursive: true });
+  const tmp = fs.mkdtempSync(path.join(root, '.test-builds', 'tls-'));
   execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-days', '2', '-subj', '/CN=127.0.0.1', '-addext', 'subjectAltName=IP:127.0.0.1', '-keyout', path.join(tmp, 'k.pem'), '-out', path.join(tmp, 'c.pem')], { stdio: 'ignore' });
+  const key = fs.readFileSync(path.join(tmp, 'k.pem'));
+  const cert = fs.readFileSync(path.join(tmp, 'c.pem'));
+  fs.rmSync(tmp, { recursive: true, force: true }); // read into memory: nothing left behind
   http2
-    .createSecureServer({ key: fs.readFileSync(path.join(tmp, 'k.pem')), cert: fs.readFileSync(path.join(tmp, 'c.pem')), allowHTTP1: true }, handler)
+    .createSecureServer({ key, cert, allowHTTP1: true }, handler)
     .listen(port, '127.0.0.1', () => console.log(`serving ${path.relative(root, dir)} on https://127.0.0.1:${port} (h2)`));
 } else {
   http.createServer(handler).listen(port, '127.0.0.1', () => console.log(`serving ${path.relative(root, dir)} on http://127.0.0.1:${port}`));

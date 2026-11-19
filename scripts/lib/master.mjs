@@ -6,7 +6,11 @@ import { fileURLToPath } from 'node:url';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const MASTER_PATH = path.join(ROOT, 'assets/source/BUFFALO_Master_EdgeToEdge.svg');
-export const BRAND_DIR = path.join(ROOT, 'public/brand');
+// Served layers: src/assets/brand, so the site build fingerprints them (/_astro/…).
+export const BRAND_DIR = path.join(ROOT, 'src/assets/brand');
+// Verification-only renders (lossless extractions, the frame, the Ƀ vectors, the
+// manifest): read by tests and the kit build, never deployed.
+export const LAYERS_DIR = path.join(ROOT, 'tests/fixtures/layers');
 export const PACK_DIR = path.join(ROOT, 'assets/logo-pack');
 
 export function readMaster() {

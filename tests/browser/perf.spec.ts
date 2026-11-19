@@ -31,14 +31,17 @@ test('hero assets on mobile at 1x ≤ 220 KB; no third-party requests', async ({
     const u = new URL(r.url());
     expect(u.origin, `third-party: ${r.url()}`).toBe(PRE);
     // the hero's raster and line-work files, the guilloche field included (/_astro/)
-    if (u.pathname.startsWith('/brand/') || /\/_astro\/guilloche-field\./.test(u.pathname)) {
+    if (/\/_astro\/(guilloche-field(-\d)?|guilloche|bison-\d+|ground)\.[\w-]{8}\./.test(u.pathname)) {
       const body = await r.body().catch(() => Buffer.alloc(0));
       sizes[u.pathname] = u.pathname.endsWith('.svg') ? zlib.gzipSync(body).length : body.length; // Vercel compresses SVG
     }
   });
   await page.goto(PRE + '/', { waitUntil: 'networkidle' });
-  const hero = Object.entries(sizes).filter(([p]) => /guilloche(-field\.[\w-]+)?\.svg|bison-\d+\.(avif|webp)|ground\.webp/.test(p));
-  expect(hero.some(([p]) => p.includes('guilloche-field'))).toBe(true);
+  // the static field's six files arrive one idle callback at a time
+  await expect.poll(() => page.locator('.field--hero use[href]').count()).toBe(6);
+  await page.waitForLoadState('networkidle');
+  const hero = Object.entries(sizes).filter(([p]) => /(guilloche-field(-\d)?|guilloche)\.[\w-]+\.svg|bison-\d+\.[\w-]+\.(avif|webp)|ground\.[\w-]+\.webp/.test(p));
+  expect(hero.filter(([p]) => /guilloche-field-\d/.test(p))).toHaveLength(6);
   const total = hero.reduce((s, [, v]) => s + v, 0);
   report['hero assets, mobile 1x'] = `${total} B (${hero.map(([p, v]) => `${path.basename(p)} ${v}`).join(', ')})`;
   expect(total).toBeLessThanOrEqual(220 * 1024);

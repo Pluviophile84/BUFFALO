@@ -28,24 +28,24 @@ test('reference renders exist and match the master', () => {
 test('extracted layers are lossless and exact', () => {
   const b64 = (id: string) => Buffer.from(master.match(new RegExp(`<image id="${id}"[^>]*href="data:image/png;base64,([^"]+)"`))![1]!, 'base64');
   const sha = (b: Buffer) => crypto.createHash('sha256').update(b).digest('hex');
-  expect(sha(fs.readFileSync(path.join(ROOT, 'public/brand/bison.png')))).toBe(sha(b64('bison-raster')));
-  expect(sha(fs.readFileSync(path.join(ROOT, 'public/brand/ground.png')))).toBe(sha(b64('ground-raster')));
-  const frame = fs.readFileSync(path.join(ROOT, 'public/brand/frame.svg'), 'utf8');
+  expect(sha(fs.readFileSync(path.join(ROOT, 'tests/fixtures/layers/bison.png')))).toBe(sha(b64('bison-raster')));
+  expect(sha(fs.readFileSync(path.join(ROOT, 'tests/fixtures/layers/ground.png')))).toBe(sha(b64('ground-raster')));
+  const frame = fs.readFileSync(path.join(ROOT, 'tests/fixtures/layers/frame.svg'), 'utf8');
   for (const fill of ['#947342', '#5D5C3C', '#7A8062']) expect(frame).toContain(fill);
   expect(frame).toContain('viewBox="40 40 920 920"');
   for (const [file, fill] of [['b-symbol.svg', '#EEE1C6'], ['b-symbol-ink.svg', '#1B1510'], ['b-symbol-bronze.svg', '#947342']] as const) {
-    const s = fs.readFileSync(path.join(ROOT, 'public/brand', file), 'utf8');
+    const s = fs.readFileSync(path.join(ROOT, 'tests/fixtures/layers', file), 'utf8');
     expect(s).toContain(`fill="${fill}"`);
     expect(s).toContain('viewBox="286.638 250 426.724 500"'); // tight bbox, computed
   }
   // the layer images never exceed native width
-  for (const f of walk(path.join(ROOT, 'public/brand'), (f) => /bison-\d+\./.test(f))) {
+  for (const f of walk(path.join(ROOT, 'src/assets/brand'), (f) => /bison-\d+\./.test(f))) {
     expect(Number(path.basename(f).match(/bison-(\d+)/)![1])).toBeLessThanOrEqual(1023);
   }
 });
 
 test('frame.svg (SVGO, tuned precision) renders like the master frame', async () => {
-  const frame = fs.readFileSync(path.join(ROOT, 'public/brand/frame.svg'), 'utf8');
+  const frame = fs.readFileSync(path.join(ROOT, 'tests/fixtures/layers/frame.svg'), 'utf8');
   const original = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 40 920 920">${master.match(/<g id="frame">[\s\S]*?<\/g>\s*<\/g>/)![0]}</svg>`;
   const r = (s: string) => readPng(new Resvg(s, { fitTo: { mode: 'width', value: 1000 } }).render().asPng());
   const ratio = diffRatio(r(original), r(frame));
@@ -55,7 +55,7 @@ test('frame.svg (SVGO, tuned precision) renders like the master frame', async ()
 
 test('every emblem export fills its canvas edge to edge', () => {
   const files = [
-    ...walk(path.join(ROOT, 'public/kit'), (f) => /buffalo-emblem-\d+\.png$/.test(f)),
+    ...walk(path.join(ROOT, 'src/assets/kit'), (f) => /buffalo-emblem-\d+\.png$/.test(f)),
     ...['icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'icon-maskable-512.png'].map((f) => path.join(ROOT, 'public', f)),
   ];
   expect(files.length).toBe(7);
@@ -71,7 +71,7 @@ test('every emblem export fills its canvas edge to edge', () => {
 
 test('kit emblem exports match the master (< 0.5% differing pixels)', () => {
   for (const s of [512, 1024, 2048]) {
-    const ratio = diffRatio(readPng(path.join(ROOT, `public/kit/buffalo-emblem-${s}.png`)), renderMaster(s), { out: path.join(out, `kit-emblem-${s}.png`) });
+    const ratio = diffRatio(readPng(path.join(ROOT, `src/assets/kit/buffalo-emblem-${s}.png`)), renderMaster(s), { out: path.join(out, `kit-emblem-${s}.png`) });
     report[`kit emblem ${s}`] = `${(ratio * 100).toFixed(3)}%`;
     expect(ratio, `emblem ${s}`).toBeLessThan(0.005);
   }
@@ -86,7 +86,8 @@ async function emblemRegionDiff(file: string, x: number, y: number, size: number
 
 test('OG image emblem region matches the master, whole and uncropped', async () => {
   for (const dist of ['dist', 'dist-live']) {
-    const meta = JSON.parse(fs.readFileSync(path.join(ROOT, 'public/og/og.json'), 'utf8'));
+    // this build's own copy (public/og is rewritten by every build)
+    const meta = JSON.parse(fs.readFileSync(path.join(ROOT, dist, 'og/og.json'), 'utf8'));
     const png = fs.readdirSync(path.join(ROOT, dist, 'og')).find((f) => f.endsWith('.png'))!;
     expect(png).toBe(dist === 'dist' ? 'buffalo-fourth-issue-specimen.png' : 'buffalo-fourth-issue.png');
     const og = path.join(ROOT, dist, 'og', png);
@@ -108,7 +109,7 @@ test('X header and wallpapers carry the emblem unaltered', async () => {
     ['buffalo-wallpaper-desktop-2560x1440.png', (2560 - 720) / 2, (1440 - 720) / 2, 720],
   ] as const;
   for (const [f, x, y, s] of cases) {
-    expect(await emblemRegionDiff(path.join(ROOT, 'public/kit', f), x, y, s, f.replace('.png', ''))).toBeLessThan(0.005);
+    expect(await emblemRegionDiff(path.join(ROOT, 'src/assets/kit', f), x, y, s, f.replace('.png', ''))).toBeLessThan(0.005);
   }
 });
 

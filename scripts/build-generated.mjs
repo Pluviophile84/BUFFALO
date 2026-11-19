@@ -51,12 +51,20 @@ const fieldPaths = source.map((d) => encode(toHundredths(d)));
 // the pattern's own disc: farthest point from the emblem's centre (500, 500)
 let disc = 0;
 for (const d of source) for (const [, x, y] of toHundredths(d)) disc = Math.max(disc, Math.hypot(x / 100 - 500, y / 100 - 500));
-fs.writeFileSync(
-  path.join(OUT, 'guilloche-field.svg'),
+const fieldSvg = (paths) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 40 920 920"><g id="field" fill="none" stroke="#5E634A" stroke-width="0.75" stroke-linecap="round">` +
-    fieldPaths.map((d) => `<path vector-effect="non-scaling-stroke" d="${d}"/>`).join('') +
-    `</g></svg>`,
-);
+  paths.map((d) => `<path vector-effect="non-scaling-stroke" d="${d}"/>`).join('') +
+  `</g></svg>`;
+// All 162 paths: the canvas, the <noscript> copy, the OG image and the tests.
+fs.writeFileSync(path.join(OUT, 'guilloche-field.svg'), fieldSvg(fieldPaths));
+// The same paths, in master order, split over FIELD_CHUNKS files: the static field
+// loads one per idle callback (scripts/field.ts). Blink parses an external SVG
+// document as one task, so one 44 KB file was one long task after first paint; six
+// files are six short ones. Drawn in the same order, the result is the same.
+const FIELD_CHUNKS = 6;
+const per = Math.ceil(fieldPaths.length / FIELD_CHUNKS);
+for (const f of fs.readdirSync(OUT).filter((n) => /^guilloche-field-\d+\.svg$/.test(n))) fs.rmSync(path.join(OUT, f));
+for (let k = 0; k < FIELD_CHUNKS; k++) fs.writeFileSync(path.join(OUT, `guilloche-field-${k + 1}.svg`), fieldSvg(fieldPaths.slice(k * per, (k + 1) * per)));
 
 const map = landPath(1200);
 const tx = -map.offset[0];
@@ -70,7 +78,7 @@ fs.writeFileSync(
 // field wrap), unchanged from the generated field it replaces: box ±4.93R, lines
 // from 1.07R (a calm ring around the coin) to 4.4R. The logo's disc is scaled so
 // its edge sits at 4.4R, where the generated field's outermost ring was.
-const field = { center: [500, 500], disc: Math.round(disc * 100) / 100, extent: 4.93, inner: 1.07, outer: 4.4, paths: fieldPaths.length };
+const field = { center: [500, 500], disc: Math.round(disc * 100) / 100, extent: 4.93, inner: 1.07, outer: 4.4, paths: fieldPaths.length, chunks: FIELD_CHUNKS };
 const meta = { field, map: { width: map.width, height: map.height } };
 fs.writeFileSync(path.join(ROOT, 'src/data/generated.json'), JSON.stringify(meta, null, 2) + '\n');
 for (const f of fs.readdirSync(OUT)) console.log(`  ${f.padEnd(22)} ${fs.statSync(path.join(OUT, f)).size} B`);

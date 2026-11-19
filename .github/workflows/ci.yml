@@ -1,0 +1,94 @@
+# CI: build both states, run the static and browser suites; verify the mint on
+# mainnet when the shipped config is live; Lighthouse as a separate job that never
+# fails the run (lab numbers on shared runners are noisy; the budgets are enforced
+# by `npm test` locally).
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # the Chromium build pinned by @playwright/test in package-lock.json
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build both states (pre-issue → dist, live fixture → dist-live)
+        run: node tests/build-states.mjs
+
+      - name: Static tests
+        run: npx playwright test --project=static
+
+      - name: Browser tests
+        run: npx playwright test --project=browser
+
+      - name: Read the shipped issue state
+        id: issue
+        run: node --input-type=module -e "import { loadIssue } from './src/lib/load-issue.mjs'; const { issue } = await loadIssue(process.cwd()); console.log('status=' + issue.status);" >> "$GITHUB_OUTPUT"
+
+      # required at launch (README → Launch procedure); runs only once status is 'live'
+      - name: Verify the mint on Solana mainnet
+        if: steps.issue.outputs.status == 'live'
+        run: npm run verify-mint
+
+      - name: Keep the test report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 7
+
+  lighthouse:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    continue-on-error: true # non-blocking
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build both states
+        run: node tests/build-states.mjs
+
+      - name: Lighthouse CI (the §9 budgets)
+        run: |
+          export CHROME_PATH="$(node -e "console.log(require('@playwright/test').chromium.executablePath())")"
+          node tests/lighthouse.mjs
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse
+          path: |
+            .lighthouseci/
+            test-results/lighthouse.json
+          retention-days: 7

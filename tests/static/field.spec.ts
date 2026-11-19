@@ -52,6 +52,18 @@ test('the field is the master frame guilloche: 162 paths, every point identical'
   expect((field.match(/vector-effect="non-scaling-stroke"/g) ?? []).length).toBe(162);
 });
 
+test('the six chunk files hold the same 162 paths, in order (Batch 3: short parse tasks)', () => {
+  const generated = JSON.parse(fs.readFileSync(path.join(ROOT, 'src/data/generated.json'), 'utf8'));
+  const ds = (svg: string) => [...svg.matchAll(/<path[^>]*\sd="([^"]+)"/g)].map((m) => m[1]!);
+  const chunks = Array.from({ length: generated.field.chunks }, (_, k) => fs.readFileSync(path.join(ROOT, `src/assets/generated/guilloche-field-${k + 1}.svg`), 'utf8'));
+  expect(chunks).toHaveLength(6);
+  expect(chunks.flatMap(ds)).toEqual(ds(field));
+  for (const c of chunks) {
+    expect(c).toMatch(/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="40 40 920 920"><g id="field" fill="none" stroke="#5E634A" stroke-width="0.75" stroke-linecap="round">/);
+    expect(c).not.toMatch(/<circle|<image|<rect/);
+  }
+});
+
 test('the generated field and its generator are gone', () => {
   for (const f of ['src/lib/guilloche.mjs', 'src/lib/guilloche.d.mts', 'src/assets/generated/guilloche-hero.svg', 'src/assets/generated/guilloche-final.svg'])
     expect(fs.existsSync(path.join(ROOT, f)), f).toBe(false);

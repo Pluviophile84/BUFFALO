@@ -3,15 +3,18 @@
 // (scripts/build-generated.mjs), in place of the generated rings it replaces.
 // Everything else is as it was:
 // - the static SVG is the baseline (no JS, reduced motion, coarse pointers);
-// - it draws the paths by <use> from the external file, so they are vector line
-//   work (never an LCP candidate) and stay out of the HTML; the file is
-//   referenced once the page has loaded (scripts/field.ts);
+// - it draws the paths by <use> from external files, so they are vector line
+//   work (never an LCP candidate) and stay out of the HTML; they are referenced
+//   once the page has loaded, one of six files (the paths in order, split) per
+//   idle callback (scripts/field.ts), inside one clipped group, so the drawing
+//   is the same as one file and no long task comes of it;
 // - scripts/guilloche-canvas.ts draws the same paths on a canvas on fine
 //   pointers and hides this SVG once it has drawn.
 // Geometry, in the anchor's radius R: box ±4.93R, centred on the anchor; the
 // logo's disc scaled so its edge falls at 4.4R (the old outermost ring); clear
 // inside 1.07R (the old calm ring around the coin).
 import fieldSvg from '../assets/generated/guilloche-field.svg?url';
+const chunkFiles = import.meta.glob<string>('../assets/generated/guilloche-field-*.svg', { query: '?url', import: 'default', eager: true });
 import generated from '../data/generated.json';
 
 interface Props {
@@ -29,11 +32,16 @@ const side = n(2 * half);
 const viewBox = `${x0} ${y0} ${side} ${side}`;
 const clip = `M${x0} ${y0}h${side}v${side}h${-side}z M${n(cx + r0)} ${cy}a${n(r0)} ${n(r0)} 0 1 0 ${n(-2 * r0)} 0a${n(r0)} ${n(r0)} 0 1 0 ${n(2 * r0)} 0z`;
 const clipId = `field-clip-${variant}`;
+const chunks = Array.from({ length: generated.field.chunks }, (_, k) => {
+  const url = chunkFiles[`../assets/generated/guilloche-field-${k + 1}.svg`];
+  if (!url) throw new Error(`Missing guilloche-field-${k + 1}.svg (scripts/build-generated.mjs)`);
+  return url;
+});
 ---
 {/* The path data (≈44 KB) loads after the page (scripts/field.ts sets the href on
     load), so it never competes with the LCP image; without JavaScript, the
     <noscript> copy references it at once, as before. */}
 <div class:list={['field', `field--${variant}`]} aria-hidden="true" data-field-src={fieldSvg}>
-  <svg class="field__svg" viewBox={viewBox} focusable="false"><clipPath id={clipId}><path clip-rule="evenodd" d={clip} /></clipPath><use data-field-href={`${fieldSvg}#field`} clip-path={`url(#${clipId})`} /></svg>
+  <svg class="field__svg" viewBox={viewBox} focusable="false"><clipPath id={clipId}><path clip-rule="evenodd" d={clip} /></clipPath><g clip-path={`url(#${clipId})`}>{chunks.map((u) => <use data-field-href={`${u}#field`} />)}</g></svg>
   <noscript><svg class="field__svg" viewBox={viewBox} focusable="false"><use href={`${fieldSvg}#field`} clip-path={`url(#${clipId})`} /></svg></noscript>
 </div>

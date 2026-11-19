@@ -1,12 +1,13 @@
 ---
 import { CHARACTER } from '../content/copy';
 import PlateLabel from '../components/PlateLabel.astro';
+import { brandUrl } from '../lib/assets';
 ---
 <section class="section character" id="character" aria-labelledby="character-title">
   <div class="character__mark" aria-hidden="true">
     <picture>
-      <source type="image/avif" srcset="/brand/bison-1023.avif" />
-      <img src="/brand/bison-1023.webp" alt="" width="1023" height="721" loading="lazy" decoding="async" />
+      <source type="image/avif" srcset={brandUrl('bison-1023.avif')} />
+      <img src={brandUrl('bison-1023.webp')} alt="" width="1023" height="721" loading="lazy" decoding="async" />
     </picture>
   </div>
   <div class="wrap character__inner">

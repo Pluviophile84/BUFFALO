@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { PRE, ROOT } from '../helpers';
 
-const bSymbol = fs.readFileSync(path.join(ROOT, 'public/brand/b-symbol.svg'), 'utf8');
+const bSymbol = fs.readFileSync(path.join(ROOT, 'tests/fixtures/layers/b-symbol.svg'), 'utf8');
 
 for (const width of [375, 768, 1440, 1920])
   test(`Statement seal: the Ƀ's bounding-box centre is the ring's centre (±0.5px) — ${width}px`, async ({ browser }) => {

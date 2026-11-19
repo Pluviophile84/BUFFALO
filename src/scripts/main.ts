@@ -6,7 +6,7 @@ import { initReveal } from './reveal';
 import { initCopy } from './copy-serial';
 import { initMark } from './mark';
 import { initCards } from './cards';
-import { initField } from './field';
+import { initField, attachAll } from './field';
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 initStrike(reduced);
@@ -15,8 +15,10 @@ initReveal(reduced);
 initCopy();
 initMark(reduced);
 initCards(reduced);
-initField();
-
-if (!reduced && matchMedia('(pointer: fine)').matches && document.querySelector('[data-guilloche-host]')) {
-  import('./guilloche-canvas').then((m) => m.initGuilloche());
+// Fine pointers draw the guilloche on a canvas; the static SVG under it is then
+// never attached (scripts/field.ts), unless the canvas cannot run.
+const canvas = !reduced && matchMedia('(pointer: fine)').matches && !!document.querySelector('[data-guilloche-host]');
+initField(canvas);
+if (canvas) {
+  import('./guilloche-canvas').then((m) => m.initGuilloche()).catch(attachAll);
 }

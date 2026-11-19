@@ -8,7 +8,8 @@
     "extent": 4.93,
     "inner": 1.07,
     "outer": 4.4,
-    "paths": 162
+    "paths": 162,
+    "chunks": 6
   },
   "map": {
     "width": 1200,

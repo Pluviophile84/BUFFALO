@@ -35,7 +35,8 @@ for (const [width, height] of [[390, 844], [1440, 900]] as const)
         wrap: box(document.querySelector('.final__fieldwrap')!),
         final: box(document.querySelector('.field--final')!),
         viewBox: svg.getAttribute('viewBox')!.split(' ').map(Number),
-        use: svg.querySelector('use')!.getAttribute('href'),
+        uses: [...svg.querySelectorAll('use')].map((u) => u.getAttribute('href')),
+        clipOnGroup: !!svg.querySelector('g[clip-path] > use'),
         clip: svg.querySelector('clipPath path')!.getAttribute('d'),
         z: getComputedStyle(document.querySelector('.field--hero')!).zIndex,
       };
@@ -47,7 +48,10 @@ for (const [width, height] of [[390, 844], [1440, 900]] as const)
     expect(Math.abs(g.final.w - 4.93 * g.wrap.w)).toBeLessThan(1);
     expect(Math.abs(g.final.cx - g.wrap.cx)).toBeLessThan(1);
     expect(g.z).toBe('0');
-    expect(g.use).toMatch(/\/_astro\/guilloche-field\.[\w-]+\.svg#field$/);
+    // Batch 3: the paths in six files, in order, one <use> each, inside one clipped group
+    expect(g.uses).toHaveLength(generated.field.chunks);
+    g.uses.forEach((u, k) => expect(u).toMatch(new RegExp(`/_astro/guilloche-field-${k + 1}\\.[\\w-]+\\.svg#field$`)));
+    expect(g.clipOnGroup).toBe(true);
     // viewBox half-size ↔ 4.93R and the logo's disc ↔ 4.4R
     const { disc, center } = generated.field;
     const half = g.viewBox[2]! / 2;
@@ -57,6 +61,28 @@ for (const [width, height] of [[390, 844], [1440, 900]] as const)
     expect(r0 / disc).toBeCloseTo(1.07 / 4.4, 3);
     await ctx.close();
   });
+
+test('fine pointer: the path file is fetched once for both hosts, and the hidden SVG under the canvas is never attached', async ({ browser }) => {
+  const { ctx, page } = await open(browser, { viewport: { width: 1440, height: 900 } });
+  const fetched: string[] = [];
+  page.on('request', (r) => /guilloche-field/.test(r.url()) && fetched.push(new URL(r.url()).pathname));
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.waitForSelector('.hero.has-canvas canvas.guilloche-canvas');
+  await page.evaluate(() => document.querySelector('.final')!.scrollIntoView());
+  await page.waitForFunction(() => document.querySelectorAll('canvas.guilloche-canvas').length === 2 && [...document.querySelectorAll<HTMLCanvasElement>('canvas.guilloche-canvas')].every((c) => c.width > 0));
+  await page.waitForTimeout(500);
+  expect(fetched.filter((p) => /guilloche-field\.[\w-]+\.svg$/.test(p))).toHaveLength(1); // one fetch, one parse
+  expect(fetched.filter((p) => /guilloche-field-\d/.test(p))).toEqual([]); // the static chunks never load
+  expect(await page.locator('.has-canvas .field use[href]').count()).toBe(0);
+  await ctx.close();
+});
+
+test('coarse pointer: the static field attaches its six files one at a time, after load', async ({ browser }) => {
+  const { ctx, page } = await open(browser, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await expect.poll(() => page.locator('.field--hero use[href]').count()).toBe(generated.field.chunks);
+  expect(await page.locator('.guilloche-canvas').count()).toBe(0);
+  await ctx.close();
+});
 
 test('fine pointer: the canvas draws the same paths, static (no drift, no pointer bend); none for reduced motion or touch', async ({ browser }) => {
   const { ctx, page } = await open(browser, { viewport: { width: 1440, height: 900 } });

@@ -83,7 +83,8 @@ order. Do not skip one because the one before passed.
      differ from the chain.
 
    It is deliberately not part of the Vercel build, so an RPC hiccup cannot block
-   a deploy. Set `SOLANA_RPC_URL` to use another endpoint.
+   a deploy. CI (`.github/workflows/ci.yml`) also runs it on every push once the
+   config is `live`. Set `SOLANA_RPC_URL` to use another endpoint.
 3. **Commit and push.** Vercel builds the deployment. The build **fails instead of
    publishing** if anything is wrong, and the build log lists every problem:
    - `live` without an address;
@@ -306,7 +307,7 @@ reason is stated.
       the 18 px glyph plus the font's descent). The ring centred that span, so
       the Ƀ rode 2.5 px above the ring's centre.
     - **Fix:** the seal now draws the Ƀ from the extracted vector (the path and
-      tight viewBox of `public/brand/b-symbol.svg`) as its own block, so the
+      tight viewBox of `tests/fixtures/layers/b-symbol.svg`) as its own block, so the
       ring centres its bounding box, as the master logo centres it. The Ƀ is
       18 px tall in a 40 px ring, as before; it is centred within 0.01 px at
       375, 768, 1440 and 1920.
@@ -652,6 +653,65 @@ reason is stated.
         button in exactly its box (tested to within 1 px), so nothing moves.
         With JavaScript the menu is as before: focus trap, Esc, inert, and the
         scroll-position fix. `menu.spec.ts` passes unchanged.
+    - **Part 9, infrastructure:**
+      - **Caching.** `/brand/*` and `/kit/*` were served `immutable` for a
+        year under stable filenames, so a corrected image would never have
+        reached returning visitors.
+        - The served brand layers now live in `src/assets/brand`, and the kit
+          (and its previews) in `src/assets/kit`. The build emits each file as
+          `/_astro/<name>.<content hash>.<ext>`, and pages look the URLs up
+          through `src/lib/assets.ts`. Downloads keep their plain names
+          (`download="buffalo-emblem-1024.png"`).
+        - `vercel.json` keeps `immutable` for `/_astro/` only: a test checks
+          that no other rule says it. HTML stays `no-cache`. The pre-issue and
+          live OG images keep their own stable `/og/` URLs (`max-age=86400`).
+        - The asset scripts write to the new places. Re-run, they reproduce
+          every moved file byte for byte.
+      - **Public output.** The renders only tests read moved from
+        `public/brand` to `tests/fixtures/layers/`: the lossless bison and
+        ground extractions, `frame.svg`, the three Ƀ vectors (also the kit's
+        source) and the layer manifest.
+        - Deploy size: **11,478,387 → 9,950,434 bytes (−1.53 MB, −13 %), 77 →
+          70 files.**
+      - **The guilloche field.**
+        - On the canvas (fine pointers), the path file is fetched and parsed
+          once for both hosts, and only when the main thread is idle. The
+          hidden SVG under the canvas is no longer attached at all.
+        - On coarse pointers, the static field's paths, in the same order,
+          come in six files (`guilloche-field-1…6.svg`), attached one per
+          `requestIdleCallback`, with `setTimeout` where it is missing. They
+          sit inside one clipped group.
+        - The full file stays for the canvas, the `<noscript>` copy and the OG
+          image.
+        - Output: the canvas modes and the 1440 static field are
+          pixel-identical to before, compared exactly. On the 390 static hero,
+          one pixel differs by 1/255. It comes from painting in six stages;
+          after a full repaint it is identical too.
+      - **Total Blocking Time.** The profile on a mid-range phone (4× CPU)
+        traced the one post-paint long task to Blink parsing the whole 44 KB
+        field SVG at once. Blocking that file alone removed the task. Deferring
+        it would not have helped, so the file is split, as above. Results:
+        - That task: 56–88 ms in every run before; gone in 8 of 8 runs after.
+        - Lighthouse, mobile, devtools-applied 4× throttling, 10 runs each:
+          TBT median **19 → 4.5 ms** (14–48 → 0–7). LCP median about 1900 →
+          about 1910 ms, within run noise: the requests in the LCP window are
+          the same. CLS 0.
+        - The suite's simulated runs read 0–33 ms. Lab hardware slower than
+          this machine (the 92–278 ms measured before) scales the same task, so
+          expect the same relative drop there. That has not been re-measured
+          on the deploy.
+      - **CI** (`.github/workflows/ci.yml`), on push and pull request:
+        - Node from `.nvmrc`, `npm ci`, and the Chromium pinned by
+          `@playwright/test`;
+        - both builds, then the static and browser suites;
+        - `npm run verify-mint` when the shipped config is `live`;
+        - Lighthouse as a separate job, `continue-on-error`.
+      - **Test builds.** They write to `.test-builds/` in the workspace, not
+        the system temp directory, and the TLS certificate of the test server
+        goes there too. Every build takes a lock (`tests/lib/build-lock.mjs`),
+        because builds share `public/og` and the generated files. The OG test
+        reads each build's own `og.json`, so a parallel build can't race it.
+      - Screenshots: `docs/batch-3/`.
 
 ### TODO-ASSET
 
@@ -670,7 +730,7 @@ reason is stated.
 
 ## Test results (last run)
 
-`npm test` → **230/230 Playwright checks passed; Lighthouse CI assertions passed.**
+`npm test` → **235/235 Playwright checks passed; Lighthouse CI assertions passed.**
 
 | Check | Result |
 |---|---|
@@ -755,21 +815,22 @@ INP cannot be measured in the lab. TBT is the lab proxy. The guilloche canvas
 
 | Path | Source | Size |
 |---|---|---|
-| `public/brand/frame.svg` | master `#frame`, SVGO precision 0.1, fills exact | 208 KB (21 KB br) |
-| `public/brand/guilloche.svg` | frame line work only, `<g id="guilloche">` | 208 KB (21 KB br) |
-| `public/brand/b-symbol{,-ink,-bronze}.svg` | master Ƀ, transform baked, tight viewBox `286.638 250 426.724 500` | 0.9 KB each |
-| `public/brand/bison.png` | `#bison-raster`, byte-identical | 1.27 MB, 1023×721 |
-| `public/brand/bison-{480,768,1023}.{avif,webp}` | from `bison.png`; never above native width | AVIF 34 / 80 / 113 KB |
-| `public/brand/ground.{png,webp}` | `#ground-raster` (PNG byte-identical; WebP lossless) | 39 / 31 KB, 882×52 |
-| `public/brand/manifest.json` | dimensions, sizes, SHA-256 of every layer | — |
+| `tests/fixtures/layers/frame.svg` | master `#frame`, SVGO precision 0.1, fills exact (verification only) | 208 KB |
+| `src/assets/brand/guilloche.svg` | frame line work only, `<g id="guilloche">` (served fingerprinted) | 208 KB (21 KB br) |
+| `tests/fixtures/layers/b-symbol{,-ink,-bronze}.svg` | master Ƀ, transform baked, tight viewBox `286.638 250 426.724 500` (source of the kit's Ƀ) | 0.9 KB each |
+| `tests/fixtures/layers/bison.png` | `#bison-raster`, byte-identical (verification only) | 1.27 MB, 1023×721 |
+| `src/assets/brand/bison-{480,768,1023}.{avif,webp}` | from `bison.png`; never above native width (served fingerprinted) | AVIF 34 / 80 / 113 KB |
+| `src/assets/brand/ground.webp`, `tests/fixtures/layers/ground.png` | `#ground-raster` (WebP lossless, served; PNG byte-identical, verification only) | 31 / 39 KB, 882×52 |
+| `tests/fixtures/layers/manifest.json` | dimensions, sizes, SHA-256 of every layer | — |
 | `src/assets/fonts/*.woff2` | fontsource, subset + metric-matched fallbacks (`src/styles/fonts.css`) | 16–21 KB each |
 | `src/assets/history/*` | historical plates, 3 widths each, AVIF + WebP | see `ASSET-SOURCES.md` |
 | `src/assets/generated/guilloche-field.svg` | the master's 162 frame guilloche paths, every point exact (hundredth steps), stroke #5E634A 0.75 px non-scaling | 298 KB (44 KB gz) |
+| `src/assets/generated/guilloche-field-{1…6}.svg` | the same paths in order, split in six (the static field loads one per idle callback) | 35–76 KB each |
 | `src/assets/generated/land.svg` | `world-atlas` land-110m, Equal Earth | 57 KB (17 KB br) |
-| `public/kit/buffalo-emblem-{512,1024,2048}.png` | pack / pack / master render | 246 KB / 844 KB / 2.6 MB |
-| `public/kit/buffalo-b-{cream,ink,bronze}.{svg,png}` | extracted Ƀ (PNG 854×1000) | 1 KB / 22 KB |
-| `public/kit/buffalo-x-header-1500x500.png` | vault + the logo's guilloche field + whole emblem | 225 KB |
-| `public/kit/buffalo-wallpaper-{phone-1290x2796,desktop-2560x1440}.png` | same | 690 / 687 KB |
+| `src/assets/kit/buffalo-emblem-{512,1024,2048}.png` | pack / pack / master render | 246 KB / 844 KB / 2.6 MB |
+| `src/assets/kit/buffalo-b-{cream,ink,bronze}.{svg,png}` | extracted Ƀ (PNG 854×1000) | 1 KB / 22 KB |
+| `src/assets/kit/buffalo-x-header-1500x500.png` | vault + the logo's guilloche field + whole emblem | 225 KB |
+| `src/assets/kit/buffalo-wallpaper-{phone-1290x2796,desktop-2560x1440}.png` | same | 690 / 687 KB |
 | `public/favicon.{svg,ico}`, `favicon-{16,32}x….png` | Ƀ in cream on vault | 1–2 KB |
 | `public/og/buffalo-fourth-issue[-specimen].png` | **generated at build**, by state | ≈ 288 KB, 1200×630 |
 | `tests/fixtures/master-{1000,2000}.png` | resvg render of the untouched master | reference for every diff |
@@ -781,14 +842,16 @@ INP cannot be measured in the lab. TBT is the lab proxy. The guilloche canvas
 ```
 src/config/issue.ts          ← the only file edited at launch
 src/lib/validate-issue.mjs   validation + derivation (shared by build, OG script and tests)
+src/lib/load-issue.mjs       the one config loader (astro.config, OG build, verify-mint)
+src/lib/assets.ts            fingerprinted URLs of src/assets/brand and src/assets/kit
 src/lib/issue-state.ts       build-time state; importing it validates the config
 src/lib/map.mjs              borderless map (land geometry only)
 src/content/copy.ts          final copy (§5, revised in Refinement Batch 2), paired by state
 src/components/ · src/sections/ · src/layouts/ · src/pages/
-src/scripts/                 vanilla TS islands: strike, nav, reveal, copy-serial, mark, field, guilloche-canvas
+src/scripts/                 vanilla TS islands: strike, nav, reveal, copy-serial, mark, cards, field, guilloche-canvas
 src/styles/                  @layer reset, tokens, base, components, sections, utilities, emblem
 scripts/                     extract-layers, build-fonts, build-historical, reference-render,
-                             build-generated, build-kit, build-og
+                             build-generated, build-kit, build-og, verify-mint
 tests/static/ · tests/browser/ · tests/lighthouse.mjs · lighthouserc.cjs
 ```
 

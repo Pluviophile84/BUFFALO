@@ -3,6 +3,7 @@ dist/
 dist-*/
 .astro/
 public/og/
+.test-builds/
 test-results/
 playwright-report/
 .lighthouseci/

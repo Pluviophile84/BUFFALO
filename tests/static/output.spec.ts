@@ -100,7 +100,35 @@ test('vercel.json: headers and caching', () => {
   expect(v.trailingSlash).toBe(false);
   const cache = (src: string) => v.headers.find((h: { source: string }) => h.source === src).headers[0].value;
   expect(cache('/_astro/(.*)')).toContain('immutable');
-  expect(cache('/brand/(.*)')).toContain('max-age=31536000');
-  expect(cache('/kit/(.*)')).toBe('public, max-age=86400');
-  expect(cache('/((?!_astro/|brand/|kit/|og/).*)')).toBe('no-cache');
+  expect(cache('/((?!_astro/|og/).*)')).toBe('no-cache');
+  expect(cache('/og/(.*)')).toBe('public, max-age=86400');
+  // Batch 3: immutable is only for fingerprinted URLs (/_astro/): no other rule says it
+  const immutable = v.headers.filter((h: { headers: { value: string }[] }) => h.headers.some((x) => /immutable/.test(x.value))).map((h: { source: string }) => h.source);
+  expect(immutable).toEqual(['/_astro/(.*)']);
+});
+
+test('brand layers and the Custodian Kit are fingerprinted; nothing is served under /brand or /kit', () => {
+  for (const st of ['dist', 'dist-live']) {
+    const out = path.join(ROOT, st);
+    expect(fs.existsSync(path.join(out, 'brand')), `${st}/brand`).toBe(false);
+    expect(fs.existsSync(path.join(out, 'kit')), `${st}/kit`).toBe(false);
+    const html = fs.readFileSync(path.join(out, 'index.html'), 'utf8');
+    expect(html).not.toMatch(/["'\s(]\/(brand|kit)\//);
+    // every brand layer and kit file the page references: /_astro/<name>.<hash>.<ext>, and the file exists
+    const refs = [...html.matchAll(/\/_astro\/((?:bison-\d+|ground|guilloche|buffalo-[\w-]+|emblem|b|x-header|wallpaper)\.([\w-]{8})\.(avif|webp|png|svg))/g)].map((m) => m[1]!);
+    for (const r of refs) expect(fs.existsSync(path.join(out, '_astro', r)), r).toBe(true);
+    const names = new Set(refs.map((r) => r.replace(/\.[\w-]{8}\.(\w+)$/, '.$1')));
+    for (const n of ['bison-480.avif', 'bison-768.webp', 'bison-1023.avif', 'ground.webp', 'guilloche.svg', 'buffalo-emblem-2048.png', 'buffalo-b-ink.svg', 'buffalo-wallpaper-phone-1290x2796.png', 'emblem.webp', 'x-header.webp'])
+      expect(names, n).toContain(n);
+    // downloads keep their plain filenames
+    expect(html).toMatch(/href="\/_astro\/buffalo-emblem-1024\.[\w-]{8}\.png" download="buffalo-emblem-1024\.png"/);
+  }
+});
+
+test('verification-only renders are not deployed', () => {
+  for (const f of ['bison.png', 'ground.png', 'frame.svg', 'b-symbol.svg', 'b-symbol-ink.svg', 'b-symbol-bronze.svg', 'manifest.json']) {
+    expect(fs.existsSync(path.join(ROOT, 'tests/fixtures/layers', f)), f).toBe(true);
+    for (const st of ['dist', 'dist-live']) expect(walk(path.join(ROOT, st), (p) => path.basename(p) === f || new RegExp(`^${f.replace('.', '\\.[\\w-]{8}\\.')}$`).test(path.basename(p)))).toEqual([]);
+  }
+  expect(fs.existsSync(path.join(ROOT, 'public/brand'))).toBe(false);
 });

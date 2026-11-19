@@ -1,7 +1,6 @@
 // §13.3 Config guards. The site must be incapable of showing a live state by accident.
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { ROOT, walk, BASE58_RUN, LIVE_CONTRACT } from '../helpers';
@@ -10,19 +9,26 @@ import { deriveIssue, isSolanaAddress, base58Decode, isCalendarDate } from '../.
 // @ts-expect-error — plain ESM module (scripts/verify-mint.mjs)
 import { checkMint, formatUnits } from '../../scripts/lib/mint-check.mjs';
 import { ISSUE } from '../../src/config/issue';
+// @ts-ignore plain ESM helper (also used by tests/build-states.mjs)
+import { withBuildLock, buildDir } from '../lib/build-lock.mjs';
 
 const OTHER = 'So11111111111111111111111111111111111111112'; // wrapped SOL: a real mint that is not ours
 const html = (dist: string, page = 'index.html') => fs.readFileSync(path.join(ROOT, dist, page), 'utf8');
 /** The Custodians head (channels and their note), from the section to the Code. */
 const custodians = (h: string) => h.slice(h.indexOf('id="custodians"'), h.indexOf('class="code"', h.indexOf('id="custodians"')));
 
+// Each build writes to its own directory on the workspace filesystem (.test-builds/)
+// and holds the build lock: builds share public/og and the generated files.
 function build(fixture: string, extraEnv: Record<string, string> = {}) {
-  const out = fs.mkdtempSync(path.join(os.tmpdir(), 'buffalo-guard-'));
-  const r = spawnSync('npm', ['run', 'build', '--silent'], {
-    cwd: ROOT,
-    encoding: 'utf8',
-    env: { ...process.env, ASTRO_TELEMETRY_DISABLED: '1', BUFFALO_ISSUE_FIXTURE: fixture, BUFFALO_OUT_DIR: out, ...extraEnv },
-  });
+  const out: string = buildDir('guard');
+  const r = withBuildLock(() =>
+    spawnSync('npm', ['run', 'build', '--silent'], {
+      cwd: ROOT,
+      encoding: 'utf8',
+      env: { ...process.env, ASTRO_TELEMETRY_DISABLED: '1', BUFFALO_ISSUE_FIXTURE: fixture, BUFFALO_OUT_DIR: out, ...extraEnv },
+    }),
+  ) as ReturnType<typeof spawnSync>;
+  if (r.status !== 0) fs.rmSync(out, { recursive: true, force: true });
   return { status: r.status, output: `${r.stdout}\n${r.stderr}`, out };
 }
 

@@ -6,6 +6,7 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import displayFont from '../assets/fonts/caslon-display.woff2?url';
 import brand from '../data/brand.json';
+import { brandUrl } from '../lib/assets';
 import og from '../../public/og/og.json';
 
 interface Props {
@@ -22,7 +23,7 @@ const ogImage = `${site}${og.file}`;
 const jsonLd = JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'BUFFALO', alternateName: '$BUFFALO', url: site });
 // Hero bison: preload the AVIF set with the same sizes the hero uses.
 const heroSizes = '(min-width: 1024px) min(48.7vh, 470px), 66vw';
-const heroSrcset = brand.bison.srcset.map((s) => `/brand/bison-${s.width}.avif ${s.width}w`).join(', ');
+const heroSrcset = brand.bison.srcset.map((s) => `${brandUrl(`bison-${s.width}.avif`)} ${s.width}w`).join(', ');
 ---
 <!doctype html>
 <html lang="en" data-state={issue.status}>

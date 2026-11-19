@@ -7,19 +7,22 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import sharp from 'sharp';
 import { optimize } from 'svgo';
-import { ROOT, BRAND_DIR, parseMaster, placeInMaster, parseBTransform, bakePath } from './lib/master.mjs';
+import { ROOT, BRAND_DIR, LAYERS_DIR, parseMaster, placeInMaster, parseBTransform, bakePath } from './lib/master.mjs';
 
 const VB = '40 40 920 920';
 const COLORS = { cream: '#EEE1C6', ink: '#1B1510', bronze: '#947342' };
 const BISON_WIDTHS = [480, 768, 1023];
 
 fs.mkdirSync(BRAND_DIR, { recursive: true });
+fs.mkdirSync(LAYERS_DIR, { recursive: true });
 const m = parseMaster();
 const written = [];
-const write = (name, buf) => {
-  const file = path.join(BRAND_DIR, name);
+// Served layers go to BRAND_DIR (fingerprinted by the site build); renders used
+// only for verification (and as the kit's sources) go to LAYERS_DIR.
+const write = (name, buf, dir = BRAND_DIR) => {
+  const file = path.join(dir, name);
   fs.writeFileSync(file, buf);
-  written.push(name);
+  written.push(file);
   return file;
 };
 
@@ -47,7 +50,7 @@ const svgoOpts = (precision) => ({
 
 // 1. frame.svg — #frame only, in the master viewBox.
 const frameSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${VB}"><g id="frame">${m.frameInner}</g></svg>`;
-write('frame.svg', optimize(frameSvg, svgoOpts(1)).data);
+write('frame.svg', optimize(frameSvg, svgoOpts(1)).data, LAYERS_DIR);
 
 // 1b. guilloche.svg — the frame's line work only, so the coin can be layered
 // (rings render as three inline circles beneath it; together they equal #frame).
@@ -63,9 +66,9 @@ const pad = 0; // tight
 const bvb = [minX - pad, minY - pad, maxX - minX + 2 * pad, maxY - minY + 2 * pad].map((n) => Number(n.toFixed(3)));
 const bSvg = (fill) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${bvb.join(' ')}" width="${bvb[2]}" height="${bvb[3]}"><path fill="${fill}" fill-rule="${m.bPath.fillRule}" d="${baked.d}"/></svg>\n`;
-write('b-symbol.svg', bSvg(COLORS.cream));
-write('b-symbol-ink.svg', bSvg(COLORS.ink));
-write('b-symbol-bronze.svg', bSvg(COLORS.bronze));
+write('b-symbol.svg', bSvg(COLORS.cream), LAYERS_DIR);
+write('b-symbol-ink.svg', bSvg(COLORS.ink), LAYERS_DIR);
+write('b-symbol-bronze.svg', bSvg(COLORS.bronze), LAYERS_DIR);
 
 // 3. Bison — lossless decode, then responsive AVIF/WebP at or below native width.
 if (m.bison.mime !== 'image/png') throw new Error('bison-raster is not PNG');
@@ -73,7 +76,7 @@ const bisonMeta = await sharp(m.bison.data).metadata();
 if (bisonMeta.width !== m.bison.width || bisonMeta.height !== m.bison.height) {
   throw new Error('bison-raster native size differs from its placement box; aspect logic would be required');
 }
-write('bison.png', m.bison.data); // byte-identical to the embedded raster
+write('bison.png', m.bison.data, LAYERS_DIR); // byte-identical to the embedded raster
 const bisonSet = [];
 for (const w of BISON_WIDTHS) {
   if (w > bisonMeta.width) throw new Error('Refusing to resample above native size');
@@ -88,7 +91,7 @@ for (const w of BISON_WIDTHS) {
 
 // 4. Ground — lossless PNG (byte-identical) + lossless WebP.
 const groundMeta = await sharp(m.ground.data).metadata();
-write('ground.png', m.ground.data);
+write('ground.png', m.ground.data, LAYERS_DIR);
 write('ground.webp', await sharp(m.ground.data).webp({ lossless: true, effort: 6 }).toBuffer());
 
 // 5. Geometry for the layered coin: every placement in master user space.
@@ -120,8 +123,9 @@ const brand = {
 
 const hash = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 const files = {};
-for (const name of written.sort()) {
-  const buf = fs.readFileSync(path.join(BRAND_DIR, name));
+for (const file of written.sort((a, b) => path.basename(a).localeCompare(path.basename(b)))) {
+  const name = path.basename(file);
+  const buf = fs.readFileSync(file);
   const meta = /\.(png|webp|avif)$/.test(name) ? await sharp(buf).metadata() : null;
   files[name] = { bytes: buf.length, sha256: hash(buf), ...(meta ? { width: meta.width, height: meta.height } : {}) };
 }
@@ -131,7 +135,7 @@ const manifest = {
   files,
   geometry: brand,
 };
-fs.writeFileSync(path.join(BRAND_DIR, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+fs.writeFileSync(path.join(LAYERS_DIR, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 fs.mkdirSync(path.join(ROOT, 'src/data'), { recursive: true });
 fs.writeFileSync(path.join(ROOT, 'src/data/brand.json'), JSON.stringify(brand, null, 2) + '\n');
 

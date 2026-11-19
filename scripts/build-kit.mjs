@@ -5,10 +5,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
-import { ROOT, PACK_DIR, BRAND_DIR } from './lib/master.mjs';
+import { ROOT, PACK_DIR, LAYERS_DIR } from './lib/master.mjs';
 import { renderSvg, renderMaster, fieldPaths } from './lib/render.mjs';
 
-const KIT = path.join(ROOT, 'public/kit');
+// src/assets/kit: the site build fingerprints every file (/_astro/…); kit.json names
+// them relative to this folder and the page resolves the URLs (src/lib/assets.ts).
+const KIT = path.join(ROOT, 'src/assets/kit');
 const PREV = path.join(KIT, 'previews');
 const PUB = path.join(ROOT, 'public');
 fs.mkdirSync(PREV, { recursive: true });
@@ -42,7 +44,7 @@ const bVariants = [
   { id: 'bronze', file: 'b-symbol-bronze.svg', label: 'Bronze' },
 ];
 for (const v of bVariants) {
-  const svg = fs.readFileSync(path.join(BRAND_DIR, v.file), 'utf8');
+  const svg = fs.readFileSync(path.join(LAYERS_DIR, v.file), 'utf8');
   fs.writeFileSync(path.join(KIT, `buffalo-b-${v.id}.svg`), svg);
   const png = await renderSvg(svg, { width: 854 }); // 854 × 1000
   fs.writeFileSync(path.join(KIT, `buffalo-b-${v.id}.png`), png);
@@ -91,7 +93,7 @@ const preview = async (src, name, w) => {
   const out = path.join(PREV, name);
   await sharp(src).resize({ width: w }).webp({ quality: 84, alphaQuality: 100 }).toFile(out);
   const m = await sharp(out).metadata();
-  return { src: `/kit/previews/${name}`, width: m.width, height: m.height };
+  return { src: `previews/${name}`, width: m.width, height: m.height };
 };
 const pv = {
   emblem: await preview(emblem[512], 'emblem.webp', 320),
@@ -107,7 +109,7 @@ const tiles = [
     name: 'The emblem',
     bg: 'vault',
     preview: pv.emblem,
-    files: [512, 1024, 2048].map((s) => ({ href: `/kit/buffalo-emblem-${s}.png`, download: `buffalo-emblem-${s}.png`, format: 'PNG', meta: `${s} × ${s} · transparent · ${kb(f(`buffalo-emblem-${s}.png`))}` })),
+    files: [512, 1024, 2048].map((s) => ({ href: `buffalo-emblem-${s}.png`, download: `buffalo-emblem-${s}.png`, format: 'PNG', meta: `${s} × ${s} · transparent · ${kb(f(`buffalo-emblem-${s}.png`))}` })),
   },
   {
     id: 'b',
@@ -116,8 +118,8 @@ const tiles = [
     bg: 'vault',
     preview: pv.b,
     files: bVariants.flatMap((v) => [
-      { href: `/kit/buffalo-b-${v.id}.svg`, download: `buffalo-b-${v.id}.svg`, format: 'SVG', meta: `${v.label} · vector`, variant: `${v.label} SVG` },
-      { href: `/kit/buffalo-b-${v.id}.png`, download: `buffalo-b-${v.id}.png`, format: 'PNG', meta: `${v.label} · ${bMeta.width} × ${bMeta.height}`, variant: `${v.label} PNG` },
+      { href: `buffalo-b-${v.id}.svg`, download: `buffalo-b-${v.id}.svg`, format: 'SVG', meta: `${v.label} · vector`, variant: `${v.label} SVG` },
+      { href: `buffalo-b-${v.id}.png`, download: `buffalo-b-${v.id}.png`, format: 'PNG', meta: `${v.label} · ${bMeta.width} × ${bMeta.height}`, variant: `${v.label} PNG` },
     ]),
   },
   {
@@ -125,7 +127,7 @@ const tiles = [
     name: 'X header',
     bg: 'vault',
     preview: pv.x,
-    files: [{ href: '/kit/buffalo-x-header-1500x500.png', download: 'buffalo-x-header-1500x500.png', format: 'PNG', meta: `1500 × 500 · ${kb(f('buffalo-x-header-1500x500.png'))}` }],
+    files: [{ href: 'buffalo-x-header-1500x500.png', download: 'buffalo-x-header-1500x500.png', format: 'PNG', meta: `1500 × 500 · ${kb(f('buffalo-x-header-1500x500.png'))}` }],
   },
   {
     id: 'wallpapers',
@@ -133,8 +135,8 @@ const tiles = [
     bg: 'vault',
     preview: pv.wall,
     files: [
-      { href: '/kit/buffalo-wallpaper-phone-1290x2796.png', download: 'buffalo-wallpaper-phone-1290x2796.png', format: 'PNG', meta: `Phone · 1290 × 2796 · ${kb(f('buffalo-wallpaper-phone-1290x2796.png'))}`, variant: 'phone' },
-      { href: '/kit/buffalo-wallpaper-desktop-2560x1440.png', download: 'buffalo-wallpaper-desktop-2560x1440.png', format: 'PNG', meta: `Desktop · 2560 × 1440 · ${kb(f('buffalo-wallpaper-desktop-2560x1440.png'))}`, variant: 'desktop' },
+      { href: 'buffalo-wallpaper-phone-1290x2796.png', download: 'buffalo-wallpaper-phone-1290x2796.png', format: 'PNG', meta: `Phone · 1290 × 2796 · ${kb(f('buffalo-wallpaper-phone-1290x2796.png'))}`, variant: 'phone' },
+      { href: 'buffalo-wallpaper-desktop-2560x1440.png', download: 'buffalo-wallpaper-desktop-2560x1440.png', format: 'PNG', meta: `Desktop · 2560 × 1440 · ${kb(f('buffalo-wallpaper-desktop-2560x1440.png'))}`, variant: 'desktop' },
     ],
   },
 ];
@@ -143,7 +145,7 @@ fs.writeFileSync(path.join(ROOT, 'src/data/kit.json'), JSON.stringify({ tiles, s
 // ── Favicons ────────────────────────────────────────────────────────────────
 // favicon.svg + 16/32/48: the Ƀ in cream on vault (legible at 16px).
 // apple-touch-icon + manifest icons: logo-pack files (full emblem, edge to edge).
-const bSvg = fs.readFileSync(path.join(BRAND_DIR, 'b-symbol.svg'), 'utf8');
+const bSvg = fs.readFileSync(path.join(LAYERS_DIR, 'b-symbol.svg'), 'utf8');
 const vb = bSvg.match(/viewBox="([^"]+)"/)[1].split(' ').map(Number);
 const bPath = bSvg.match(/<path[^>]*\/>/)[0];
 const pad = 0.16; // Ƀ fills 68% of the tile height
