@@ -24,6 +24,9 @@ export const ACTION = {
   availableAtIssue: 'Available at issue',
   copy: 'Copy',
   copied: 'Copied',
+  // clipboard unavailable or denied: the address is selected instead
+  manual: 'Selected — copy manually',
+  manualAnnounce: 'Clipboard unavailable. The mint address is selected; copy it manually.',
 };
 
 export const HERO = {

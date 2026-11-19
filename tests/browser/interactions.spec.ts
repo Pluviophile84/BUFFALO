@@ -48,6 +48,69 @@ test.describe('live state', () => {
     await ctx.close();
   });
 
+  // Batch 3: the fallback when the clipboard is unavailable or denied, in all three places
+  // a Copy button sits (hero and final section: the serial module; the Specification row).
+  const COPY_SPOTS = [
+    ['hero', '.hero'],
+    ['Specification', '.spec__ledger'],
+    ['final section', '.final'],
+  ] as const;
+  const MANUAL = 'Selected — copy manually';
+  const ANNOUNCE = 'Clipboard unavailable. The mint address is selected; copy it manually.';
+
+  for (const [where, scope] of COPY_SPOTS) {
+    for (const mode of ['denied', 'unavailable'] as const) {
+      test(`clipboard ${mode} — ${where}: the address is selected, the button says so, and it is announced`, async ({ browser }) => {
+        const ctx = await browser.newContext({ viewport: { width: 384, height: 832 } });
+        await ctx.addInitScript((m) => {
+          // denied: writeText rejects as a refused permission does; unavailable: no Clipboard API
+          const value = m === 'denied' ? { writeText: () => Promise.reject(new DOMException('Write permission denied.', 'NotAllowedError')) } : undefined;
+          Object.defineProperty(Navigator.prototype, 'clipboard', { configurable: true, get: () => value });
+        }, mode);
+        const page = await ctx.newPage();
+        await page.goto(LIVE + '/', { waitUntil: 'networkidle' });
+        const btn = page.locator(`${scope} button[data-copy]`);
+        await btn.scrollIntoViewIfNeeded();
+        await btn.click();
+        await expect(btn).toHaveText(MANUAL);
+        await expect(btn).toBeVisible();
+        await expect(page.locator('#live-status')).toHaveText(ANNOUNCE);
+        // the address in this block is selected, whole
+        const sel = await page.evaluate((s) => {
+          const g = getSelection()!;
+          const code = document.querySelector(`${s} [data-serial]`)!;
+          return { text: g.toString(), inside: code.contains(g.anchorNode) && code.contains(g.focusNode) };
+        }, scope);
+        expect(sel.text).toBe(LIVE_CONTRACT);
+        expect(sel.inside).toBe(true);
+        // the feedback fits: inside the viewport and inside its own block
+        const b = (await btn.boundingBox())!;
+        const box = (await btn.locator('xpath=ancestor::*[@data-serial-scope][1]').boundingBox())!;
+        expect(b.x).toBeGreaterThanOrEqual(box.x - 0.5);
+        expect(b.x + b.width).toBeLessThanOrEqual(Math.min(box.x + box.width, 384) + 0.5);
+        expect(await btn.evaluate((e) => e.scrollWidth <= e.clientWidth + 1)).toBe(true);
+        // restored after 3s; the selection stays
+        await page.waitForTimeout(3100);
+        await expect(btn).toHaveText('Copy');
+        await expect(page.locator('#live-status')).toHaveText('');
+        expect(await page.evaluate(() => getSelection()!.toString())).toBe(LIVE_CONTRACT);
+        await ctx.close();
+      });
+    }
+    test(`clipboard granted — ${where}: Copied, announced, on the clipboard`, async ({ browser }) => {
+      const ctx = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'] });
+      const page = await ctx.newPage();
+      await page.goto(LIVE + '/', { waitUntil: 'networkidle' });
+      const btn = page.locator(`${scope} button[data-copy]`);
+      await btn.scrollIntoViewIfNeeded();
+      await btn.click();
+      await expect(btn).toHaveText('Copied');
+      await expect(page.locator('#live-status')).toHaveText('Serial copied.');
+      expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(LIVE_CONTRACT);
+      await ctx.close();
+    });
+  }
+
   test('serial everywhere is identical; links derived; specimen gone', async ({ page }) => {
     await page.goto(LIVE + '/');
     const serials = await page.locator('[data-serial]').allTextContents();

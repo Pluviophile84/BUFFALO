@@ -667,6 +667,15 @@
   .serial__copy:hover {
     border-color: var(--cream-2);
   }
+  /* "Selected — copy manually" (clipboard unavailable): may wrap to two lines
+     inside the button's 44px instead of pushing the label aside */
+  .serial__copy.is-manual {
+    flex: 0 1 auto;
+    max-width: 13em;
+    line-height: 1.35;
+    text-align: center;
+    border-color: var(--cream-2);
+  }
   .serial__copy[aria-disabled='true'] {
     border-style: dashed;
     color: var(--cream-3);

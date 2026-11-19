@@ -552,6 +552,20 @@ reason is stated.
           comparing the config's facts.
         - The script runs with Node's `--use-env-proxy`, so it also works
           behind an HTTPS proxy.
+    - **Part 4, copy fallback:** when the clipboard is denied or missing, the
+      Copy buttons in the hero and the final section used to do nothing. Their
+      address sits outside the button's parent. The Specification did select
+      its address, but showed nothing.
+      - All three blocks now carry `data-serial-scope`. The button finds its
+        address with `closest('[data-serial-scope]')` and selects it.
+      - The button reads "Selected — copy manually". It may wrap to two lines
+        within its 44 px, so the block's height does not change.
+      - The live region announces "Clipboard unavailable. The mint address is
+        selected; copy it manually."
+      - After 3 s the button is restored and the selection stays.
+      - Tests cover all three places with the clipboard denied (`writeText`
+        rejects) and unavailable (no Clipboard API), and the granted path
+        ("Copied") in each.
 
 ### TODO-ASSET
 
@@ -570,7 +584,7 @@ reason is stated.
 
 ## Test results (last run)
 
-`npm test` → **187/187 Playwright checks passed; Lighthouse CI assertions passed.**
+`npm test` → **196/196 Playwright checks passed; Lighthouse CI assertions passed.**
 
 | Check | Result |
 |---|---|

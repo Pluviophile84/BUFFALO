@@ -11,11 +11,11 @@ interface Props {
 const { class: cls = '' } = Astro.props;
 const live = issue.live;
 ---
-<div class:list={['serial', !live && 'serial--pending', cls]} data-serial-module>
+<div class:list={['serial', !live && 'serial--pending', cls]} data-serial-module data-serial-scope>
   <div class="serial__head">
     <span class="label">{HERO.serialLabel}</span>
     {live ? (
-      <button class="serial__copy" type="button" data-copy={issue.serial} data-copied={ACTION.copied} aria-label={`${ACTION.copy} mint address`}>
+      <button class="serial__copy" type="button" data-copy={issue.serial} data-copied={ACTION.copied} data-manual={ACTION.manual} data-manual-announce={ACTION.manualAnnounce} aria-label={`${ACTION.copy} mint address`}>
         <span data-copy-label>{ACTION.copy}</span>
       </button>
     ) : (
