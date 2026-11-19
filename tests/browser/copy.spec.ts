@@ -44,6 +44,8 @@ for (const st of STATES)
       expect(all, 'exclamation mark').not.toContain('!');
       // the bison was on American money more than three times: 1901, 1913 and 2006 are landmarks
       expect(all, '"three times"').not.toMatch(/three times/i);
+      // the footer's old line is gone from every page (Refinement Batch 3)
+      expect(all, '"Now, everywhere"').not.toMatch(/now,\s*everywhere/i);
       expect(all, '$BUFF token').not.toMatch(/\$BUFF(?![A-Z])/);
       expect(all, 'emoji').not.toMatch(/(?![©®™])\p{Extended_Pictographic}/u);
       for (const m of all.matchAll(/\bpump\b/gi)) expect(all.slice(m.index!, m.index! + 8).toLowerCase()).toBe('pump.fun');

@@ -427,8 +427,8 @@ reason is stated.
     - **Name lint:** the lint that keeps "Buffalo Coin/Token" from being used
       as a name now also exempts the ticker. The live counterfeit notice reads
       "the official $BUFFALO token", as given.
-    - **Unchanged:** the footer's bottom line ("Paper. Nickel. Gold. Now,
-      everywhere."), which the batch does not list.
+    - **Unchanged:** the footer's bottom line, which the batch does not list.
+      Batch 3 replaced it (decision 24).
 
 23. **The Character watermark is whole and centred.** The bison layer behind
     III · Character used to be anchored to the section's bottom-right corner
@@ -450,6 +450,12 @@ reason is stated.
     At each one the image must be fully inside the section, centred within
     8 px, at most 1023 px wide and undistorted. Screenshots are in
     `docs/fix-character/`.
+
+24. **Refinement Batch 3: final fixes and launch hardening.** Each part is its
+    own commit, and `npm test` passes after each one.
+    - **Part 1, footer:** the bottom line is now "Paper. Nickel. Gold.
+      Blockchain.". The copy lint checks that "Now, everywhere" appears on no
+      page (`/`, `/disclaimer`, `/404`, both states).
 
 ### TODO-ASSET
 

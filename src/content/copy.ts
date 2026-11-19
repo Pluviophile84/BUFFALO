@@ -249,7 +249,7 @@ export const FOOTER = {
   ],
   disclaimerWit: 'Historically significant. Financially unserious in the legally appropriate places.',
   disclaimerTail: 'You are responsible for the laws that apply where you live.',
-  bottom: 'Paper. Nickel. Gold. Now, everywhere.',
+  bottom: 'Paper. Nickel. Gold. Blockchain.',
 };
 
 export const NOT_FOUND = {
